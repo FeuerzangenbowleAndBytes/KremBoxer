@@ -1,0 +1,27 @@
+{
+  "run_calibration": true,
+  "run_data_cleaner": true,
+  "run_frp_computation": true,
+  "calibration_parameters": {
+    "cal_output": "calibrations/example_calibration.json",
+    "LW_bandpass": "/home/jepaki/PycharmProjects/OsceolaAnalysis/data/clean/DC-6073_W1_8-14Si.csv",
+    "MW_bandpass": "/home/jepaki/PycharmProjects/OsceolaAnalysis/data/clean/DC-6216_u1_Saph_longwave.csv",
+    "cal_input": "/home/jepaki/PycharmProjects/OsceolaAnalysis/data/clean/unit11_calibration_data.csv",
+    "temp_cal_input": "/home/jepaki/PycharmProjects/OsceolaAnalysis/data/clean/temperature_sensor_calibration.csv",
+    "show_plot": true,
+    "plot_output": "plots/example_calibration_plot.png",
+    "v_top": 3300,
+    "r_top": 100000
+  },
+  "data_cleaner_parameters": {
+    "data_directories": ["/home/jepaki/Projects/Osceola/020322_Osceola_Radiometers_DualBand/", "/home/jepaki/Projects/Osceola/020422_Osceola_Radiometers_DualBand/"],
+    "target_dates": ["2022-02-04", "2022-02-03"],
+    "clean_dataframe_csv_output": "dataframes/example_cleaned_dataframe.csv",
+    "clean_dataframe_geojson_output": "dataframes/example_cleaned_dataframe.geojson"
+  },
+  "frp_parameters": {
+    "clean_dataframe_input": "dataframes/example_cleaned_dataframe.geojson",
+    "cal_input": "calibrations/example_calibration.json",
+    "processed_dataframe_output": "dataframes/example_processed_dataframe.geojson"
+  }
+}
