@@ -16,7 +16,7 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
         if data_series[1][data_series[0].index('GPS-TYPE')] == "LOCKED":
             fields = data_series[0]
             header = data_series[1]
-            dt, lat, lon = kdb_utils.parse_header(fields, header)
+            dt, lat, lon, sample_freq = kdb_utils.parse_header(fields, header)
 
             # Only clean datasets from the dates we're interested in
             if dt.date() in target_dates:
@@ -47,6 +47,7 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
                     metadata['lon'] = lon
                     metadata['rad'] = clean_file.split(".")[0].split("_")[1]
                     metadata['N'] = len(data_series)-3
+                    metadata['sample_freq'] = sample_freq
     return valid_data, metadata
 
 
@@ -114,10 +115,10 @@ def run_krembox_dualband_cleaner(params: dict):
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat))
     gdf.set_crs(epsg=4326)
 
-    print("Saving clean dataframe in CSV format: ",  params["clean_dataframe_csv_output"])
-    gdf.to_csv(params["clean_dataframe_csv_output"])
-    print("Saving clean dataframe in GeoJSON format: ", params["clean_dataframe_geojson_output"])
-    gdf.to_file(params["clean_dataframe_geojson_output"], driver='GeoJSON')
+    print("Saving clean dataframe in CSV format: ",  params["clean_dataframe_output"]+".csv")
+    gdf.to_csv(params["clean_dataframe_output"]+".csv")
+    print("Saving clean dataframe in GeoJSON format: ", params["clean_dataframe_output"]+".geojson")
+    gdf.to_file(params["clean_dataframe_output"]+".geojson", driver='GeoJSON')
     return gdf
 
 
@@ -130,8 +131,7 @@ if __name__ == '__main__':
         "data_directories": ["/home/jepaki/Projects/Osceola/020322_Osceola_Radiometers_DualBand/", "/home/jepaki/Projects/Osceola/020422_Osceola_Radiometers_DualBand/"],
         #"target_dates": [datetime.date(year=2022, month=2, day=4), datetime.date(year=2022, month=2, day=3)],
         "target_dates": ["2022-02-04", "2022-02-03"],
-        "clean_dataframe_csv_output": "dataframes/example_cleaned_dataframe.csv",
-        "clean_dataframe_geojson_output": "dataframes/example_cleaned_dataframe.geojson"
+        "clean_dataframe_output": "dataframes/example_cleaned_dataframe",
     }
     print("Running cleaner with params = ", params)
     cleaned_gdf = run_krembox_dualband_cleaner(params)

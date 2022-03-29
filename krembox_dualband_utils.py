@@ -10,4 +10,6 @@ def parse_header(fields, header):
                            tzinfo=datetime.timezone.utc)
     lat, lon = int(header[fields.index('LATITUDE(deg/100000)')]) / 1000000, \
                int(header[fields.index('LONGITUDE(deg/100000)')]) / 1000000
-    return dt, lat, lon
+
+    sample_freq = float(header[fields.index('SAMPLE-RATE(Hz)')])
+    return dt, lat, lon, sample_freq

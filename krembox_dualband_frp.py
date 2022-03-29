@@ -115,6 +115,8 @@ def run_krembox_dualband_frp(params: dict):
     max_FRP_indices = []
     max_FRPs = []
     max_FRP_datetimes = []
+    LW_FREs = []
+    MW_FREs = []
     for i, row in gdf.iterrows():
         clean_file_path = os.path.join(row["data_directory"], row["clean_file"])
         print(i, clean_file_path)
@@ -125,10 +127,17 @@ def run_krembox_dualband_frp(params: dict):
         max_FRP_index = rad_data_proc["MW_FRP"].argmax()
         max_FRP = rad_data_proc["MW_FRP"][max_FRP_index]
         max_FRP_datetime = rad_data_proc["datetime"][max_FRP_index]
+
+        # Compute the FRE as the integral of the FRP over the entire dataset duration
+        lw_fre = rad_data_proc["LW_FRP"].sum() * (1./ row['sample_freq'])
+        mw_fre = rad_data_proc["MW_FRP"].sum() * (1. / row['sample_freq'])
         print("\tMax FRP: ", max_FRP_index, max_FRP_datetime, max_FRP, "W/m**2")
+        print("\t MW FRE:", mw_fre, ', LW FRE:', lw_fre)
         max_FRP_indices.append(max_FRP_index)
         max_FRPs.append(max_FRP)
         max_FRP_datetimes.append(max_FRP_datetime)
+        MW_FREs.append(mw_fre)
+        LW_FREs.append(lw_fre)
 
         # Save the processed data to a new csv file
         proc_directory = os.path.join(row["data_directory"], "Processed")
@@ -141,8 +150,11 @@ def run_krembox_dualband_frp(params: dict):
     gdf["max_FRP_index"] = max_FRP_indices
     gdf["max_FRP_datetime"] = max_FRP_datetimes
     gdf["max_FRP"] = max_FRPs
+    gdf["MW_FRE"] = MW_FREs
+    gdf["LW_FRE"] = LW_FREs
     print("Saving processed dataframe in GeoJSON format: ", params["processed_dataframe_output"])
-    gdf.to_file(params["processed_dataframe_output"], driver='GeoJSON')
+    gdf.to_file(params["processed_dataframe_output"]+".geojson", driver='GeoJSON')
+    gdf.to_csv(params["processed_dataframe_output"] + ".csv")
     return gdf
 
 
@@ -154,7 +166,7 @@ if __name__ == '__main__':
     params = {
         "clean_dataframe_input": "dataframes/example_cleaned_dataframe.geojson",
         "cal_input": "calibrations/example_calibration.json",
-        "processed_dataframe_output": "dataframes/example_processed_dataframe.geojson"
+        "processed_dataframe_output": "dataframes/example_processed_dataframe"
     }
 
     gdf = run_krembox_dualband_frp(params)
