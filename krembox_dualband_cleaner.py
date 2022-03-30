@@ -115,6 +115,9 @@ def run_krembox_dualband_cleaner(params: dict):
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat))
     gdf.set_crs(epsg=4326)
 
+    if "burn_plot_dataframe_input" in params.keys():
+        gdf = kdb_utils.associate_data2burnplot(gdf, gpd.read_file(params["burn_plot_dataframe_input"]))
+
     print("Saving clean dataframe in CSV format: ",  params["clean_dataframe_output"]+".csv")
     gdf.to_csv(params["clean_dataframe_output"]+".csv")
     print("Saving clean dataframe in GeoJSON format: ", params["clean_dataframe_output"]+".geojson")
@@ -132,6 +135,7 @@ if __name__ == '__main__':
         #"target_dates": [datetime.date(year=2022, month=2, day=4), datetime.date(year=2022, month=2, day=3)],
         "target_dates": ["2022-02-04", "2022-02-03"],
         "clean_dataframe_output": "dataframes/example_cleaned_dataframe",
+        "burn_plot_dataframe_input": "dataframes/osceola_burn_plots.geojson"
     }
     print("Running cleaner with params = ", params)
     cleaned_gdf = run_krembox_dualband_cleaner(params)
