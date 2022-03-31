@@ -1,3 +1,4 @@
+import datetime
 import os.path
 
 import numpy as np
@@ -115,13 +116,18 @@ def run_krembox_dualband_frp(params: dict):
     max_FRP_indices = []
     max_FRPs = []
     max_FRP_datetimes = []
+    mean_FRPs = []
+    var_FRPs = []
     LW_FREs = []
     MW_FREs = []
+    proc_files = []
+    fire_durations = []
     for i, row in gdf.iterrows():
         clean_file_path = os.path.join(row["data_directory"], row["clean_file"])
         print(i, clean_file_path)
         rad_data = pd.read_csv(clean_file_path, skiprows=2, index_col=False, usecols=[0, 1, 2, 3])
         rad_data_proc = compute_FRP(rad_data, F_MW, F_LW, model_params, detect_temp_cal_data)
+        rad_data_proc['datetime'] = pd.to_datetime(rad_data_proc['datetime'])
 
         # Compute when the max FRP occurs
         max_FRP_index = rad_data_proc["MW_FRP"].argmax()
@@ -139,19 +145,36 @@ def run_krembox_dualband_frp(params: dict):
         MW_FREs.append(mw_fre)
         LW_FREs.append(lw_fre)
 
+        # Find duration of fire, as measured by how long frp > 0
+        df_temp = rad_data_proc[rad_data_proc["LW_FRP"] > 1000]
+        if df_temp.empty:
+            duration = 0
+            mean_FRPs.append(0)
+            var_FRPs.append(0)
+        else:
+            duration = (df_temp['datetime'].iloc[-1] - df_temp['datetime'].iloc[0]).seconds / 60
+            mean_FRPs.append(df_temp["LW_FRP"].mean())
+            var_FRPs.append(df_temp["LW_FRP"].var())
+        fire_durations.append(duration)
+
         # Save the processed data to a new csv file
         proc_directory = os.path.join(row["data_directory"], "Processed")
         if not os.path.exists(proc_directory):
             os.mkdir(proc_directory)
         proc_file = os.path.join("Processed", os.path.split(row["clean_file"])[-1])
+        proc_files.append(proc_file)
         proc_file_path = os.path.join(row["data_directory"], proc_file)
         rad_data_proc.to_csv(proc_file_path)
 
     gdf["max_FRP_index"] = max_FRP_indices
     gdf["max_FRP_datetime"] = max_FRP_datetimes
     gdf["max_FRP"] = max_FRPs
+    gdf["mean_FRP"] = mean_FRPs
+    gdf["var_FRP"] = var_FRPs
     gdf["MW_FRE"] = MW_FREs
     gdf["LW_FRE"] = LW_FREs
+    gdf["processed_file"] = proc_files
+    gdf["fire_duration"] = fire_durations
     print("Saving processed dataframe in GeoJSON format: ", params["processed_dataframe_output"])
     gdf.to_file(params["processed_dataframe_output"]+".geojson", driver='GeoJSON')
     gdf.to_csv(params["processed_dataframe_output"] + ".csv")

@@ -20,7 +20,8 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
 
             # Only clean datasets from the dates we're interested in
             if dt.date() in target_dates:
-                clean_file = file.split(".")[0] + "_" +dt.isoformat() + ".csv"
+                dataset = file.split(".")[0] + "_" +dt.isoformat()
+                clean_file = dataset + ".csv"
                 clean_file = os.path.join("Clean", clean_file)
 
                 # Only keep this dataset if we have not already processed it
@@ -41,6 +42,7 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
 
                     valid_data = True
                     metadata["dt"] = dt
+                    metadata["dataset"] = dataset
                     metadata["data_directory"] = data_directory
                     metadata["clean_file"] = clean_file
                     metadata['lat'] = lat
@@ -109,12 +111,15 @@ def run_krembox_dualband_cleaner(params: dict):
                         data_series.clear()
                     data_series.append(row)
 
+    # Create a pandas dataframe to record the metadata, and then convert into a geopands dataframe with gps info
     df = pd.DataFrame(metadata_list)
     print(df)
     print("Found ", len(clean_file_list), " valid datasets")
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat))
     gdf.set_crs(epsg=4326)
 
+    # Figure out which burn unit each dataset was recorded in, if we have burn unit polygons
+    # The burn unit Id will be added as a column in the dataframe
     if "burn_plot_dataframe_input" in params.keys():
         gdf = kdb_utils.associate_data2burnplot(gdf, gpd.read_file(params["burn_plot_dataframe_input"]))
 
