@@ -18,7 +18,7 @@ $ python3 -m venv ~/python_venvs/kremboxer
 4. Activate virtual environment and install Python dependencies 
 ```
 $ source ~/python_venvs/kremboxer/bin/activate
-(kremboxer) $ pip install numpy scipy matplotlib pandas geopandas
+(kremboxer) $ pip install datetime numpy scipy matplotlib pandas geopandas
 ```
 
 ## Download KremBox dualband raw data
