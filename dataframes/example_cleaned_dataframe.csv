@@ -1,4 +1,4 @@
-,dt,dataset,data_directory,clean_file,lat,lon,rad,N,sample_freq,geometry,burn_plot
+,dt,dataset,data_directory,clean_file,lat,lon,rad,N,sample_freq,geometry,burn_unit
 0,2022-02-03 13:53:59+00:00,DATALOG_5_2022-02-03T13:53:59+00:00,/home/jepaki/Projects/Osceola/020322_Osceola_Radiometers_DualBand/,Clean/DATALOG_5_2022-02-03T13:53:59+00:00.csv,30.239038,-82.409377,5,14410,1.0,POINT (-82.409377 30.239038),E2
 1,2022-02-03 13:50:16+00:00,DATALOG_21_2022-02-03T13:50:16+00:00,/home/jepaki/Projects/Osceola/020322_Osceola_Radiometers_DualBand/,Clean/DATALOG_21_2022-02-03T13:50:16+00:00.csv,30.239015,-82.410027,21,10384,1.0,POINT (-82.410027 30.239015),E4
 2,2022-02-03 16:50:38+00:00,DATALOG_21_2022-02-03T16:50:38+00:00,/home/jepaki/Projects/Osceola/020322_Osceola_Radiometers_DualBand/,Clean/DATALOG_21_2022-02-03T16:50:38+00:00.csv,30.238538,-82.410093,21,10320,1.0,POINT (-82.410093 30.238538),A1

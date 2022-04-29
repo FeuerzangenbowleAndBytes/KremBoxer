@@ -10,7 +10,9 @@ def main(argv):
     """
     Main user entry point for the Kremboxer code.  All parts of the dualband calibration and FRP computation
     can be launched by providing this script with a JSON parameter file as a command line argument
+
     Ex. python kremboxer.py -p paramfiles/example_paramfile.json
+
     :param argv:
     :return:
     """
