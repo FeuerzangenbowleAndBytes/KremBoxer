@@ -33,6 +33,12 @@ $ source ~/python_venvs/kremboxer/bin/activate
 $ python kremboxer.py -p paramfiles/example_paramfile.json
 ```
 
+## Pipeline Steps
+The code can be thought of as performing three different steps in the processing pipeline.
+1. **Calibration** - `krembox_dualband_calibrate.py` - Uses provided calibration data to compute a models that relates the instrument temperature and sensor voltages into detected radiances.
+2. **Cleaning** - `kremboxer_dualband_cleaner.py` - Given a set of data folders and days of interest, extract and separate the datasets of interest into separate files.  This step can also match the dataset with a burn unit if a GEOJSON defining the burn units is provided.
+3. **FRP** - `krembox_dualband_frp.py` - Uses the calibration coefficients and the two band data to compute the time series of area-emmissivity product and FRP for each dataset.  This step also computes simple statistics like max FRP, mean and variance of FRP, FRE, and how long the fire was in the sensor's field of view.
+
 ## Parameter File
 KremBoxer requires a user defined JSON parameter file to run. This file specifies things like which processing steps to run (i.e. calibration, cleaning, FRP computation) and all of the parameters needed for those steps.  There is an example parameter file demonstrating all of the possible parameters in `paramfiles/example_paramfile.json`.  Here is a description of the parameters:
 
