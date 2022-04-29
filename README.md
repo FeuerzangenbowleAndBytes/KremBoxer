@@ -32,3 +32,29 @@ $ cd ~/code/kremboxer
 $ source ~/python_venvs/kremboxer/bin/activate
 $ python kremboxer.py -p paramfiles/example_paramfile.json
 ```
+
+## Parameter File
+KremBoxer requires a user defined JSON parameter file to run. This file specifies things like which processing steps to run (i.e. calibration, cleaning, FRP computation) and all of the parameters needed for those steps.  There is an example parameter file demonstrating all of the possible parameters in `paramfiles/example_paramfile.json`.  Here is a description of the parameters:
+
+* run_calibration (bool) - 
+* run_data_cleaner (bool) - 
+* run_frp_computation (bool) - 
+* calibration_parameters
+  * cal_output (string) - 
+  * LW_bandpass (string) - 
+  * MW_bandpass (string) - 
+  * cal_input (string) - 
+  * temp_cal_input (string) - 
+  * show_plot (bool)
+  * plot_output (string) - 
+  * v_top (float) - 
+  * r_top (float) - 
+* data_cleaner_parameters 
+  * data_directories (list[string]) - 
+  * target_dates (list[date strings]) - 
+  * clean_datafrom_output (string) - 
+  * burn_plot_dataframe_input (string) - 
+* frp_parameters
+  * clean_dataframe_output (string) - 
+  * cal_input (string) - 
+  * processed_dataframe_output (string) - 
