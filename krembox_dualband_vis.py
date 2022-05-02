@@ -1,0 +1,262 @@
+import os.path
+import datetime
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib import cm
+from celluloid import Camera
+import krembox_dualband_utils as kdu
+
+
+def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit, plot_output_dir: str, plot_title_prefix=""):
+    """
+    Animate the time traces of the FRP measurements from each radiometer in the burn unit
+    :param rad_data_gdf:
+    :param burn_plot_gdf:
+    :param burn_unit:
+    :param plot_output_dir:
+    :param plot_title_prefix:
+    :return:
+    """
+
+    # Filter to the datasets from the burn unit we care about
+    rad_data_gdf = rad_data_gdf[rad_data_gdf["burn_unit"] == burn_unit]
+    burn_plot_gdf = burn_plot_gdf[burn_plot_gdf["Id"] == burn_unit]
+
+    if len(rad_data_gdf) == 0:
+        print("No datasets from burn unit ", burn_unit, " found.")
+        return
+
+    if len(burn_plot_gdf) == 0:
+        print("No burn units named ", burn_unit, " found.")
+        return
+
+    # Make a color map for the radiometer numbers
+    rad_nums = rad_data_gdf["rad"].unique()
+    cmap = cm.get_cmap('tab20', len(rad_nums))
+    rad_colors = dict(zip(rad_nums, cmap.colors))
+    print(rad_data_gdf.head())
+    rad_dict = {}
+
+    # Make a plot of the FRP traces of each radiometer in the burn unit
+    print("Plotting burn unit", burn_unit, ", ", len(rad_data_gdf), "datasets")
+    frp_dfs = {}
+    for i, row in rad_data_gdf.iterrows():
+        # Load each dataset into a pandas dataframe
+        proc_data_filepath = os.path.join(row["data_directory"], row["processed_file"])
+        rad_num = row["rad"]
+        rad_dict[rad_num] = {"lat": row["lat"],
+                             "lon": row["lon"]}
+        dataset_name = row["dataset"]
+        rad_df = pd.read_csv(proc_data_filepath)
+        rad_df['datetime'] = pd.to_datetime(rad_df['datetime'])
+
+        # Figure out where the max FRP occurs and only plot data in a time window around it (reduces time to render plot)
+        max_frp_index = rad_df['LW_FRP'].argmax()
+        max_frp_datetime = rad_df['datetime'][max_frp_index]
+        min_datetime = max_frp_datetime - datetime.timedelta(minutes=10)
+        max_datetime = max_frp_datetime + datetime.timedelta(minutes=10)
+        rad_df = rad_df[(rad_df['datetime'] > min_datetime) & (rad_df['datetime'] < max_datetime)]
+        frp_dfs[rad_num] = rad_df
+
+    # Figure out the start and end times of the animation
+    dt_start = frp_dfs[rad_nums[0]]["datetime"].min()
+    dt_end = frp_dfs[rad_nums[0]]["datetime"].max()
+    for burn_unit, df in frp_dfs.items():
+        if df["datetime"].min() < dt_start:
+            dt_start = df["datetime"].min()
+        if df["datetime"].max() > dt_end:
+            dt_end = df["datetime"].max()
+
+    # Make frames of animation
+    fig, axs = plt.subplots(2, 1, figsize=(7,9))
+    camera = Camera(fig)
+
+    dt = dt_start
+    while dt < dt_end:
+        print(dt)
+        burn_plot_gdf.plot(ax=axs[0], facecolor="none", edgecolor='black')
+        for ctype, data in rad_data_gdf.groupby("rad"):
+            data.plot(ax=axs[0], color=rad_colors[ctype], label=ctype, legend=False)
+        axs[0].set_title(plot_title_prefix + "Dualband locations for burn unit " + burn_unit)
+        #axs[0].legend()
+
+        for rad_num, rdf in frp_dfs.items():
+            max_frp_index = rdf['LW_FRP'].argmax()
+            max_frp_datetime =rdf['datetime'].iloc[max_frp_index]
+            axs[1].plot(rdf["datetime"], rdf["LW_FRP"], color=rad_colors[rad_num], label="Rad " + str(rad_num))
+            axs[1].axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
+
+            rdf = rdf[rdf['datetime'] == dt]
+            if len(rdf) > 0:
+                frp = rdf.iloc[0]["LW_FRP"]
+                radius = max(0, 0.00001 * np.log(frp))
+                #print(rad_num, frp, radius)
+                axs[0].add_patch(plt.Circle((rad_dict[rad_num]["lon"], rad_dict[rad_num]["lat"]), radius=radius, alpha=0.5, color=rad_colors[rad_num]))
+
+        axs[1].axvline(x=dt, color='black', linewidth=1, alpha=0.9)
+        axs[1].set_ylim([0, None])
+        axs[1].xaxis.set_major_locator(mdates.MinuteLocator(interval=10))
+        axs[1].xaxis.set_minor_locator(mdates.MinuteLocator(interval=1))
+        axs[1].xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+        axs[1].set_ylabel("FRP [W/m2]")
+        axs[1].set_xlabel("UTM Time")
+        axs[1].set_title(plot_title_prefix+"Dualband FRP for burn unit "+burn_unit)
+        #axs[1].legend()
+
+        camera.snap()
+
+        dt += datetime.timedelta(minutes=1)
+
+    # Create animation from saved snapshots and write to file
+    animation = camera.animate()
+    gif_output_filename = str(burn_unit)+"_animation.gif"
+    mp4_output_filename = str(burn_unit)+"_animation.mp4"
+    animation.save(os.path.join(plot_output_dir, gif_output_filename), writer='imagemagick')
+    animation.save(os.path.join(plot_output_dir, mp4_output_filename), writer='imagemagick')
+
+
+def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit, plot_output_dir: str, plot_title_prefix=""):
+    """
+    Plots data associated with a given burn unit
+    :param rad_data_gdf:
+    :param burn_plot_gdf:
+    :param burn_unit:
+    :param plot_output_dir:
+    :return:
+    """
+
+    # Filter to the datasets from the burn unit we care about
+    rad_data_gdf = rad_data_gdf[rad_data_gdf["burn_unit"] == burn_unit]
+    burn_plot_gdf = burn_plot_gdf[burn_plot_gdf["Id"] == burn_unit]
+
+    if len(rad_data_gdf) == 0:
+        print("No datasets from burn unit ", burn_unit, " found.")
+        return
+
+    if len(burn_plot_gdf) == 0:
+        print("No burn units named ", burn_unit, " found.")
+        return
+
+    # Make a color map for the radiometer numbers
+    rad_nums = rad_data_gdf["rad"].unique()
+    cmap = cm.get_cmap('tab20', len(rad_nums))
+    rad_colors = dict(zip(rad_nums, cmap.colors))
+    print(rad_data_gdf.head())
+
+    # Make a plot of the FRP traces of each radiometer in the burn unit
+    print("Plotting burn unit", burn_unit, ", ", len(rad_data_gdf), "datasets")
+    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+    for i, row in rad_data_gdf.iterrows():
+        # Load each dataset into a pandas dataframe
+        proc_data_filepath = os.path.join(row["data_directory"], row["processed_file"])
+        rad_num = row["rad"]
+        dataset_name = row["dataset"]
+        print(dataset_name, proc_data_filepath)
+        rad_df = pd.read_csv(proc_data_filepath)
+        rad_df['datetime'] = pd.to_datetime(rad_df['datetime'])
+
+        # Figure out where the max FRP occurs and only plot data in a time window around it (reduces time to render plot)
+        max_frp_index = rad_df['LW_FRP'].argmax()
+        max_frp_datetime = rad_df['datetime'][max_frp_index]
+        min_datetime = max_frp_datetime - datetime.timedelta(minutes=10)
+        max_datetime = max_frp_datetime + datetime.timedelta(minutes=10)
+        rad_df = rad_df[(rad_df['datetime'] > min_datetime) & (rad_df['datetime'] < max_datetime)]
+
+        ax.plot(rad_df["datetime"], rad_df["LW_FRP"], color=rad_colors[rad_num], label="Rad "+str(rad_num))
+        ax.axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
+
+    ax.set_ylim([0, None])
+    ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=10))
+    ax.xaxis.set_minor_locator(mdates.MinuteLocator(interval=1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+    ax.set_ylabel("FRP [W/m2]")
+    ax.set_xlabel("UTM Time")
+    ax.set_title(plot_title_prefix+"Dualband FRP for burn unit "+burn_unit)
+    ax.legend()
+    plot_filename = "Dualband_FRP_BurnUnit_"+str(burn_unit)+".png"
+    plt.savefig(os.path.join(plot_output_dir, plot_filename))
+    fig.show()
+
+    # Make a spatial plot of the locations of the radiometers
+    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+    burn_plot_gdf.plot(ax=ax, facecolor="none", edgecolor='black')
+    for ctype, data in rad_data_gdf.groupby("rad"):
+        data.plot(ax=ax, color=rad_colors[ctype], label=ctype, legend=True)
+    ax.set_title(plot_title_prefix + "Dualband locations for burn unit " + burn_unit)
+    ax.legend()
+    plot_filename = "Dualband_Locations_BurnUnit_" + str(burn_unit) + ".png"
+    plt.savefig(os.path.join(plot_output_dir, plot_filename))
+    fig.show()
+
+
+def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: str, plot_title_prefix=""):
+    """
+    Makes a simple plot of all the burn units
+    :param burn_plot_gdf:
+    :param plot_output_dir:
+    :param plot_title_prefix:
+    :return:
+    """
+
+    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+    burn_plot_gdf.plot(column="BurnYear", ax=ax, legend=True, alpha=0.5)
+    burn_plot_gdf.apply(lambda x: ax.annotate(text=x['Id'], xy=x.geometry.centroid.coords[0], ha='center'), axis=1)
+    ax.set_title(plot_title_prefix + "Burn Unit Map")
+    plot_filename = "BurnUnitMap" + ".png"
+    plt.savefig(os.path.join(plot_output_dir, plot_filename))
+    fig.show()
+
+
+def run_krembox_dualband_vis(vis_params: dict):
+    """
+    Runs visualizer
+    :param vis_params:
+    :return:
+    """
+
+    print("Running visualizer")
+
+    # Load processed dataframe and burn plots dataframe
+    rad_data_gdf = gpd.read_file(params["rad_data_dataframe"])
+    burn_plot_gdf = gpd.read_file(params["burn_plot_dataframe"])
+
+    # Figure out which burn units to plot (default to all of them)
+    if "burn_units" in params.keys():
+        burn_units = params["burn_units"]
+    else:
+        burn_units = burn_plot_gdf["Id"].unique()
+
+    # Make plot of all burn units
+    plot_burn_unit_map(burn_plot_gdf, params["plot_output_dir"], params["plot_title_prefix"])
+
+    # Check if the processed data has already been matched with burn unit
+    if "burn_unit" not in rad_data_gdf.keys():
+        print("Associating datasets with burn units")
+        rad_data_gdf = kdu.associate_data2burnplot(rad_data_gdf, burn_plot_gdf)
+
+    # Create output plot directory if it does not exist
+    if not os.path.exists(params["plot_output_dir"]):
+        os.mkdir(params["plot_output_dir"])
+
+    # Loop through burn units of interest and plot data
+    for burn_unit in burn_units:
+        plot_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, params["plot_output_dir"], params["plot_title_prefix"])
+        animate_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, params["plot_output_dir"], params["plot_title_prefix"])
+
+    print("Finished vis!")
+    return 1
+
+
+if __name__ == "__main__":
+    params = {
+        "rad_data_dataframe": "dataframes/example_processed_dataframe.geojson",
+        "burn_plot_dataframe": "dataframes/osceola_burn_plots.geojson",
+        "plot_output_dir": "plots/",
+        "burn_units": ["A4", "B4", "C4"],
+        "plot_title_prefix": "Osceola 02/22, "
+    }
+
+    result = run_krembox_dualband_vis(params)
