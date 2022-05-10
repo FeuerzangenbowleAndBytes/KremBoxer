@@ -37,34 +37,36 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
     rad_nums = rad_data_gdf["rad"].unique()
     cmap = cm.get_cmap('tab20', len(rad_nums))
     rad_colors = dict(zip(rad_nums, cmap.colors))
-    print(rad_data_gdf.head())
     rad_dict = {}
 
     # Make a plot of the FRP traces of each radiometer in the burn unit
-    print("Plotting burn unit", burn_unit, ", ", len(rad_data_gdf), "datasets")
+    print("Animating burn unit", burn_unit, ", ", len(rad_data_gdf), "datasets")
     frp_dfs = {}
     for i, row in rad_data_gdf.iterrows():
         # Load each dataset into a pandas dataframe
         proc_data_filepath = os.path.join(row["data_directory"], row["processed_file"])
         rad_num = row["rad"]
         rad_dict[rad_num] = {"lat": row["lat"],
-                             "lon": row["lon"]}
+                             "lon": row["lon"],
+                             "max_frp_index": row["max_FRP_index"],
+                             "max_frp_datetime": datetime.datetime.fromisoformat(row["max_FRP_datetime"])}
         dataset_name = row["dataset"]
         rad_df = pd.read_csv(proc_data_filepath)
         rad_df['datetime'] = pd.to_datetime(rad_df['datetime'])
 
         # Figure out where the max FRP occurs and only plot data in a time window around it (reduces time to render plot)
-        max_frp_index = rad_df['LW_FRP'].argmax()
-        max_frp_datetime = rad_df['datetime'][max_frp_index]
+        #max_frp_index = rad_df['LW_FRP'].argmax()
+        max_frp_datetime = rad_dict[rad_num]["max_frp_datetime"]
         min_datetime = max_frp_datetime - datetime.timedelta(minutes=10)
         max_datetime = max_frp_datetime + datetime.timedelta(minutes=10)
         rad_df = rad_df[(rad_df['datetime'] > min_datetime) & (rad_df['datetime'] < max_datetime)]
+        rad_df = rad_df.set_index("datetime", drop=False)
         frp_dfs[rad_num] = rad_df
 
     # Figure out the start and end times of the animation
     dt_start = frp_dfs[rad_nums[0]]["datetime"].min()
     dt_end = frp_dfs[rad_nums[0]]["datetime"].max()
-    for burn_unit, df in frp_dfs.items():
+    for rn, df in frp_dfs.items():
         if df["datetime"].min() < dt_start:
             dt_start = df["datetime"].min()
         if df["datetime"].max() > dt_end:
@@ -76,25 +78,28 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
 
     dt = dt_start
     while dt < dt_end:
-        print(dt)
         burn_plot_gdf.plot(ax=axs[0], facecolor="none", edgecolor='black')
-        for ctype, data in rad_data_gdf.groupby("rad"):
-            data.plot(ax=axs[0], color=rad_colors[ctype], label=ctype, legend=False)
+
+        for index, row in rad_data_gdf.iterrows():
+            axs[0].scatter([row["lon"]], [row["lat"]], color=rad_colors[row["rad"]], label=row["rad"])
         axs[0].set_title(plot_title_prefix + "Dualband locations for burn unit " + burn_unit)
-        #axs[0].legend()
 
         for rad_num, rdf in frp_dfs.items():
-            max_frp_index = rdf['LW_FRP'].argmax()
-            max_frp_datetime =rdf['datetime'].iloc[max_frp_index]
+
+            max_frp_datetime = rad_dict[rad_num]["max_frp_datetime"]
             axs[1].plot(rdf["datetime"], rdf["LW_FRP"], color=rad_colors[rad_num], label="Rad " + str(rad_num))
             axs[1].axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
 
-            rdf = rdf[rdf['datetime'] == dt]
-            if len(rdf) > 0:
-                frp = rdf.iloc[0]["LW_FRP"]
-                radius = max(0, 0.00001 * np.log(frp))
-                #print(rad_num, frp, radius)
-                axs[0].add_patch(plt.Circle((rad_dict[rad_num]["lon"], rad_dict[rad_num]["lat"]), radius=radius, alpha=0.5, color=rad_colors[rad_num]))
+            try:
+                frp = rdf.loc[dt]["LW_FRP"]
+                radius = 0
+                if frp > 0:
+                    radius = max(0, 0.00001 * np.log(frp))
+                axs[0].add_patch(
+                    plt.Circle((rad_dict[rad_num]["lon"], rad_dict[rad_num]["lat"]), radius=radius, alpha=0.5,
+                               color=rad_colors[rad_num]))
+            except KeyError:
+                continue
 
         axs[1].axvline(x=dt, color='black', linewidth=1, alpha=0.9)
         axs[1].set_ylim([0, None])
@@ -102,7 +107,7 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
         axs[1].xaxis.set_minor_locator(mdates.MinuteLocator(interval=1))
         axs[1].xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
         axs[1].set_ylabel("FRP [W/m2]")
-        axs[1].set_xlabel("UTM Time")
+        axs[1].set_xlabel("UTC Time")
         axs[1].set_title(plot_title_prefix+"Dualband FRP for burn unit "+burn_unit)
         #axs[1].legend()
 
@@ -111,11 +116,13 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
         dt += datetime.timedelta(minutes=1)
 
     # Create animation from saved snapshots and write to file
+    print("Creating gif / mp4")
     animation = camera.animate()
     gif_output_filename = str(burn_unit)+"_animation.gif"
     mp4_output_filename = str(burn_unit)+"_animation.mp4"
     animation.save(os.path.join(plot_output_dir, gif_output_filename), writer='imagemagick')
     animation.save(os.path.join(plot_output_dir, mp4_output_filename), writer='imagemagick')
+    print("Animations saved to ", os.path.join(plot_output_dir, gif_output_filename))
 
 
 def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit, plot_output_dir: str, plot_title_prefix=""):
@@ -173,7 +180,7 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
     ax.xaxis.set_minor_locator(mdates.MinuteLocator(interval=1))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
     ax.set_ylabel("FRP [W/m2]")
-    ax.set_xlabel("UTM Time")
+    ax.set_xlabel("UTC Time")
     ax.set_title(plot_title_prefix+"Dualband FRP for burn unit "+burn_unit)
     ax.legend()
     plot_filename = "Dualband_FRP_BurnUnit_"+str(burn_unit)+".png"
@@ -244,7 +251,7 @@ def run_krembox_dualband_vis(vis_params: dict):
     # Loop through burn units of interest and plot data
     for burn_unit in burn_units:
         plot_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, params["plot_output_dir"], params["plot_title_prefix"])
-        animate_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, params["plot_output_dir"], params["plot_title_prefix"])
+        #animate_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, params["plot_output_dir"], params["plot_title_prefix"])
 
     print("Finished vis!")
     return 1
@@ -255,8 +262,8 @@ if __name__ == "__main__":
         "rad_data_dataframe": "dataframes/example_processed_dataframe.geojson",
         "burn_plot_dataframe": "dataframes/osceola_burn_plots.geojson",
         "plot_output_dir": "plots/",
-        "burn_units": ["A4", "B4", "C4"],
-        "plot_title_prefix": "Osceola 02/22, "
+        "plot_title_prefix": "Osceola 02/22, ",
+        "burn_units": ["A1"]
     }
 
     result = run_krembox_dualband_vis(params)
