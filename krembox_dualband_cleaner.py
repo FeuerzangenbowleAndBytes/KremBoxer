@@ -115,8 +115,8 @@ def run_krembox_dualband_cleaner(params: dict):
     df = pd.DataFrame(metadata_list)
     print(df)
     print("Found ", len(clean_file_list), " valid datasets")
-    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat))
-    gdf.set_crs(epsg=4326)
+    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat, crs="EPSG:4326"))
+    #gdf.set_crs(epsg=4326)
 
     # Figure out which burn unit each dataset was recorded in, if we have burn unit polygons
     # The burn unit Id will be added as a column in the dataframe

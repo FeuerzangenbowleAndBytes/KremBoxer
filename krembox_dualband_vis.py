@@ -3,6 +3,7 @@ import datetime
 import numpy as np
 import pandas as pd
 import geopandas as gpd
+from shapely.geometry import Point
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib import cm
@@ -38,6 +39,7 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
     cmap = cm.get_cmap('tab20', len(rad_nums))
     rad_colors = dict(zip(rad_nums, cmap.colors))
     rad_dict = {}
+    maximum_frp_in_unit = 0
 
     # Make a plot of the FRP traces of each radiometer in the burn unit
     print("Animating burn unit", burn_unit, ", ", len(rad_data_gdf), "datasets")
@@ -46,13 +48,15 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
         # Load each dataset into a pandas dataframe
         proc_data_filepath = os.path.join(row["data_directory"], row["processed_file"])
         rad_num = row["rad"]
-        rad_dict[rad_num] = {"lat": row["lat"],
-                             "lon": row["lon"],
+        rad_dict[rad_num] = {"loc": row["geometry"],
                              "max_frp_index": row["max_FRP_index"],
                              "max_frp_datetime": datetime.datetime.fromisoformat(row["max_FRP_datetime"])}
         dataset_name = row["dataset"]
         rad_df = pd.read_csv(proc_data_filepath)
         rad_df['datetime'] = pd.to_datetime(rad_df['datetime'])
+
+        if row["max_FRP"] > maximum_frp_in_unit:
+            maximum_frp_in_unit = row["max_FRP"]
 
         # Figure out where the max FRP occurs and only plot data in a time window around it (reduces time to render plot)
         #max_frp_index = rad_df['LW_FRP'].argmax()
@@ -81,11 +85,11 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
         burn_plot_gdf.plot(ax=axs[0], facecolor="none", edgecolor='black')
 
         for index, row in rad_data_gdf.iterrows():
-            axs[0].scatter([row["lon"]], [row["lat"]], color=rad_colors[row["rad"]], label=row["rad"])
-        axs[0].set_title(plot_title_prefix + "Dualband locations for burn unit " + burn_unit)
+            point: Point = row["geometry"]
+            axs[0].scatter([point.x], [point.y], color=rad_colors[row["rad"]], label=row["rad"])
+        axs[0].set_title(plot_title_prefix + "Dualband locations for burn unit " + burn_unit, y=1.04)
 
         for rad_num, rdf in frp_dfs.items():
-
             max_frp_datetime = rad_dict[rad_num]["max_frp_datetime"]
             axs[1].plot(rdf["datetime"], rdf["LW_FRP"], color=rad_colors[rad_num], label="Rad " + str(rad_num))
             axs[1].axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
@@ -94,9 +98,11 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
                 frp = rdf.loc[dt]["LW_FRP"]
                 radius = 0
                 if frp > 0:
-                    radius = max(0, 0.00001 * np.log(frp))
+                    radius = max(0, 1 * np.log(frp))
+                    #radius = 10* frp / maximum_frp_in_unit
+                    #print(radius, maximum_frp_in_unit)
                 axs[0].add_patch(
-                    plt.Circle((rad_dict[rad_num]["lon"], rad_dict[rad_num]["lat"]), radius=radius, alpha=0.5,
+                    plt.Circle((rad_dict[rad_num]["loc"].x, rad_dict[rad_num]["loc"].y), radius=radius, alpha=0.5,
                                color=rad_colors[rad_num]))
             except KeyError:
                 continue
@@ -181,7 +187,7 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
     ax.set_ylabel("FRP [W/m2]")
     ax.set_xlabel("UTC Time")
-    ax.set_title(plot_title_prefix+"Dualband FRP for burn unit "+burn_unit)
+    ax.set_title(plot_title_prefix+"Dualband FRP for burn unit "+burn_unit, y=1.04)
     ax.legend()
     plot_filename = "Dualband_FRP_BurnUnit_"+str(burn_unit)+".png"
     plt.savefig(os.path.join(plot_output_dir, plot_filename))
@@ -192,7 +198,7 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
     burn_plot_gdf.plot(ax=ax, facecolor="none", edgecolor='black')
     for ctype, data in rad_data_gdf.groupby("rad"):
         data.plot(ax=ax, color=rad_colors[ctype], label=ctype, legend=True)
-    ax.set_title(plot_title_prefix + "Dualband locations for burn unit " + burn_unit)
+    ax.set_title(plot_title_prefix + "Dualband locations for burn unit " + burn_unit, y=1.04)
     ax.legend()
     plot_filename = "Dualband_Locations_BurnUnit_" + str(burn_unit) + ".png"
     plt.savefig(os.path.join(plot_output_dir, plot_filename))
@@ -211,7 +217,7 @@ def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: str, pl
     fig, ax = plt.subplots(1, 1, figsize=(6, 6))
     burn_plot_gdf.plot(column="BurnYear", ax=ax, legend=True, alpha=0.5)
     burn_plot_gdf.apply(lambda x: ax.annotate(text=x['Id'], xy=x.geometry.centroid.coords[0], ha='center'), axis=1)
-    ax.set_title(plot_title_prefix + "Burn Unit Map")
+    ax.set_title(plot_title_prefix + "Burn Unit Map", y=1.04)
     plot_filename = "BurnUnitMap" + ".png"
     plt.savefig(os.path.join(plot_output_dir, plot_filename))
     fig.show()
@@ -227,8 +233,13 @@ def run_krembox_dualband_vis(vis_params: dict):
     print("Running visualizer")
 
     # Load processed dataframe and burn plots dataframe
-    rad_data_gdf = gpd.read_file(params["rad_data_dataframe"])
-    burn_plot_gdf = gpd.read_file(params["burn_plot_dataframe"])
+    rad_data_gdf = gpd.read_file(vis_params["rad_data_dataframe"])
+    burn_plot_gdf = gpd.read_file(vis_params["burn_plot_dataframe"])
+
+    print("Reprojecting from ", burn_plot_gdf.crs, " to ", vis_params["projection"])
+    burn_plot_gdf = burn_plot_gdf.to_crs(vis_params["projection"])
+    rad_data_gdf = rad_data_gdf.to_crs(vis_params["projection"])
+    plot_title_prefix = vis_params["plot_title_prefix"] + ", " + vis_params["projection"] + ", "
 
     # Figure out which burn units to plot (default to all of them)
     if "burn_units" in params.keys():
@@ -237,7 +248,7 @@ def run_krembox_dualband_vis(vis_params: dict):
         burn_units = burn_plot_gdf["Id"].unique()
 
     # Make plot of all burn units
-    plot_burn_unit_map(burn_plot_gdf, params["plot_output_dir"], params["plot_title_prefix"])
+    plot_burn_unit_map(burn_plot_gdf, vis_params["plot_output_dir"], plot_title_prefix)
 
     # Check if the processed data has already been matched with burn unit
     if "burn_unit" not in rad_data_gdf.keys():
@@ -245,13 +256,13 @@ def run_krembox_dualband_vis(vis_params: dict):
         rad_data_gdf = kdu.associate_data2burnplot(rad_data_gdf, burn_plot_gdf)
 
     # Create output plot directory if it does not exist
-    if not os.path.exists(params["plot_output_dir"]):
-        os.mkdir(params["plot_output_dir"])
+    if not os.path.exists(vis_params["plot_output_dir"]):
+        os.mkdir(vis_params["plot_output_dir"])
 
     # Loop through burn units of interest and plot data
     for burn_unit in burn_units:
-        plot_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, params["plot_output_dir"], params["plot_title_prefix"])
-        #animate_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, params["plot_output_dir"], params["plot_title_prefix"])
+        plot_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, vis_params["plot_output_dir"], plot_title_prefix)
+        animate_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, params["plot_output_dir"], params["plot_title_prefix"])
 
     print("Finished vis!")
     return 1
@@ -262,8 +273,9 @@ if __name__ == "__main__":
         "rad_data_dataframe": "dataframes/example_processed_dataframe.geojson",
         "burn_plot_dataframe": "dataframes/osceola_burn_plots.geojson",
         "plot_output_dir": "plots/",
-        "plot_title_prefix": "Osceola 02/22, ",
-        "burn_units": ["A1"]
+        "plot_title_prefix": "Osceola 02/22",
+        "burn_units": ["A1"],
+        "projection": "EPSG:32617"
     }
 
     result = run_krembox_dualband_vis(params)

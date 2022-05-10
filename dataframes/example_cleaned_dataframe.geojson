@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
 "features": [
 { "type": "Feature", "properties": { "dt": "2022-02-03T13:53:59Z", "dataset": "DATALOG_5_2022-02-03T13:53:59+00:00", "data_directory": "/home/jepaki/Projects/Osceola/020322_Osceola_Radiometers_DualBand/", "clean_file": "Clean/DATALOG_5_2022-02-03T13:53:59+00:00.csv", "lat": 30.239038, "lon": -82.409377, "rad": "5", "N": 14410, "sample_freq": 1.0, "burn_unit": "E2" }, "geometry": { "type": "Point", "coordinates": [ -82.409377, 30.239038 ] } },
 { "type": "Feature", "properties": { "dt": "2022-02-03T13:50:16Z", "dataset": "DATALOG_21_2022-02-03T13:50:16+00:00", "data_directory": "/home/jepaki/Projects/Osceola/020322_Osceola_Radiometers_DualBand/", "clean_file": "Clean/DATALOG_21_2022-02-03T13:50:16+00:00.csv", "lat": 30.239015, "lon": -82.410027, "rad": "21", "N": 10384, "sample_freq": 1.0, "burn_unit": "E4" }, "geometry": { "type": "Point", "coordinates": [ -82.410027, 30.239015 ] } },
