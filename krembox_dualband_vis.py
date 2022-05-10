@@ -236,8 +236,9 @@ def run_krembox_dualband_vis(vis_params: dict):
     rad_data_gdf = gpd.read_file(vis_params["rad_data_dataframe"])
     burn_plot_gdf = gpd.read_file(vis_params["burn_plot_dataframe"])
 
-    print("Reprojecting from ", burn_plot_gdf.crs, " to ", vis_params["projection"])
+    print("Reprojecting from burn plots from ", burn_plot_gdf.crs, " to ", vis_params["projection"])
     burn_plot_gdf = burn_plot_gdf.to_crs(vis_params["projection"])
+    print("Reprojecting from rad data from ", rad_data_gdf.crs, " to ", vis_params["projection"])
     rad_data_gdf = rad_data_gdf.to_crs(vis_params["projection"])
     plot_title_prefix = vis_params["plot_title_prefix"] + ", " + vis_params["projection"] + ", "
 

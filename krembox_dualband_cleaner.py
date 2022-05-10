@@ -116,12 +116,18 @@ def run_krembox_dualband_cleaner(params: dict):
     print(df)
     print("Found ", len(clean_file_list), " valid datasets")
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat, crs="EPSG:4326"))
-    #gdf.set_crs(epsg=4326)
+
+    # Convert to the desired projection
+    gdf = gdf.to_crs(params["projection"])
 
     # Figure out which burn unit each dataset was recorded in, if we have burn unit polygons
     # The burn unit Id will be added as a column in the dataframe
     if "burn_plot_dataframe_input" in params.keys():
-        gdf = kdb_utils.associate_data2burnplot(gdf, gpd.read_file(params["burn_plot_dataframe_input"]))
+        burn_plot_gdf = gpd.read_file(params["burn_plot_dataframe_input"])
+        burn_plot_gdf = burn_plot_gdf.to_crs(params["projection"])
+        gdf = kdb_utils.associate_data2burnplot(gdf, burn_plot_gdf)
+
+
 
     print("Saving clean dataframe in CSV format: ",  params["clean_dataframe_output"]+".csv")
     gdf.to_csv(params["clean_dataframe_output"]+".csv")

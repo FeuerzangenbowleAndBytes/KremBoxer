@@ -17,7 +17,8 @@
     "data_directories": ["/home/jepaki/Projects/Osceola/020322_Osceola_Radiometers_DualBand/", "/home/jepaki/Projects/Osceola/020422_Osceola_Radiometers_DualBand/"],
     "target_dates": ["2022-02-04", "2022-02-03"],
     "clean_dataframe_output": "dataframes/example_cleaned_dataframe",
-    "burn_plot_dataframe_input": "dataframes/osceola_burn_plots.geojson"
+    "burn_plot_dataframe_input": "dataframes/osceola_burn_plots.geojson",
+    "projection": "EPSG:32617"
   },
   "frp_parameters": {
     "clean_dataframe_input": "dataframes/example_cleaned_dataframe.geojson",
