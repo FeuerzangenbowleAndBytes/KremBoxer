@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.optimize as so
 import scipy.constants as sc
+import os
 import json
 import matplotlib.pyplot as plt
 import greybody_utils as gbu
@@ -221,8 +222,12 @@ def run_krembox_dualband_calibration(cal_params: dict):
 
     fig.suptitle("Radiometer Calibration")
     plt.tight_layout()
-    plt.savefig(cal_params["plot_output"])
-    print("Saved calibration plot to: ", cal_params["plot_output"])
+
+    # Create output plot directory if it does not exist
+    if not os.path.exists(cal_params["plot_output_dir"]):
+        os.mkdir(cal_params["plot_output_dir"])
+    plt.savefig(os.path.join(cal_params["plot_output_dir"], cal_params["plot_output"]))
+    print("Saved calibration plot to: ", cal_params["plot_output_dir"])
 
     if cal_params["show_plot"]:
         plt.show()

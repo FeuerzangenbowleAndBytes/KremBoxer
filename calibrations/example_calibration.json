@@ -1,7 +1,7 @@
 {
 "cal_input": "calibration_data/unit11_calibration_data.csv",
 "temp_cal_input": "calibration_data/temperature_sensor_calibration.csv",
-"plot_output": "plots/example_calibration_plot.png",
+"plot_output": "example_calibration_plot.png",
 "LW_bandpass": "calibration_data/DC-6073_W1_8-14Si.csv",
 "MW_bandpass": "calibration_data/DC-6216_u1_Saph_longwave.csv",
 "r_top": 100000,

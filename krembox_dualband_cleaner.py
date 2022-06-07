@@ -127,8 +127,6 @@ def run_krembox_dualband_cleaner(params: dict):
         burn_plot_gdf = burn_plot_gdf.to_crs(params["projection"])
         gdf = kdb_utils.associate_data2burnplot(gdf, burn_plot_gdf)
 
-
-
     print("Saving clean dataframe in CSV format: ",  params["clean_dataframe_output"]+".csv")
     gdf.to_csv(params["clean_dataframe_output"]+".csv")
     print("Saving clean dataframe in GeoJSON format: ", params["clean_dataframe_output"]+".geojson")

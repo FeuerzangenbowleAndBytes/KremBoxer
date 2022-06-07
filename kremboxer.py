@@ -4,6 +4,7 @@ import json
 import krembox_dualband_calibrate as kd_calibrate
 import krembox_dualband_cleaner as kd_clean
 import krembox_dualband_frp as kd_frp
+import krembox_dualband_vis as kd_vis
 
 
 def main(argv):
@@ -54,6 +55,11 @@ def main(argv):
     if params["run_frp_computation"]:
         print("Running dualband FRP computation")
         processed_gdf = kd_frp.run_krembox_dualband_frp(params["frp_parameters"])
+
+    # Run visualizer to make FRP plots, animations, and burn plot maps
+    if params["run_visualizer"]:
+        print("Running visualizer")
+        kd_vis.run_krembox_dualband_vis(params["vis_parameters"])
 
 
 if __name__ == "__main__":

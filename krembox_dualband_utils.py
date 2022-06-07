@@ -90,7 +90,56 @@ def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: str, show_p
         plt.show()
 
 
-if __name__=="__main__":
+def plot_osceola_statistics(gdf: gpd.GeoDataFrame, plot_output_dir: str):
+    """
+    Makes a plot with statistics computed from all the Osceola FRP datasets at Osceola, ex: fire duration, max FRP, vs treatment
+    Note that this only works for the Osceola datasets, because of the special association between treatments and burn units
+    :param rad_data_gdf:
+    :param plot_output_dir:
+    :return:
+    """
+
+    fire_durations = gdf["fire_duration"]
+    max_frps = gdf["max_FRP"]
+    fres = gdf["LW_FRE"]
+    burn_units = gdf['burn_unit']
+    bus = [int(x[1]) for x in burn_units]
+    bu_letters = [x[0] for x in burn_units]
+
+    colors = {'A': 'red', 'B': 'green', 'C': 'blue', 'D': 'violet', 'E': 'orange'}
+    scatter_colors = [colors[x] for x in bu_letters]
+
+    fig, axs = plt.subplots(5, 1, figsize=(6, 10))
+    axs[0].scatter(bus, fire_durations, c=scatter_colors)
+    axs[0].set_ylabel("Fire Len [minutes]")
+    axs[0].set_title("Fire Duration vs Burn Frequency at Osceola")
+    axs[0].set_ylim([0, 25])
+
+    axs[1].scatter(bus, max_frps, c=scatter_colors)
+    axs[1].set_ylabel("max FRP [W/m2]")
+    axs[1].set_title("max FRP vs Burn Frequency at Osceola")
+
+    axs[2].scatter(bus, gdf["mean_FRP"], c=scatter_colors)
+    axs[2].set_ylabel("mean FRP [W/m2]")
+    axs[2].set_title("mean FRP vs Burn Frequency at Osceola")
+
+    axs[3].scatter(bus, gdf["var_FRP"], c=scatter_colors)
+    axs[3].set_ylabel("var FRP [W/m2]")
+    axs[3].set_title("var FRP vs Burn Frequency at Osceola")
+
+    axs[4].scatter(bus, fres, c=scatter_colors)
+    axs[4].set_xlabel("#Years between burns")
+    axs[4].set_ylabel("FRE [J/m2]")
+    axs[4].set_title("FRE vs Burn Frequency at Osceola")
+    plt.tight_layout()
+
+    if not os.path.exists(plot_output_dir):
+        os.mkdir(plot_output_dir)
+    plt.savefig(os.path.join(plot_output_dir, "fre_vs_burnfreq.png"))
+    plt.show()
+
+
+if __name__ == "__main__":
     params = {
         "rad_data_dataframe": "dataframes/example_processed_dataframe.geojson",
         "burn_plot_dataframe": "dataframes/osceola_burn_plots.geojson"
