@@ -24,9 +24,17 @@ def parse_header(fields, header):
 def associate_data2burnplot(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame):
     burn_plot_ids = []
     for i, rad_data_row in rad_data_gdf.iterrows():
+        found = False
         for j, burn_plot_row in burn_plot_gdf.iterrows():
             if burn_plot_row.geometry.contains(rad_data_row.geometry):
                 burn_plot_ids.append(burn_plot_row.Id)
+                found = True
+                break
+        if not found:
+            print("Warning! Dataset ", rad_data_row["dataset"], " not contained in any burn plot!!")
+            print("\t(lat,lon)=(", rad_data_row["lat"], ", ", rad_data_row["lon"], ")")
+            print("\tSetting burn plot to unknown")
+            burn_plot_ids.append("unknown")
 
     rad_data_gdf["burn_unit"] = burn_plot_ids
 

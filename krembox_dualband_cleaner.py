@@ -20,7 +20,7 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
 
             # Only clean datasets from the dates we're interested in
             if dt.date() in target_dates:
-                dataset = file.split(".")[0] + "_" +dt.isoformat()
+                dataset = file.split(".CSV")[0] + "_" +dt.isoformat()
                 clean_file = dataset + ".csv"
                 clean_file = os.path.join("Clean", clean_file)
 
@@ -47,7 +47,7 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
                     metadata["clean_file"] = clean_file
                     metadata['lat'] = lat
                     metadata['lon'] = lon
-                    metadata['rad'] = clean_file.split(".")[0].split("_")[1]
+                    metadata['rad'] = clean_file.split("_")[-2]
                     metadata['N'] = len(data_series)-3
                     metadata['sample_freq'] = sample_freq
     return valid_data, metadata

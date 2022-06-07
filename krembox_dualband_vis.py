@@ -218,7 +218,7 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
         kdu.plot_processed_dualband_data(rad_df, os.path.join(plot_output_dir, plot_name), True, True, sup_title)
 
 
-def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: str, plot_title_prefix="", rad_data_df = None):
+def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: str, color_column: str, plot_title_prefix="", rad_data_df = None):
     """
     Makes a simple plot of all the burn units
     :param burn_plot_gdf:
@@ -228,7 +228,7 @@ def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: str, pl
     """
 
     fig, ax = plt.subplots(1, 1, figsize=(6, 6))
-    burn_plot_gdf.plot(column="BurnYear", ax=ax, legend=True, alpha=0.5)
+    burn_plot_gdf.plot(column=color_column, ax=ax, legend=True, alpha=0.5)
     burn_plot_gdf.apply(lambda x: ax.annotate(text=x['Id'], xy=x.geometry.centroid.coords[0], ha='center'), axis=1)
 
     if rad_data_df is not None:
@@ -265,20 +265,26 @@ def run_krembox_dualband_vis(vis_params: dict):
     else:
         burn_units = burn_plot_gdf["Id"].unique()
 
-    # Make plot of all burn units
-    plot_burn_unit_map(burn_plot_gdf, vis_params["plot_output_dir"], plot_title_prefix, rad_data_gdf)
-
     # Check if the processed data has already been matched with burn unit
     if "burn_unit" not in rad_data_gdf.keys():
         print("Associating datasets with burn units")
         rad_data_gdf = kdu.associate_data2burnplot(rad_data_gdf, burn_plot_gdf)
+
+    rad_data_gdf = rad_data_gdf[rad_data_gdf["burn_unit"] != "unknown"]
+
+    # Make plot of all burn units
+    color_column = "Id"
+    if vis_params["campaign"] == "Osceola":
+        color_column = "BurnYear"
+    plot_burn_unit_map(burn_plot_gdf, vis_params["plot_output_dir"], color_column, plot_title_prefix, rad_data_gdf)
 
     # Loop through burn units of interest and plot data
     for burn_unit in burn_units:
         # Create output plot directory if it does not exist
         burn_unit_plot_output_dir = os.path.join(vis_params["plot_output_dir"], burn_unit)
         plot_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, burn_unit_plot_output_dir, plot_title_prefix)
-        animate_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, burn_unit_plot_output_dir, vis_params["plot_title_prefix"])
+        if vis_params["animations"]:
+            animate_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, burn_unit_plot_output_dir, vis_params["plot_title_prefix"])
 
     # Make graphs associated with particular burn campaigns
     if vis_params["campaign"] == "Osceola":
