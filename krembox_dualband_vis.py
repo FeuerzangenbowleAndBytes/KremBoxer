@@ -296,7 +296,7 @@ def run_krembox_dualband_vis(vis_params: dict):
 
 if __name__ == "__main__":
     params = {
-        "rad_data_dataframe": "dataframes/example_processed_dataframe.geojson",
+        "rad_data_dataframe": "dataframes/osceola_processed_dataframe.geojson",
         "burn_plot_dataframe": "dataframes/osceola_burn_plots.geojson",
         "plot_output_dir": "plots/",
         "plot_title_prefix": "Osceola 02/22",

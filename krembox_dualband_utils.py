@@ -149,7 +149,7 @@ def plot_osceola_statistics(gdf: gpd.GeoDataFrame, plot_output_dir: str):
 
 if __name__ == "__main__":
     params = {
-        "rad_data_dataframe": "dataframes/example_processed_dataframe.geojson",
+        "rad_data_dataframe": "dataframes/osceola_processed_dataframe.geojson",
         "burn_plot_dataframe": "dataframes/osceola_burn_plots.geojson"
     }
 
