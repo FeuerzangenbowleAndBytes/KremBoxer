@@ -17,7 +17,7 @@
   },
   "data_cleaner_parameters": {
     "data_directories": ["/Users/pakij/Projects/SycanMarsh"],
-    "target_dates": ["2022-10-24", "2022-10-25"],
+    "target_dates": ["2022-10-25"],
     "clean_dataframe_output": "dataframes/sycan_marsh_cleaned_dataframe",
     "burn_plot_dataframe_input": "dataframes/sycan_marsh_burn_units.geojson",
     "projection": "EPSG:32617"
