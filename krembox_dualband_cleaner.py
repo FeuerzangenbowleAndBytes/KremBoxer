@@ -11,7 +11,8 @@ import krembox_dualband_utils as kdb_utils
 def process_data_series(data_series, target_dates, file, data_directory, clean_file_list):
     valid_data = False
     metadata = {}
-    clean_directory = os.path.join(data_directory, "Clean")
+    #clean_directory = os.path.join(data_directory, "Clean")
+    clean_directory = data_directory / "Clean"
 
     if len(data_series) > 3:
         if data_series[1][data_series[0].index('GPS-TYPE')] == "LOCKED":
@@ -22,15 +23,18 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
             # Only clean datasets from the dates we're interested in
             if dt.date() in target_dates:
                 dataset = file.split(".CSV")[0] + "_" +dt.isoformat()
-                clean_file = dataset + ".csv"
-                clean_file = os.path.join("Clean", clean_file)
+                clean_file_name = dataset + ".csv"
+                #clean_file = os.path.join("Clean", clean_file)
+                clean_file = Path("Clean") / clean_file_name
 
                 # Only keep this dataset if we have not already processed it
                 # For example, raw data files from a second day of data collection may
                 # still contain datasets from the previous day
-                if clean_file not in clean_file_list:
-                    clean_file_path = os.path.join(data_directory, clean_file)
+                if str(clean_file) not in clean_file_list:
+                    #clean_file_path = os.path.join(data_directory, clean_file)
+                    clean_file_path = data_directory / clean_file
                     clean_header = '#'+','.join(data_series[0]) + "\n#" + ','.join(data_series[1]) + "\ndatetime," + ",".join(data_series[2]) + "\n"
+                    print(clean_file_path)
 
                     # Write the cleaned up data file
                     with open(clean_file_path, 'w') as csvcleanfile:
@@ -74,12 +78,15 @@ def run_krembox_dualband_cleaner(params: dict):
 
     # Loop through data directories to find all the raw data, create directories to store cleaned data
     for data_directory in params["data_directories"]:
-        raw_directory = data_directory+"/Raw/"
-        clean_directory = data_directory+"/Clean/"
-        if not os.path.exists(raw_directory):
-            raise RuntimeError("Specified raw directory "+raw_directory+" does not exist!")
-        if not os.path.exists(clean_directory):
-            os.mkdir(clean_directory)
+        data_dir_path = Path(data_directory)
+        print(data_dir_path)
+        raw_directory = data_dir_path / "Raw"
+        clean_directory = data_dir_path / "Clean"
+        print(raw_directory)
+        if not raw_directory.exists():
+            raise RuntimeError("Specified raw directory "+str(raw_directory)+" does not exist!")
+        if not clean_directory.exists():
+            os.mkdir(clean_directory)   # TODO switch to pathlib
 
         # Loop through the raw data files
         print(f"Cleaning data in {raw_directory}")
@@ -89,7 +96,8 @@ def run_krembox_dualband_cleaner(params: dict):
             if file[0] == '.':
                 continue
 
-            raw_data_file = os.path.join(raw_directory, file)
+            #raw_data_file = os.path.join(raw_directory, file)
+            raw_data_file = raw_directory / file
             with open(raw_data_file, 'r') as csvfile:
                 csvreader = csv.reader(csvfile)
                 data_series = []
@@ -104,7 +112,7 @@ def run_krembox_dualband_cleaner(params: dict):
                 while row is not None:
                     row = next(csvreader, None)
                     if row is None or 'DAY' == row[0]:
-                        (valid_data, metadata) = process_data_series(data_series, target_dates, file, data_directory, clean_file_list)
+                        (valid_data, metadata) = process_data_series(data_series, target_dates, file, data_dir_path, clean_file_list)
                         if valid_data:
                             print(metadata)
                             clean_file_list.append(metadata["clean_file"])
