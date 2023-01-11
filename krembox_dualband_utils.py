@@ -1,7 +1,6 @@
 import datetime
 import pandas as pd
 import geopandas as gpd
-#import os
 from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -50,8 +49,8 @@ def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: Path, show_
     if zoom2fire:
         max_frp_index = rad_df['LW_FRP'].argmax()
         max_frp_datetime = rad_df['datetime'][max_frp_index]
-        min_datetime = max_frp_datetime - datetime.timedelta(minutes=10)
-        max_datetime = max_frp_datetime + datetime.timedelta(minutes=10)
+        min_datetime = max_frp_datetime - datetime.timedelta(minutes=20)
+        max_datetime = max_frp_datetime + datetime.timedelta(minutes=20)
         rad_df = rad_df[(rad_df['datetime'] > min_datetime) & (rad_df['datetime'] < max_datetime)]
 
     datetimes = rad_df["datetime"]

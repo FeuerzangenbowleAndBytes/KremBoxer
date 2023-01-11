@@ -176,8 +176,8 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
         # Figure out where the max FRP occurs and only plot data in a time window around it (reduces time to render plot)
         max_frp_index = rad_df['LW_FRP'].argmax()
         max_frp_datetime = rad_df['datetime'][max_frp_index]
-        min_datetime = max_frp_datetime - datetime.timedelta(minutes=10)
-        max_datetime = max_frp_datetime + datetime.timedelta(minutes=10)
+        min_datetime = max_frp_datetime - datetime.timedelta(minutes=20)
+        max_datetime = max_frp_datetime + datetime.timedelta(minutes=20)
         rad_df = rad_df[(rad_df['datetime'] > min_datetime) & (rad_df['datetime'] < max_datetime)]
 
         ax.plot(rad_df["datetime"], rad_df["LW_FRP"], color=rad_colors[rad_num], label="Rad "+str(rad_num))
@@ -228,14 +228,17 @@ def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: Path, c
     :return:
     """
 
-    fig, ax = plt.subplots(1, 1)
-    burn_plot_gdf.plot(column=color_column, ax=ax, legend=True, alpha=0.5)
-    burn_plot_gdf.apply(lambda x: ax.annotate(text=x['Id'], xy=x.geometry.centroid.coords[0], ha='center'), axis=1)
+    fig, ax = plt.subplots(1, 1, figsize=(6, 8))
+    burn_plot_gdf.plot(column=color_column, ax=ax, legend=False, alpha=0.5)
+    burn_plot_gdf.apply(lambda x: ax.annotate(text=x['Id'], size=10, xy=x.geometry.centroid.coords[0], ha='center'), axis=1)
 
     if rad_data_df is not None:
-        rad_data_df.plot(ax=ax, alpha=0.8, markersize=5)
+        dates = rad_data_df["dt"]
+        rad_data_df["date"] = dates.apply(lambda x: datetime.datetime.fromisoformat(x).date())
+        rad_data_df.plot(ax=ax, alpha=1, markersize=5, column="date", legend=True)
 
     ax.set_title(plot_title_prefix + "Burn Unit Map", y=1.04)
+    ax.set_aspect('equal')
     plt.tight_layout()
     plot_filename = "BurnUnitMap" + ".png"
     plt.savefig(plot_output_dir.joinpath(plot_filename))

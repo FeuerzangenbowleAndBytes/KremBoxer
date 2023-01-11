@@ -1,7 +1,7 @@
 {
-  "run_calibration": true,
-  "run_data_cleaner": true,
-  "run_frp_computation": true,
+  "run_calibration": false,
+  "run_data_cleaner": false,
+  "run_frp_computation": false,
   "run_visualizer": true,
   "calibration_parameters": {
     "cal_output": "calibrations/sycan_marsh_calibration.json",
