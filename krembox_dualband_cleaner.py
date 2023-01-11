@@ -32,6 +32,7 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
                 if str(clean_file) not in clean_file_list:
                     clean_file_path = Path(data_directory).joinpath(clean_file)
                     clean_header = '#'+','.join(data_series[0]) + "\n#" + ','.join(data_series[1]) + "\ndatetime," + ",".join(data_series[2]) + "\n"
+                    print(clean_file_path)
 
                     # Write the cleaned up data file
                     with open(clean_file_path, 'w') as csvcleanfile:
