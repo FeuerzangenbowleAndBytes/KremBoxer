@@ -1,4 +1,5 @@
-import os.path
+#import os.path
+from pathlib import Path
 import datetime
 import numpy as np
 import pandas as pd
@@ -11,7 +12,7 @@ from celluloid import Camera
 import krembox_dualband_utils as kdu
 
 
-def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit, plot_output_dir: str, plot_title_prefix=""):
+def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit, plot_output_dir: Path, plot_title_prefix=""):
     """
     Animate the time traces of the FRP measurements from each radiometer in the burn unit
     :param rad_data_gdf:
@@ -46,7 +47,7 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
     frp_dfs = {}
     for i, row in rad_data_gdf.iterrows():
         # Load each dataset into a pandas dataframe
-        proc_data_filepath = os.path.join(row["data_directory"], row["processed_file"])
+        proc_data_filepath = Path(row["data_directory"]).joinpath(row["processed_file"])
         rad_num = row["rad"]
         rad_dict[rad_num] = {"loc": row["geometry"],
                              "max_frp_index": row["max_FRP_index"],
@@ -115,7 +116,6 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
         axs[1].set_ylabel("FRP [W/m2]")
         axs[1].set_xlabel("UTC Time")
         axs[1].set_title(plot_title_prefix+"Dualband FRP for burn unit "+burn_unit)
-        #axs[1].legend()
 
         camera.snap()
 
@@ -126,14 +126,14 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
     animation = camera.animate()
     gif_output_filename = str(burn_unit)+"_animation.gif"
     mp4_output_filename = str(burn_unit)+"_animation.mp4"
-    if not os.path.exists(plot_output_dir):
-        os.mkdir(plot_output_dir)
-    animation.save(os.path.join(plot_output_dir, gif_output_filename), writer='imagemagick')
-    animation.save(os.path.join(plot_output_dir, mp4_output_filename), writer='imagemagick')
-    print("Animations saved to ", os.path.join(plot_output_dir, gif_output_filename))
+    if not plot_output_dir.exists():
+        plot_output_dir.mkdir()
+    animation.save(plot_output_dir.joinpath(gif_output_filename), writer='imagemagick')
+    animation.save(plot_output_dir.joinpath(mp4_output_filename), writer='imagemagick')
+    print("Animations saved to ", plot_output_dir.joinpath(gif_output_filename))
 
 
-def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit, plot_output_dir: str, plot_title_prefix=""):
+def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit, plot_output_dir: Path, plot_title_prefix=""):
     """
     Plots data associated with a given burn unit
     :param rad_data_gdf:
@@ -166,7 +166,7 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
     fig, ax = plt.subplots(1, 1, figsize=(6, 6))
     for i, row in rad_data_gdf.iterrows():
         # Load each dataset into a pandas dataframe
-        proc_data_filepath = os.path.join(row["data_directory"], row["processed_file"])
+        proc_data_filepath = Path(row["data_directory"]).joinpath(row["processed_file"])
         rad_num = row["rad"]
         dataset_name = row["dataset"]
         print(dataset_name, proc_data_filepath)
@@ -187,15 +187,16 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
     ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=10))
     ax.xaxis.set_minor_locator(mdates.MinuteLocator(interval=1))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+    ax.tick_params(axis='x', labelrotation=45)
     ax.set_ylabel("FRP [W/m2]")
     ax.set_xlabel("UTC Time")
     ax.set_title(plot_title_prefix+"Dualband FRP for burn unit "+burn_unit, y=1.04)
     ax.legend()
     plot_filename = "Dualband_FRP_BurnUnit_"+str(burn_unit)+".png"
 
-    if not os.path.exists(plot_output_dir):
-        os.mkdir(plot_output_dir)
-    plt.savefig(os.path.join(plot_output_dir, plot_filename))
+    if not plot_output_dir.exists():
+        plot_output_dir.mkdir()
+    plt.savefig(plot_output_dir.joinpath(plot_filename))
     fig.show()
 
     # Make a spatial plot of the locations of the radiometers
@@ -206,19 +207,19 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
     ax.set_title(plot_title_prefix + "Dualband locations for burn unit " + burn_unit, y=1.04)
     ax.legend()
     plot_filename = "Dualband_Locations_BurnUnit_" + str(burn_unit) + ".png"
-    plt.savefig(os.path.join(plot_output_dir, plot_filename))
+    plt.savefig(plot_output_dir.joinpath(plot_filename))
     fig.show()
 
     # Make detailed plots of each radiometer dataset
     for i, row in rad_data_gdf.iterrows():
-        proc_data_filepath = os.path.join(row["data_directory"], row["processed_file"])
+        proc_data_filepath = Path(row["data_directory"]).joinpath(row["processed_file"])
         rad_df = pd.read_csv(proc_data_filepath)
         plot_name = row["dataset"] + ".png"
         sup_title = row["dataset"] + ", Burn Unit " + burn_unit
-        kdu.plot_processed_dualband_data(rad_df, os.path.join(plot_output_dir, plot_name), True, True, sup_title)
+        kdu.plot_processed_dualband_data(rad_df, plot_output_dir.joinpath(plot_name), True, True, sup_title)
 
 
-def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: str, color_column: str, plot_title_prefix="", rad_data_df = None):
+def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: Path, color_column: str, plot_title_prefix="", rad_data_df = None):
     """
     Makes a simple plot of all the burn units
     :param burn_plot_gdf:
@@ -227,7 +228,7 @@ def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: str, co
     :return:
     """
 
-    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+    fig, ax = plt.subplots(1, 1)
     burn_plot_gdf.plot(column=color_column, ax=ax, legend=True, alpha=0.5)
     burn_plot_gdf.apply(lambda x: ax.annotate(text=x['Id'], xy=x.geometry.centroid.coords[0], ha='center'), axis=1)
 
@@ -235,8 +236,9 @@ def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: str, co
         rad_data_df.plot(ax=ax, alpha=0.8, markersize=5)
 
     ax.set_title(plot_title_prefix + "Burn Unit Map", y=1.04)
+    plt.tight_layout()
     plot_filename = "BurnUnitMap" + ".png"
-    plt.savefig(os.path.join(plot_output_dir, plot_filename))
+    plt.savefig(plot_output_dir.joinpath(plot_filename))
     fig.show()
 
 
@@ -276,12 +278,11 @@ def run_krembox_dualband_vis(vis_params: dict):
     color_column = "Id"
     if vis_params["campaign"] == "Osceola":
         color_column = "BurnYear"
-    plot_burn_unit_map(burn_plot_gdf, vis_params["plot_output_dir"], color_column, plot_title_prefix, rad_data_gdf)
+    plot_burn_unit_map(burn_plot_gdf, Path(vis_params["plot_output_dir"]), color_column, plot_title_prefix, rad_data_gdf)
 
     # Loop through burn units of interest and plot data
     for burn_unit in burn_units:
-        # Create output plot directory if it does not exist
-        burn_unit_plot_output_dir = os.path.join(vis_params["plot_output_dir"], burn_unit)
+        burn_unit_plot_output_dir = Path(vis_params["plot_output_dir"]).joinpath(burn_unit)
         plot_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, burn_unit_plot_output_dir, plot_title_prefix)
         if vis_params["animations"]:
             animate_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, burn_unit_plot_output_dir, vis_params["plot_title_prefix"])

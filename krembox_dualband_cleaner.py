@@ -1,5 +1,5 @@
 import csv
-import os.path
+#import os.path
 from pathlib import Path
 import numpy as np
 import datetime
@@ -11,7 +11,7 @@ import krembox_dualband_utils as kdb_utils
 def process_data_series(data_series, target_dates, file, data_directory, clean_file_list):
     valid_data = False
     metadata = {}
-    clean_directory = os.path.join(data_directory, "Clean")
+    clean_directory = Path(data_directory).joinpath("Clean")
 
     if len(data_series) > 3:
         if data_series[1][data_series[0].index('GPS-TYPE')] == "LOCKED":
@@ -21,15 +21,16 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
 
             # Only clean datasets from the dates we're interested in
             if dt.date() in target_dates:
-                dataset = file.split(".CSV")[0] + "_" +dt.isoformat()
+                print(file, type(file))
+                dataset = file.stem + "_" + dt.isoformat()
                 clean_file = dataset + ".csv"
-                clean_file = os.path.join("Clean", clean_file)
+                clean_file = Path("Clean").joinpath(clean_file)
 
                 # Only keep this dataset if we have not already processed it
                 # For example, raw data files from a second day of data collection may
                 # still contain datasets from the previous day
-                if clean_file not in clean_file_list:
-                    clean_file_path = os.path.join(data_directory, clean_file)
+                if str(clean_file) not in clean_file_list:
+                    clean_file_path = Path(data_directory).joinpath(clean_file)
                     clean_header = '#'+','.join(data_series[0]) + "\n#" + ','.join(data_series[1]) + "\ndatetime," + ",".join(data_series[2]) + "\n"
 
                     # Write the cleaned up data file
@@ -44,13 +45,15 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
                     valid_data = True
                     metadata["dt"] = dt
                     metadata["dataset"] = dataset
-                    metadata["data_directory"] = data_directory
-                    metadata["clean_file"] = clean_file
+                    metadata["data_directory"] = str(data_directory)
+                    metadata["clean_file"] = str(clean_file)
                     metadata['lat'] = lat
                     metadata['lon'] = lon
-                    metadata['rad'] = clean_file.split("_")[-2]
+                    metadata['rad'] = clean_file.stem.split("_")[-2]
                     metadata['N'] = len(data_series)-3
                     metadata['sample_freq'] = sample_freq
+                else:
+                    print("Already processed ", clean_file)
     return valid_data, metadata
 
 
@@ -60,7 +63,7 @@ def run_krembox_dualband_cleaner(params: dict):
     specified target dates
 
     :param params:
-    :return:
+    :return: geopandas dataframe with information on all the datasets cleaned
     """
 
     # Sort the target dates for convenience
@@ -74,23 +77,23 @@ def run_krembox_dualband_cleaner(params: dict):
 
     # Loop through data directories to find all the raw data, create directories to store cleaned data
     for data_directory in params["data_directories"]:
-        raw_directory = data_directory+"/Raw/"
-        clean_directory = data_directory+"/Clean/"
-        if not os.path.exists(raw_directory):
-            raise RuntimeError("Specified raw directory "+raw_directory+" does not exist!")
-        if not os.path.exists(clean_directory):
-            os.mkdir(clean_directory)
+        raw_directory = Path(data_directory).joinpath('Raw')
+        clean_directory = Path(data_directory).joinpath("Clean")
+        if not raw_directory.exists():
+            raise RuntimeError("Specified raw directory "+raw_directory+" does not exist!  Remember that raw data should be in a subfolder called 'Raw'")
+        if not clean_directory.exists():
+            clean_directory.mkdir()
 
         # Loop through the raw data files
         print(f"Cleaning data in {raw_directory}")
-        raw_files = os.listdir(raw_directory)
-        for file in raw_files:
+        for file in raw_directory.iterdir():
             # Skip hidden or lock files
-            if file[0] == '.':
+            if file.stem[0] == '.':
                 continue
-
-            raw_data_file = os.path.join(raw_directory, file)
-            with open(raw_data_file, 'r') as csvfile:
+            if not file.suffix.lower() == '.csv':
+                print("Found non-csv file in raw data folder: ", file)
+                continue
+            with open(file, 'r') as csvfile:
                 csvreader = csv.reader(csvfile)
                 data_series = []
 

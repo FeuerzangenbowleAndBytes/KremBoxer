@@ -1,6 +1,6 @@
 import datetime
-import os.path
-
+#import os.path
+from pathlib import Path
 import numpy as np
 import json
 import pandas as pd
@@ -123,7 +123,7 @@ def run_krembox_dualband_frp(params: dict):
     proc_files = []
     fire_durations = []
     for i, row in gdf.iterrows():
-        clean_file_path = os.path.join(row["data_directory"], row["clean_file"])
+        clean_file_path = Path(row["data_directory"]).joinpath(row["clean_file"])
         print(i, clean_file_path)
         rad_data = pd.read_csv(clean_file_path, skiprows=2, index_col=False, usecols=[0, 1, 2, 3])
         rad_data_proc = compute_FRP(rad_data, F_MW, F_LW, model_params, detect_temp_cal_data)
@@ -158,12 +158,12 @@ def run_krembox_dualband_frp(params: dict):
         fire_durations.append(duration)
 
         # Save the processed data to a new csv file
-        proc_directory = os.path.join(row["data_directory"], "Processed")
-        if not os.path.exists(proc_directory):
-            os.mkdir(proc_directory)
-        proc_file = os.path.join("Processed", os.path.split(row["clean_file"])[-1])
-        proc_files.append(proc_file)
-        proc_file_path = os.path.join(row["data_directory"], proc_file)
+        proc_directory = Path(row["data_directory"]).joinpath("Processed")
+        if not proc_directory.exists():
+            proc_directory.mkdir()
+        proc_file = Path("Processed").joinpath(Path(row["clean_file"]).stem)
+        proc_files.append(str(proc_file))
+        proc_file_path = Path(row["data_directory"]).joinpath(proc_file)
         rad_data_proc.to_csv(proc_file_path)
 
     gdf["max_FRP_index"] = max_FRP_indices

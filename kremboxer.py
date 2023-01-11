@@ -14,7 +14,7 @@ def main(argv):
 
     Ex. python kremboxer.py -p paramfiles/example_paramfile.json
 
-    :param argv:
+    :param argv: Command line parameters passed from the system.  Will be parsed to extract the parameter file.
     :return:
     """
 

@@ -1,7 +1,8 @@
 import datetime
 import pandas as pd
 import geopandas as gpd
-import os
+#import os
+from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
@@ -42,7 +43,7 @@ def associate_data2burnplot(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.G
     return rad_data_gdf
 
 
-def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: str, show_plot: bool, zoom2fire: bool, sup_title: str):
+def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: Path, show_plot: bool, zoom2fire: bool, sup_title: str):
     fig, axs = plt.subplots(3, 2, figsize=(8,8))
     print(rad_df)
     rad_df['datetime'] = pd.to_datetime(rad_df['datetime'])
@@ -57,7 +58,7 @@ def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: str, show_p
     mdatetimes = mdates.date2num(datetimes)
 
     axs[0, 0].plot(mdatetimes, rad_df["TH"])
-    axs[0,0].set_ylabel("TH [mV]")
+    axs[0, 0].set_ylabel("TH [mV]")
 
     axs[0, 1].plot(mdatetimes, rad_df["LW-A"], label="LW-A")
     axs[0, 1].plot(mdatetimes, rad_df["MW-B"], label="MW-B")
@@ -98,7 +99,7 @@ def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: str, show_p
         plt.show()
 
 
-def plot_osceola_statistics(gdf: gpd.GeoDataFrame, plot_output_dir: str):
+def plot_osceola_statistics(gdf: gpd.GeoDataFrame, plot_output_dir: Path):
     """
     Makes a plot with statistics computed from all the Osceola FRP datasets at Osceola, ex: fire duration, max FRP, vs treatment
     Note that this only works for the Osceola datasets, because of the special association between treatments and burn units
@@ -141,9 +142,9 @@ def plot_osceola_statistics(gdf: gpd.GeoDataFrame, plot_output_dir: str):
     axs[4].set_title("FRE vs Burn Frequency at Osceola")
     plt.tight_layout()
 
-    if not os.path.exists(plot_output_dir):
-        os.mkdir(plot_output_dir)
-    plt.savefig(os.path.join(plot_output_dir, "fre_vs_burnfreq.png"))
+    if not plot_output_dir.exists():
+        plot_output_dir.mkdir()
+    plt.savefig(plot_output_dir.joinpath("fre_vs_burnfreq.png"))
     plt.show()
 
 
@@ -158,22 +159,23 @@ if __name__ == "__main__":
 
     gdf = associate_data2burnplot(rad_data_gdf, burn_plot_gdf)
 
-    df_file = os.path.join(gdf.iloc[0]["data_directory"], gdf.iloc[0]["processed_file"])
+    df_file = Path(gdf.iloc[0]["data_directory"]).joinpath(gdf.iloc[0]["processed_file"])
     print(df_file)
     df = pd.read_csv(df_file)
     plot_name = gdf.iloc[0]["dataset"]+".png"
     sup_title = gdf.iloc[0]["dataset"]+", Burn Unit "+gdf.iloc[0]["burn_unit"]
-    plot_processed_dualband_data(df, os.path.join("plots", plot_name), True, True, sup_title)
+    plot_processed_dualband_data(df, Path("plots").joinpath(plot_name), True, True, sup_title)
 
     burn_units = gdf['burn_unit'].unique()
     for burn_unit in burn_units:
         gdf_temp = gdf[gdf['burn_unit'] == burn_unit]
-        df_file = os.path.join(gdf_temp.iloc[0]["data_directory"], gdf_temp.iloc[0]["processed_file"])
+        #df_file = os.path.join(gdf_temp.iloc[0]["data_directory"], gdf_temp.iloc[0]["processed_file"])
+        df_file = Path(gdf_temp.iloc[0]["data_directory"]).joinpath(gdf_temp.iloc[0]["processed_file"])
         print(df_file)
         df = pd.read_csv(df_file)
         plot_name = gdf_temp.iloc[0]["dataset"] + ".png"
         sup_title = gdf_temp.iloc[0]["dataset"] + ", Burn Unit " + gdf_temp.iloc[0]["burn_unit"]
-        plot_processed_dualband_data(df, os.path.join("plots", plot_name), True, True, sup_title)
+        plot_processed_dualband_data(df, Path("plots").joinpath(plot_name), True, True, sup_title)
 
     fire_durations = gdf["fire_duration"]
     max_frps = gdf["max_FRP"]

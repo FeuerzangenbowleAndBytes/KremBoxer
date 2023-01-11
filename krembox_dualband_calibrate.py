@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.optimize as so
 import scipy.constants as sc
-import os
+from pathlib import Path
 import json
 import matplotlib.pyplot as plt
 import greybody_utils as gbu
@@ -35,9 +35,9 @@ def run_krembox_dualband_calibration(cal_params: dict):
 
     # Convert the temperature sensor mV data into resistance, using known voltage divider characteristics
     t_mV = blackbody_cal_data[:, 1]
-    v_top = cal_params["v_top"]                                # voltage at the top of divider in mV
-    r_top = cal_params["r_top"]                              # 100kOhm resistor in voltage divider
-    t_resist = t_mV * r_top / (v_top - t_mV)    # Convert mV reading into resistance of temperature sensor
+    v_top = cal_params["v_top"]                     # voltage at the top of divider in mV
+    r_top = cal_params["r_top"]                     # 100kOhm resistor in voltage divider
+    t_resist = t_mV * r_top / (v_top - t_mV)        # Convert mV reading into resistance of temperature sensor
 
     # Load actual temperaures and detector signals from calibration data
     t_actual = blackbody_cal_data[:, 0]
@@ -136,8 +136,8 @@ def run_krembox_dualband_calibration(cal_params: dict):
     fig, axs = plt.subplots(5, 2, figsize=(8, 10))
 
     # Plot the bandpasses
-    axs[0,0].plot(f_lw[:,0], f_lw[:,1], label="F_LW")
-    axs[0,0].plot(f_mw[:,0], f_mw[:,1], label="F_MW")
+    axs[0,0].plot(f_lw[:, 0], f_lw[:, 1], label="F_LW")
+    axs[0,0].plot(f_mw[:, 0], f_mw[:, 1], label="F_MW")
     axs[0, 0].legend()
     axs[0, 0].set_xlim(0, 20)
     axs[0, 0].set_xlabel("Wavelength [um]")
@@ -224,9 +224,9 @@ def run_krembox_dualband_calibration(cal_params: dict):
     plt.tight_layout()
 
     # Create output plot directory if it does not exist
-    if not os.path.exists(cal_params["plot_output_dir"]):
-        os.mkdir(cal_params["plot_output_dir"])
-    plt.savefig(os.path.join(cal_params["plot_output_dir"], cal_params["plot_output"]))
+    if not Path(cal_params["plot_output_dir"]).exists():
+        Path(cal_params["plot_output_dir"]).mkdir()
+    plt.savefig(Path(cal_params["plot_output_dir"]).joinpath(cal_params["plot_output"]))
     print("Saved calibration plot to: ", cal_params["plot_output_dir"])
 
     if cal_params["show_plot"]:
