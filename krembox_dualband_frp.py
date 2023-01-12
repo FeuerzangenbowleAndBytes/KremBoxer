@@ -1,5 +1,4 @@
 import datetime
-#import os.path
 from pathlib import Path
 import numpy as np
 import json
@@ -8,6 +7,7 @@ import geopandas as gpd
 import scipy.optimize as so
 import scipy.constants as sc
 import greybody_utils as gbu
+import krembox_utils as kbu
 
 
 def load_calibration_data(cal_params):
@@ -113,6 +113,8 @@ def run_krembox_dualband_frp(params: dict):
 
     # Loop through the clean datasets and compute FRP, record some new metadata
     print("Iterating through clean datasets")
+    pstart_indices = []
+    pend_indices = []
     max_FRP_indices = []
     max_FRPs = []
     max_FRP_datetimes = []
@@ -145,6 +147,15 @@ def run_krembox_dualband_frp(params: dict):
         MW_FREs.append(mw_fre)
         LW_FREs.append(lw_fre)
 
+        # Find time bounds for the middle 90% of the integrated FRP signal
+        ind_start, ind_end = kbu.get_signal_bounds(rad_data_proc["LW_FRP"].to_numpy(), 0.05, 0.95)
+        dt_start = rad_data_proc["datetime"].iloc[ind_start]
+        dt_end = rad_data_proc["datetime"].iloc[ind_end]
+        dt_dur = (dt_end - dt_start).seconds / 60
+        print("\tDuration: {:.2f} minutes".format(dt_dur))
+        pstart_indices.append(ind_start)
+        pend_indices.append(ind_end)
+
         # Find duration of fire, as measured by how long frp > 0
         df_temp = rad_data_proc[rad_data_proc["LW_FRP"] > 1000]
         if df_temp.empty:
@@ -175,6 +186,8 @@ def run_krembox_dualband_frp(params: dict):
     gdf["LW_FRE"] = LW_FREs
     gdf["processed_file"] = proc_files
     gdf["fire_duration"] = fire_durations
+    gdf["pstart_ind"] = pstart_indices
+    gdf["pend_ind"] = pend_indices
     print("Saving processed dataframe in GeoJSON format: ", params["processed_dataframe_output"])
     gdf.to_file(params["processed_dataframe_output"]+".geojson", driver='GeoJSON')
     gdf.to_csv(params["processed_dataframe_output"] + ".csv")

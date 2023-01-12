@@ -42,53 +42,60 @@ def associate_data2burnplot(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.G
     return rad_data_gdf
 
 
-def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: Path, show_plot: bool, zoom2fire: bool, sup_title: str):
-    fig, axs = plt.subplots(3, 2, figsize=(8,8))
+def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: Path, show_plot: bool,
+                                 dt_start: datetime.datetime, dt_end: datetime.datetime, sup_title: str):
+    fig, axs = plt.subplots(3, 2, figsize=(8, 8))
     print(rad_df)
     rad_df['datetime'] = pd.to_datetime(rad_df['datetime'])
-    if zoom2fire:
-        max_frp_index = rad_df['LW_FRP'].argmax()
-        max_frp_datetime = rad_df['datetime'][max_frp_index]
-        min_datetime = max_frp_datetime - datetime.timedelta(minutes=20)
-        max_datetime = max_frp_datetime + datetime.timedelta(minutes=20)
-        rad_df = rad_df[(rad_df['datetime'] > min_datetime) & (rad_df['datetime'] < max_datetime)]
+
+    max_frp_index = rad_df['LW_FRP'].argmax()
+    max_frp_datetime = rad_df['datetime'][max_frp_index]
+    min_datetime = dt_start - datetime.timedelta(minutes=20)
+    max_datetime = dt_end + datetime.timedelta(minutes=20)
+    rad_df = rad_df[(rad_df['datetime'] > min_datetime) & (rad_df['datetime'] < max_datetime)]
 
     datetimes = rad_df["datetime"]
     mdatetimes = mdates.date2num(datetimes)
 
     axs[0, 0].plot(mdatetimes, rad_df["TH"])
+    axs[0, 0].axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
     axs[0, 0].set_ylabel("TH [mV]")
 
     axs[0, 1].plot(mdatetimes, rad_df["LW-A"], label="LW-A")
     axs[0, 1].plot(mdatetimes, rad_df["MW-B"], label="MW-B")
+    axs[0, 1].axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
     axs[0, 1].set_ylabel("Sensor [mV]")
     axs[0, 1].legend()
 
     axs[1, 0].plot(mdatetimes, rad_df["TD"], label="Detector")
     axs[1, 0].plot(mdatetimes, rad_df["T"], label="Fire")
+    axs[1, 0].axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
     axs[1, 0].set_ylabel("Temperature [K]")
     axs[1, 0].legend()
 
     axs[1, 1].plot(mdatetimes, rad_df["LW_W"], label="LW_W")
     axs[1, 1].plot(mdatetimes, rad_df["MW_W"], label="MW_W")
+    axs[1, 1].axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
     axs[1, 1].set_ylabel("Detected W [W/m2]")
     axs[1, 1].legend()
 
     axs[2, 0].plot(mdatetimes, rad_df["LW_eA"], label="LW_eA")
     axs[2, 0].plot(mdatetimes, rad_df["MW_eA"], label="MW_eA")
+    axs[2, 0].axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
     axs[2, 0].set_ylabel("eA")
     axs[2, 0].legend()
 
     axs[2, 1].plot(mdatetimes, rad_df["LW_FRP"], label="LW_FRP")
     axs[2, 1].plot(mdatetimes, rad_df["MW_FRP"], label="MW_FRP")
+    axs[2, 1].axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
     axs[2, 1].set_ylabel("FRP [W/m2]")
     axs[2, 1].legend()
 
-    for i in range(0,3):
-        for j in range(0,2):
-            axs[i, j].xaxis.set_major_locator(mdates.MinuteLocator(interval=10))
+    for i in range(0, 3):
+        for j in range(0, 2):
+            axs[i, j].xaxis.set_major_locator(mdates.MinuteLocator(interval=30))
             axs[i, j].xaxis.set_minor_locator(mdates.MinuteLocator(interval=1))
-            axs[i,j].xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+            axs[i, j].xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
     print(rad_df["datetime"].iloc[0], rad_df["datetime"].iloc[-1])
 
     plt.suptitle(sup_title)

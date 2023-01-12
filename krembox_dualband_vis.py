@@ -176,15 +176,17 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
         # Figure out where the max FRP occurs and only plot data in a time window around it (reduces time to render plot)
         max_frp_index = rad_df['LW_FRP'].argmax()
         max_frp_datetime = rad_df['datetime'][max_frp_index]
-        min_datetime = max_frp_datetime - datetime.timedelta(minutes=20)
-        max_datetime = max_frp_datetime + datetime.timedelta(minutes=20)
+        #min_datetime = max_frp_datetime - datetime.timedelta(minutes=20)
+        #max_datetime = max_frp_datetime + datetime.timedelta(minutes=20)
+        min_datetime = rad_df['datetime'].iloc[row['pstart_ind']] - datetime.timedelta(minutes=10)
+        max_datetime = rad_df['datetime'].iloc[row['pend_ind']] + datetime.timedelta(minutes=10)
         rad_df = rad_df[(rad_df['datetime'] > min_datetime) & (rad_df['datetime'] < max_datetime)]
 
         ax.plot(rad_df["datetime"], rad_df["LW_FRP"], color=rad_colors[rad_num], label="Rad "+str(rad_num))
         ax.axvline(x=max_frp_datetime, color='grey', linewidth=1, alpha=0.2)
 
     ax.set_ylim([0, None])
-    ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=10))
+    ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=30))
     ax.xaxis.set_minor_locator(mdates.MinuteLocator(interval=1))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
     ax.tick_params(axis='x', labelrotation=45)
@@ -216,7 +218,9 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
         rad_df = pd.read_csv(proc_data_filepath)
         plot_name = row["dataset"] + ".png"
         sup_title = row["dataset"] + ", Burn Unit " + burn_unit
-        kdu.plot_processed_dualband_data(rad_df, plot_output_dir.joinpath(plot_name), True, True, sup_title)
+        min_datetime = datetime.datetime.fromisoformat(rad_df['datetime'].iloc[row['pstart_ind']]) - datetime.timedelta(minutes=10)
+        max_datetime = datetime.datetime.fromisoformat(rad_df['datetime'].iloc[row['pend_ind']]) + datetime.timedelta(minutes=10)
+        kdu.plot_processed_dualband_data(rad_df, plot_output_dir.joinpath(plot_name), True, min_datetime, max_datetime, sup_title)
 
 
 def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: Path, color_column: str, plot_title_prefix="", rad_data_df = None):
