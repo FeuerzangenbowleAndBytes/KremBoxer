@@ -5,6 +5,11 @@
 
 Welcome to KremBoxer's documentation!
 =====================================
+
+.. figure:: images/krembox_banner.png
+   :align:  center
+
+
 This Python 3 code performs calibration and FRP computation with data gathered by the dualband 'krembox' detectors.  More documentation will follow, but for now here is a quick start guide.  
 
 **NOTE**: So far this has only been tested on Ubuntu, but in principle it should work on Windows and Mac too.  We might just need to work through some OS specific file path issues.
