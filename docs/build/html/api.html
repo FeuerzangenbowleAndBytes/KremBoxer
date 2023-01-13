@@ -1,0 +1,1805 @@
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="">
+    
+    
+      
+        <title>API - KremBoxer 0.1 documentation</title>
+      
+    
+    
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+        <link rel="stylesheet" type="text/css" href="_static/google_fonts.css" />
+        <link rel="stylesheet" type="text/css" href="_static/stylesheets/sphinx_immaterial_theme.d9cc94a134e137f5b.min.css" />
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#greybody-utils" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="KremBoxer 0.1 documentation" class="md-header__button md-logo" aria-label="KremBoxer 0.1 documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            KremBoxer 0.1 documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="KremBoxer 0.1 documentation" class="md-nav__button md-logo" aria-label="KremBoxer 0.1 documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+    </a>
+    KremBoxer 0.1 documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          <span class="md-ellipsis">Contents:<wbr></span>
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Contents:" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          <span class="md-ellipsis">Contents:<wbr></span>
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="usage.html" class="md-nav__link">
+        <span class="md-ellipsis">Usage</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="burnunits.html" class="md-nav__link">
+        <span class="md-ellipsis">Burn Units Data</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+    
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__current-nested md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_3" type="checkbox" id="__nav_1_3" checked>
+      
+      
+      
+        
+        <div class="md-nav__link md-nav__link--index md-nav__link--active">
+          <a href="#"><span class="md-ellipsis">API</span></a>
+          
+            <label for="__nav_1_3">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="API" data-md-level="2">
+        <label class="md-nav__title" for="__nav_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          <span class="md-ellipsis">API</span>
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_3_1" type="checkbox" id="__nav_1_3_1" >
+      
+      
+      
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="#greybody-utils"><span class="md-ellipsis">greybody_<wbr>utils</span></a>
+          
+            <label for="__nav_1_3_1">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="greybody_utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_1_3_1">
+          <span class="md-nav__icon md-icon"></span>
+          <span class="md-ellipsis">greybody_<wbr>utils</span>
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/greybody_utils/planck_model.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.planck_model (Python function) — Computes a polynomial approximation to the planck curve, A*T^N" class="md-ellipsis">planck_<wbr>model</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/greybody_utils/detector_model.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.detector_model (Python function) — Model for the detector response when viewing an object at temperature T and when the detector&#39;s temperature is TD" class="md-ellipsis">detector_<wbr>model</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/greybody_utils/GB_lambda.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.GB_lambda (Python function) — Compute the greybody radiation emitted by an object at temperature T" class="md-ellipsis">GB_<wbr>lambda</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/greybody_utils/GB_lambda_window.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.GB_lambda_window (Python function) — Integrated radiance of an object at temperature T over specified wavelengths" class="md-ellipsis">GB_<wbr>lambda_<wbr>window</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/greybody_utils/GB_ratio.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.GB_ratio (Python function) — Compute the ratio of the integrated radiances in two wavelength windows" class="md-ellipsis">GB_<wbr>ratio</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/greybody_utils/GB_ratio_BP.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.GB_ratio_BP (Python function) — Compute the ratio of the integrated radiances in two wavelength windows, accounting for bandbass of detector" class="md-ellipsis">GB_<wbr>ratio_<wbr>BP</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/greybody_utils/stefan_boltzmann.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.stefan_boltzmann (Python function) — Compute the total radiation emitted by a greybody object via Stefan-Boltzmann law" class="md-ellipsis">stefan_<wbr>boltzmann</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/greybody_utils/detector_temperature_lookup.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.detector_temperature_lookup (Python function) — Converts a resistance reading into a temperature measurement" class="md-ellipsis">detector_<wbr>temperature_<wbr>lookup</span>
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_3_2" type="checkbox" id="__nav_1_3_2" >
+      
+      
+      
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="#krembox-utils"><span class="md-ellipsis">krembox_<wbr>utils</span></a>
+          
+            <label for="__nav_1_3_2">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="krembox_utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_1_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          <span class="md-ellipsis">krembox_<wbr>utils</span>
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_utils/get_signal_bounds.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_utils.get_signal_bounds (Python function) — Compute the indices, ind_start ind_end, containing the specified percentage of the signal&#39;s integrated weight.  IE p_start of the signal occurs before ind_start, p_end of the signal occurs before ind_end." class="md-ellipsis">get_<wbr>signal_<wbr>bounds</span>
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_3_3" type="checkbox" id="__nav_1_3_3" >
+      
+      
+      
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="#krembox-dualband-utils"><span class="md-ellipsis">krembox_<wbr>dualband_<wbr>utils</span></a>
+          
+            <label for="__nav_1_3_3">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="krembox_dualband_utils" data-md-level="3">
+        <label class="md-nav__title" for="__nav_1_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>utils</span>
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_utils/parse_header.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_utils.parse_header (Python function)" class="md-ellipsis">parse_<wbr>header</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_utils/associate_data2burnplot.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_utils.associate_data2burnplot (Python function)" class="md-ellipsis">associate_<wbr>data2burnplot</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_utils/plot_processed_dualband_data.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_utils.plot_processed_dualband_data (Python function)" class="md-ellipsis">plot_<wbr>processed_<wbr>dualband_<wbr>data</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_utils/plot_osceola_statistics.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_utils.plot_osceola_statistics (Python function) — Makes a plot with statistics computed from all the Osceola FRP datasets at Osceola, ex: fire duration, max FRP, vs treatment Note that this only works for the Osceola datasets, because of the special association between treatments and burn units :param rad_data_gdf: :param plot_output_dir: :return:" class="md-ellipsis">plot_<wbr>osceola_<wbr>statistics</span>
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_3_4" type="checkbox" id="__nav_1_3_4" >
+      
+      
+      
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="#krembox-dualband-cleaner"><span class="md-ellipsis">krembox_<wbr>dualband_<wbr>cleaner</span></a>
+          
+            <label for="__nav_1_3_4">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="krembox_dualband_cleaner" data-md-level="3">
+        <label class="md-nav__title" for="__nav_1_3_4">
+          <span class="md-nav__icon md-icon"></span>
+          <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>cleaner</span>
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_cleaner/process_data_series.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_cleaner.process_data_series (Python function)" class="md-ellipsis">process_<wbr>data_<wbr>series</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_cleaner/run_krembox_dualband_cleaner.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_cleaner.run_krembox_dualband_cleaner (Python function) — Cleans the raw datafiles from raw krembox data stored in specified directories.  Only keeps data from the specified target dates" class="md-ellipsis">run_<wbr>krembox_<wbr>dualband_<wbr>cleaner</span>
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_3_5" type="checkbox" id="__nav_1_3_5" >
+      
+      
+      
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="#krembox-dualband-frp"><span class="md-ellipsis">krembox_<wbr>dualband_<wbr>frp</span></a>
+          
+            <label for="__nav_1_3_5">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="krembox_dualband_frp" data-md-level="3">
+        <label class="md-nav__title" for="__nav_1_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>frp</span>
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_frp/load_calibration_data.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_frp.load_calibration_data (Python function) — Loads the calibration data needed to process the raw KremBox data, including bandpasses, detector model parameters, and temperature sensor look up table" class="md-ellipsis">load_<wbr>calibration_<wbr>data</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_frp/compute_FRP.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_frp.compute_FRP (Python function) — Use the dualband data to compute the target temperature, emissivity Area product, and FRP of the fire passing under the krembox :param rad_data: :param F_MW: :param F_LW: :param model_params: :param detect_temp_cal_data: :return:" class="md-ellipsis">compute_<wbr>FRP</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_frp/run_krembox_dualband_frp.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_frp.run_krembox_dualband_frp (Python function)" class="md-ellipsis">run_<wbr>krembox_<wbr>dualband_<wbr>frp</span>
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_3_6" type="checkbox" id="__nav_1_3_6" >
+      
+      
+      
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="#krembox-dualband-vis"><span class="md-ellipsis">krembox_<wbr>dualband_<wbr>vis</span></a>
+          
+            <label for="__nav_1_3_6">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="krembox_dualband_vis" data-md-level="3">
+        <label class="md-nav__title" for="__nav_1_3_6">
+          <span class="md-nav__icon md-icon"></span>
+          <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>vis</span>
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_vis/animate_burn_unit.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_vis.animate_burn_unit (Python function) — Animate the time traces of the FRP measurements from each radiometer in the burn unit :param rad_data_gdf: :param burn_plot_gdf: :param burn_unit: :param plot_output_dir: :param plot_title_prefix: :return:" class="md-ellipsis">animate_<wbr>burn_<wbr>unit</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_vis/plot_burn_unit.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_vis.plot_burn_unit (Python function) — Plots data associated with a given burn unit :param rad_data_gdf: :param burn_plot_gdf: :param burn_unit: :param plot_output_dir: :return:" class="md-ellipsis">plot_<wbr>burn_<wbr>unit</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_vis/plot_burn_unit_map.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_vis.plot_burn_unit_map (Python function) — Makes a simple plot of all the burn units :param burn_plot_gdf: :param plot_output_dir: :param plot_title_prefix: :return:" class="md-ellipsis">plot_<wbr>burn_<wbr>unit_<wbr>map</span>
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/krembox_dualband_vis/run_krembox_dualband_vis.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_vis.run_krembox_dualband_vis (Python function) — Runs visualizer :param vis_params: :return:" class="md-ellipsis">run_<wbr>krembox_<wbr>dualband_<wbr>vis</span>
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1_3_7" type="checkbox" id="__nav_1_3_7" >
+      
+      
+      
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="#kremboxer"><span class="md-ellipsis">kremboxer</span></a>
+          
+            <label for="__nav_1_3_7">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="kremboxer" data-md-level="3">
+        <label class="md-nav__title" for="__nav_1_3_7">
+          <span class="md-nav__icon md-icon"></span>
+          <span class="md-ellipsis">kremboxer</span>
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/kremboxer/main.html" class="md-nav__link">
+        <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.kremboxer.main (Python function) — Main user entry point for the Kremboxer code.  All parts of the dualband calibration and FRP computation can be launched by providing this script with a JSON parameter file as a command line argument" class="md-ellipsis">main</span>
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+  
+      
+    <li class="md-nav__item md-nav__item--active md-nav__current-toc">
+      
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          <span class="md-ellipsis">API</span>
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="#" class="md-nav__link md-nav__link--active">
+        <span class="md-ellipsis">API</span>
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#greybody-utils" class="md-nav__link">
+    <span class="md-ellipsis">greybody_<wbr>utils</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="greybody_utils">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="api/greybody_utils/planck_model.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.planck_model (Python function) — Computes a polynomial approximation to the planck curve, A*T^N" class="md-ellipsis">planck_<wbr>model</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/greybody_utils/detector_model.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.detector_model (Python function) — Model for the detector response when viewing an object at temperature T and when the detector&#39;s temperature is TD" class="md-ellipsis">detector_<wbr>model</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/greybody_utils/GB_lambda.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.GB_lambda (Python function) — Compute the greybody radiation emitted by an object at temperature T" class="md-ellipsis">GB_<wbr>lambda</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/greybody_utils/GB_lambda_window.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.GB_lambda_window (Python function) — Integrated radiance of an object at temperature T over specified wavelengths" class="md-ellipsis">GB_<wbr>lambda_<wbr>window</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/greybody_utils/GB_ratio.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.GB_ratio (Python function) — Compute the ratio of the integrated radiances in two wavelength windows" class="md-ellipsis">GB_<wbr>ratio</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/greybody_utils/GB_ratio_BP.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.GB_ratio_BP (Python function) — Compute the ratio of the integrated radiances in two wavelength windows, accounting for bandbass of detector" class="md-ellipsis">GB_<wbr>ratio_<wbr>BP</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/greybody_utils/stefan_boltzmann.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.stefan_boltzmann (Python function) — Compute the total radiation emitted by a greybody object via Stefan-Boltzmann law" class="md-ellipsis">stefan_<wbr>boltzmann</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/greybody_utils/detector_temperature_lookup.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.greybody_utils.detector_temperature_lookup (Python function) — Converts a resistance reading into a temperature measurement" class="md-ellipsis">detector_<wbr>temperature_<wbr>lookup</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-utils" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>utils</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="krembox_utils">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_utils/get_signal_bounds.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_utils.get_signal_bounds (Python function) — Compute the indices, ind_start ind_end, containing the specified percentage of the signal&#39;s integrated weight.  IE p_start of the signal occurs before ind_start, p_end of the signal occurs before ind_end." class="md-ellipsis">get_<wbr>signal_<wbr>bounds</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-utils" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>utils</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="krembox_dualband_utils">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_utils/parse_header.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_utils.parse_header (Python function)" class="md-ellipsis">parse_<wbr>header</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_utils/associate_data2burnplot.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_utils.associate_data2burnplot (Python function)" class="md-ellipsis">associate_<wbr>data2burnplot</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_utils/plot_processed_dualband_data.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_utils.plot_processed_dualband_data (Python function)" class="md-ellipsis">plot_<wbr>processed_<wbr>dualband_<wbr>data</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_utils/plot_osceola_statistics.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_utils.plot_osceola_statistics (Python function) — Makes a plot with statistics computed from all the Osceola FRP datasets at Osceola, ex: fire duration, max FRP, vs treatment Note that this only works for the Osceola datasets, because of the special association between treatments and burn units :param rad_data_gdf: :param plot_output_dir: :return:" class="md-ellipsis">plot_<wbr>osceola_<wbr>statistics</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-calibrate" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>calibrate</span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-cleaner" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>cleaner</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="krembox_dualband_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_cleaner/process_data_series.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_cleaner.process_data_series (Python function)" class="md-ellipsis">process_<wbr>data_<wbr>series</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_cleaner/run_krembox_dualband_cleaner.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_cleaner.run_krembox_dualband_cleaner (Python function) — Cleans the raw datafiles from raw krembox data stored in specified directories.  Only keeps data from the specified target dates" class="md-ellipsis">run_<wbr>krembox_<wbr>dualband_<wbr>cleaner</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-frp" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>frp</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="krembox_dualband_frp">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_frp/load_calibration_data.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_frp.load_calibration_data (Python function) — Loads the calibration data needed to process the raw KremBox data, including bandpasses, detector model parameters, and temperature sensor look up table" class="md-ellipsis">load_<wbr>calibration_<wbr>data</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_frp/compute_FRP.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_frp.compute_FRP (Python function) — Use the dualband data to compute the target temperature, emissivity Area product, and FRP of the fire passing under the krembox :param rad_data: :param F_MW: :param F_LW: :param model_params: :param detect_temp_cal_data: :return:" class="md-ellipsis">compute_<wbr>FRP</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_frp/run_krembox_dualband_frp.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_frp.run_krembox_dualband_frp (Python function)" class="md-ellipsis">run_<wbr>krembox_<wbr>dualband_<wbr>frp</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-vis" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>vis</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="krembox_dualband_vis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_vis/animate_burn_unit.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_vis.animate_burn_unit (Python function) — Animate the time traces of the FRP measurements from each radiometer in the burn unit :param rad_data_gdf: :param burn_plot_gdf: :param burn_unit: :param plot_output_dir: :param plot_title_prefix: :return:" class="md-ellipsis">animate_<wbr>burn_<wbr>unit</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_vis/plot_burn_unit.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_vis.plot_burn_unit (Python function) — Plots data associated with a given burn unit :param rad_data_gdf: :param burn_plot_gdf: :param burn_unit: :param plot_output_dir: :return:" class="md-ellipsis">plot_<wbr>burn_<wbr>unit</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_vis/plot_burn_unit_map.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_vis.plot_burn_unit_map (Python function) — Makes a simple plot of all the burn units :param burn_plot_gdf: :param plot_output_dir: :param plot_title_prefix: :return:" class="md-ellipsis">plot_<wbr>burn_<wbr>unit_<wbr>map</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="api/krembox_dualband_vis/run_krembox_dualband_vis.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.krembox_dualband_vis.run_krembox_dualband_vis (Python function) — Runs visualizer :param vis_params: :return:" class="md-ellipsis">run_<wbr>krembox_<wbr>dualband_<wbr>vis</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kremboxer" class="md-nav__link">
+    <span class="md-ellipsis">kremboxer</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="kremboxer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="api/kremboxer/main.html" class="md-nav__link">
+    <span aria-label="Python function" class="objinfo-icon objinfo-icon__procedure" title="Python function">F</span><span title="kremboxer.kremboxer.main (Python function) — Main user entry point for the Kremboxer code.  All parts of the dualband calibration and FRP computation can be launched by providing this script with a JSON parameter file as a command line argument" class="md-ellipsis">main</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-members" class="md-nav__link">
+    <span class="md-ellipsis">Public Members</span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#greybody-utils" class="md-nav__link">
+    <span class="md-ellipsis">greybody_<wbr>utils</span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-utils" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>utils</span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-utils" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>utils</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="krembox_dualband_utils">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-calibrate" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>calibrate</span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-cleaner" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>cleaner</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="krembox_dualband_cleaner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-frp" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>frp</span>
+  </a>
+  
+    <nav class="md-nav" aria-label="krembox_dualband_frp">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">Parameters</span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">Returns</span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#krembox-dualband-vis" class="md-nav__link">
+    <span class="md-ellipsis">krembox_<wbr>dualband_<wbr>vis</span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kremboxer" class="md-nav__link">
+    <span class="md-ellipsis">kremboxer</span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-members" class="md-nav__link">
+    <span class="md-ellipsis">Public Members</span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset" role="main">
+                  
+
+
+<h1 id="api">API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h1>
+<h2 id="greybody-utils">greybody_utils<a class="headerlink" href="#greybody-utils" title="Permalink to this heading">¶</a></h2>
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.greybody_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/greybody_utils/planck_model.html" title="kremboxer.greybody_utils.planck_model (Python function) — Computes a polynomial approximation to the planck curve, A*T^N"><span class="sig-name descname pseudo-toc-entry"><span class="pre">planck_model</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/planck_model.html#p-T" title="kremboxer.greybody_utils.planck_model.T (Python parameter) — temperature (Kelvin)"><span class="n"><span class="pre">T</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/planck_model.html#p-A" title="kremboxer.greybody_utils.planck_model.A (Python parameter) — polynomial fit coefficient"><span class="n"><span class="pre">A</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/planck_model.html#p-N" title="kremboxer.greybody_utils.planck_model.N (Python parameter) — polynomial fit power coefficient"><span class="n"><span class="pre">N</span></span></a></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Computes a polynomial approximation to the planck curve, A*T^N</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.greybody_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/greybody_utils/detector_model.html" title="kremboxer.greybody_utils.detector_model (Python function) — Model for the detector response when viewing an object at temperature T and when the detector's temperature is TD"><span class="sig-name descname pseudo-toc-entry"><span class="pre">detector_model</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/detector_model.html#p-T" title="kremboxer.greybody_utils.detector_model.T (Python parameter) — temperature of the object being viewed"><span class="n"><span class="pre">T</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/detector_model.html#p-G" title="kremboxer.greybody_utils.detector_model.G (Python parameter) — fit coefficient"><span class="n"><span class="pre">G</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/detector_model.html#p-AL" title="kremboxer.greybody_utils.detector_model.AL (Python parameter) — fit coefficient"><span class="n"><span class="pre">AL</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/detector_model.html#p-TD" title="kremboxer.greybody_utils.detector_model.TD (Python parameter) — temprature of the detector"><span class="n"><span class="pre">TD</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/detector_model.html#p-A" title="kremboxer.greybody_utils.detector_model.A (Python parameter) — fit coefficient"><span class="n"><span class="pre">A</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/detector_model.html#p-N" title="kremboxer.greybody_utils.detector_model.N (Python parameter) — fit power coefficient"><span class="n"><span class="pre">N</span></span></a></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Model for the detector response when viewing an object at temperature <cite>T</cite> and when the detector’s temperature
+is <cite>TD</cite></p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.greybody_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/greybody_utils/GB_lambda.html" title="kremboxer.greybody_utils.GB_lambda (Python function) — Compute the greybody radiation emitted by an object at temperature T"><span class="sig-name descname pseudo-toc-entry"><span class="pre">GB_lambda</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_lambda.html#p-lams" title="kremboxer.greybody_utils.GB_lambda.lams (Python parameter) — wavelengths at which to compute the radiance"><span class="n"><span class="pre">lams</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_lambda.html#p-T" title="kremboxer.greybody_utils.GB_lambda.T (Python parameter) — temperature of the object"><span class="n"><span class="pre">T</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_lambda.html#p-emissivity" title="kremboxer.greybody_utils.GB_lambda.emissivity (Python parameter) — emissivity of the object, defaults to 1"><span class="n"><span class="pre">emissivity</span></span></a><span class="o"><span class="pre">=</span></span><code class="code python default_value docutils literal highlight highlight-python"><span class="mi">1</span></code></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Compute the greybody radiation emitted by an object at temperature <cite>T</cite></p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.greybody_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/greybody_utils/GB_lambda_window.html" title="kremboxer.greybody_utils.GB_lambda_window (Python function) — Integrated radiance of an object at temperature T over specified wavelengths"><span class="sig-name descname pseudo-toc-entry"><span class="pre">GB_lambda_window</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_lambda_window.html#p-lam1" title="kremboxer.greybody_utils.GB_lambda_window.lam1 (Python parameter) — lower wavelength bound"><span class="n"><span class="pre">lam1</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_lambda_window.html#p-lam2" title="kremboxer.greybody_utils.GB_lambda_window.lam2 (Python parameter) — upper wavelength bound"><span class="n"><span class="pre">lam2</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_lambda_window.html#p-T" title="kremboxer.greybody_utils.GB_lambda_window.T (Python parameter) — temperature of object"><span class="n"><span class="pre">T</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Integrated radiance of an object at temperature <cite>T</cite> over specified wavelengths</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.greybody_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/greybody_utils/GB_ratio.html" title="kremboxer.greybody_utils.GB_ratio (Python function) — Compute the ratio of the integrated radiances in two wavelength windows"><span class="sig-name descname pseudo-toc-entry"><span class="pre">GB_ratio</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_ratio.html#p-T" title="kremboxer.greybody_utils.GB_ratio.T (Python parameter) — temperature of object"><span class="n"><span class="pre">T</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_ratio.html#p-lam1" title="kremboxer.greybody_utils.GB_ratio.lam1 (Python parameter) — lower bound of first window"><span class="n"><span class="pre">lam1</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_ratio.html#p-lam2" title="kremboxer.greybody_utils.GB_ratio.lam2 (Python parameter) — upper bound of first window"><span class="n"><span class="pre">lam2</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_ratio.html#p-lam3" title="kremboxer.greybody_utils.GB_ratio.lam3 (Python parameter) — lower bound of second window"><span class="n"><span class="pre">lam3</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_ratio.html#p-lam4" title="kremboxer.greybody_utils.GB_ratio.lam4 (Python parameter) — upper bound of second window"><span class="n"><span class="pre">lam4</span></span></a></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Compute the ratio of the integrated radiances in two wavelength windows</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.greybody_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/greybody_utils/GB_ratio_BP.html" title="kremboxer.greybody_utils.GB_ratio_BP (Python function) — Compute the ratio of the integrated radiances in two wavelength windows, accounting for bandbass of detector"><span class="sig-name descname pseudo-toc-entry"><span class="pre">GB_ratio_BP</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_ratio_BP.html#p-T" title="kremboxer.greybody_utils.GB_ratio_BP.T (Python parameter) — temperature of object"><span class="n"><span class="pre">T</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_ratio_BP.html#p-F1" title="kremboxer.greybody_utils.GB_ratio_BP.F1 (Python parameter) — bandpass of the first window detector"><span class="n"><span class="pre">F1</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/GB_ratio_BP.html#p-F2" title="kremboxer.greybody_utils.GB_ratio_BP.F2 (Python parameter) — bandpass of the second window detector"><span class="n"><span class="pre">F2</span></span></a></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Compute the ratio of the integrated radiances in two wavelength windows, accounting for bandbass of detector</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.greybody_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/greybody_utils/stefan_boltzmann.html" title="kremboxer.greybody_utils.stefan_boltzmann (Python function) — Compute the total radiation emitted by a greybody object via Stefan-Boltzmann law"><span class="sig-name descname pseudo-toc-entry"><span class="pre">stefan_boltzmann</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/stefan_boltzmann.html#p-T" title="kremboxer.greybody_utils.stefan_boltzmann.T (Python parameter) — temperature of object"><span class="n"><span class="pre">T</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/stefan_boltzmann.html#p-emissivity" title="kremboxer.greybody_utils.stefan_boltzmann.emissivity (Python parameter) — emissivity of object"><span class="n"><span class="pre">emissivity</span></span></a><span class="o"><span class="pre">=</span></span><code class="code python default_value docutils literal highlight highlight-python"><span class="mi">1</span></code></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Compute the total radiation emitted by a greybody object via Stefan-Boltzmann law</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.greybody_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/greybody_utils/detector_temperature_lookup.html" title="kremboxer.greybody_utils.detector_temperature_lookup (Python function) — Converts a resistance reading into a temperature measurement"><span class="sig-name descname pseudo-toc-entry"><span class="pre">detector_temperature_lookup</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/greybody_utils/detector_temperature_lookup.html#p-R" title="kremboxer.greybody_utils.detector_temperature_lookup.R (Python parameter) — Resistance of temperature sensor, Ohms"><span class="n"><span class="pre">R</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Converts a resistance reading into a temperature measurement</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+<h2 id="krembox-utils">krembox_utils<a class="headerlink" href="#krembox-utils" title="Permalink to this heading">¶</a></h2>
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_utils/get_signal_bounds.html" title="kremboxer.krembox_utils.get_signal_bounds (Python function) — Compute the indices, ind_start ind_end, containing the specified percentage of the signal's integrated weight.  IE p_start of the signal occurs before ind_start, p_end of the signal occurs before ind_end."><span class="sig-name descname pseudo-toc-entry"><span class="pre">get_signal_bounds</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/krembox_utils/get_signal_bounds.html#p-data" title="kremboxer.krembox_utils.get_signal_bounds.data (Python parameter) — One dimensional signal data"><span class="n"><span class="pre">data</span></span></a><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="desctype"><span class="pre">array</span></span></span></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/krembox_utils/get_signal_bounds.html#p-p_start" title="kremboxer.krembox_utils.get_signal_bounds.p_start (Python parameter) — Want position in signal where p_start of the total weight has occurred"><span class="n"><span class="pre">p_start</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Compute the indices, <cite>ind_start</cite> <cite>ind_end</cite>, containing the specified percentage of the signal’s integrated weight.  IE <cite>p_start</cite> of the
+signal occurs before <cite>ind_start</cite>, <cite>p_end</cite> of the signal occurs before <cite>ind_end</cite>.</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+<h2 id="krembox-dualband-utils">krembox_dualband_utils<a class="headerlink" href="#krembox-dualband-utils" title="Permalink to this heading">¶</a></h2>
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_utils/parse_header.html" title="kremboxer.krembox_dualband_utils.parse_header (Python function)"><span class="sig-name descname pseudo-toc-entry"><span class="pre">parse_header</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/krembox_dualband_utils/parse_header.html#p-fields" title="kremboxer.krembox_dualband_utils.parse_header.fields (Python parameter)"><span class="n"><span class="pre">fields</span></span></a></em>, </span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/krembox_dualband_utils/parse_header.html#p-header" title="kremboxer.krembox_dualband_utils.parse_header.header (Python parameter)"><span class="n"><span class="pre">header</span></span></a></em></span><span class="sig-paren">)</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd" id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></dt>
+<dd class="field-odd"><dl class="api-field highlight simple">
+<dt><span class="n sig-name">fields</span></dt><dd><p></p>
+</dd>
+<dt><span class="n sig-name">header</span></dt><dd><p></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even" id="returns">Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_utils/associate_data2burnplot.html" title="kremboxer.krembox_dualband_utils.associate_data2burnplot (Python function)"><span class="sig-name descname pseudo-toc-entry"><span class="pre">associate_data2burnplot</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd" id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></dt>
+<dd class="field-odd"><dl class="api-field highlight simple">
+<dt><span class="sig-name descname">rad_data_gdf</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">burn_plot_gdf</span></dt><dd><p></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even" id="returns">Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_utils/plot_processed_dualband_data.html" title="kremboxer.krembox_dualband_utils.plot_processed_dualband_data (Python function)"><span class="sig-name descname pseudo-toc-entry"><span class="pre">plot_processed_dualband_data</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd" id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></dt>
+<dd class="field-odd"><dl class="api-field highlight simple">
+<dt><span class="sig-name descname">rad_df</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">plot_outfile</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">show_plot</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">dt_start</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">dt_end</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">sup_title</span></dt><dd><p></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even" id="returns">Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_utils.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_utils/plot_osceola_statistics.html" title="kremboxer.krembox_dualband_utils.plot_osceola_statistics (Python function) — Makes a plot with statistics computed from all the Osceola FRP datasets at Osceola, ex: fire duration, max FRP, vs treatment Note that this only works for the Osceola datasets, because of the special association between treatments and burn units :param rad_data_gdf: :param plot_output_dir: :return:"><span class="sig-name descname pseudo-toc-entry"><span class="pre">plot_osceola_statistics</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em>, </span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Makes a plot with statistics computed from all the Osceola FRP datasets at Osceola, ex: fire duration, max FRP, vs treatment
+Note that this only works for the Osceola datasets, because of the special association between treatments and burn units
+:param rad_data_gdf:
+:param plot_output_dir:
+:return:</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+<h2 id="krembox-dualband-calibrate">krembox_dualband_calibrate<a class="headerlink" href="#krembox-dualband-calibrate" title="Permalink to this heading">¶</a></h2>
+<h2 id="krembox-dualband-cleaner">krembox_dualband_cleaner<a class="headerlink" href="#krembox-dualband-cleaner" title="Permalink to this heading">¶</a></h2>
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_cleaner.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_cleaner/process_data_series.html" title="kremboxer.krembox_dualband_cleaner.process_data_series (Python function)"><span class="sig-name descname pseudo-toc-entry"><span class="pre">process_data_series</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd" id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></dt>
+<dd class="field-odd"><dl class="api-field highlight simple">
+<dt><span class="sig-name descname">data_series</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">target_dates</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">file</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">data_directory</span></dt><dd><p></p>
+</dd>
+<dt><span class="sig-name descname">clean_file_list</span></dt><dd><p></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even" id="returns">Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_cleaner.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_cleaner/run_krembox_dualband_cleaner.html" title="kremboxer.krembox_dualband_cleaner.run_krembox_dualband_cleaner (Python function) — Cleans the raw datafiles from raw krembox data stored in specified directories.  Only keeps data from the specified target dates"><span class="sig-name descname pseudo-toc-entry"><span class="pre">run_krembox_dualband_cleaner</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Cleans the raw datafiles from raw krembox data stored in specified directories.  Only keeps data from the
+specified target dates</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+<h2 id="krembox-dualband-frp">krembox_dualband_frp<a class="headerlink" href="#krembox-dualband-frp" title="Permalink to this heading">¶</a></h2>
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_frp.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_frp/load_calibration_data.html" title="kremboxer.krembox_dualband_frp.load_calibration_data (Python function) — Loads the calibration data needed to process the raw KremBox data, including bandpasses, detector model parameters, and temperature sensor look up table"><span class="sig-name descname pseudo-toc-entry"><span class="pre">load_calibration_data</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/krembox_dualband_frp/load_calibration_data.html#p-cal_params" title="kremboxer.krembox_dualband_frp.load_calibration_data.cal_params (Python parameter) — dictionary of calibration parameters"><span class="n"><span class="pre">cal_params</span></span></a></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Loads the calibration data needed to process the raw KremBox data, including bandpasses, detector model parameters,
+and temperature sensor look up table</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_frp.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_frp/compute_FRP.html" title="kremboxer.krembox_dualband_frp.compute_FRP (Python function) — Use the dualband data to compute the target temperature, emissivity Area product, and FRP of the fire passing under the krembox :param rad_data: :param F_MW: :param F_LW: :param model_params: :param detect_temp_cal_data: :return:"><span class="sig-name descname pseudo-toc-entry"><span class="pre">compute_FRP</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="n"><span class="pre">rad_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="desctype"><span class="pre">DataFrame</span></span></span></em>, </span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Use the dualband data to compute the target temperature, emissivity Area product, and FRP of the fire
+passing under the krembox
+:param rad_data:
+:param F_MW:
+:param F_LW:
+:param model_params:
+:param detect_temp_cal_data:
+:return:</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_frp.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_frp/run_krembox_dualband_frp.html" title="kremboxer.krembox_dualband_frp.run_krembox_dualband_frp (Python function)"><span class="sig-name descname pseudo-toc-entry"><span class="pre">run_krembox_dualband_frp</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/krembox_dualband_frp/run_krembox_dualband_frp.html#p-params" title="kremboxer.krembox_dualband_frp.run_krembox_dualband_frp.params (Python parameter)"><span class="n"><span class="pre">params</span></span></a></em></span><span class="sig-paren">)</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd" id="parameters">Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></dt>
+<dd class="field-odd"><dl class="api-field highlight simple">
+<dt><span class="n sig-name">params</span></dt><dd><p></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even" id="returns">Returns<a class="headerlink" href="#returns" title="Permalink to this headline">¶</a></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+<h2 id="krembox-dualband-vis">krembox_dualband_vis<a class="headerlink" href="#krembox-dualband-vis" title="Permalink to this heading">¶</a></h2>
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_vis.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_vis/animate_burn_unit.html" title="kremboxer.krembox_dualband_vis.animate_burn_unit (Python function) — Animate the time traces of the FRP measurements from each radiometer in the burn unit :param rad_data_gdf: :param burn_plot_gdf: :param burn_unit: :param plot_output_dir: :param plot_title_prefix: :return:"><span class="sig-name descname pseudo-toc-entry"><span class="pre">animate_burn_unit</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="n"><span class="pre">rad_data_gdf</span></span></em>, </span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Animate the time traces of the FRP measurements from each radiometer in the burn unit
+:param rad_data_gdf:
+:param burn_plot_gdf:
+:param burn_unit:
+:param plot_output_dir:
+:param plot_title_prefix:
+:return:</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_vis.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_vis/plot_burn_unit.html" title="kremboxer.krembox_dualband_vis.plot_burn_unit (Python function) — Plots data associated with a given burn unit :param rad_data_gdf: :param burn_plot_gdf: :param burn_unit: :param plot_output_dir: :return:"><span class="sig-name descname pseudo-toc-entry"><span class="pre">plot_burn_unit</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="n"><span class="pre">rad_data_gdf</span></span></em>, </span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Plots data associated with a given burn unit
+:param rad_data_gdf:
+:param burn_plot_gdf:
+:param burn_unit:
+:param plot_output_dir:
+:return:</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_vis.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_vis/plot_burn_unit_map.html" title="kremboxer.krembox_dualband_vis.plot_burn_unit_map (Python function) — Makes a simple plot of all the burn units :param burn_plot_gdf: :param plot_output_dir: :param plot_title_prefix: :return:"><span class="sig-name descname pseudo-toc-entry"><span class="pre">plot_burn_unit_map</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="p"><span class="pre">...</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Makes a simple plot of all the burn units
+:param burn_plot_gdf:
+:param plot_output_dir:
+:param plot_title_prefix:
+:return:</p>
+</dd></dl>
+
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.krembox_dualband_vis.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/krembox_dualband_vis/run_krembox_dualband_vis.html" title="kremboxer.krembox_dualband_vis.run_krembox_dualband_vis (Python function) — Runs visualizer :param vis_params: :return:"><span class="sig-name descname pseudo-toc-entry"><span class="pre">run_krembox_dualband_vis</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><span class="n"><span class="pre">vis_params</span></span></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Runs visualizer
+:param vis_params:
+:return:</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+<h2 id="kremboxer">kremboxer<a class="headerlink" href="#kremboxer" title="Permalink to this heading">¶</a></h2>
+<dl class="py function summary objdesc">
+<dt class="sig sig-object highlight py">
+<span class="sig-prename descclassname"><span class="pre">kremboxer.kremboxer.</span></span><a class="sig-name descname pseudo-toc-entry reference internal" href="api/kremboxer/main.html" title="kremboxer.kremboxer.main (Python function) — Main user entry point for the Kremboxer code.  All parts of the dualband calibration and FRP computation can be launched by providing this script with a JSON parameter file as a command line argument"><span class="sig-name descname pseudo-toc-entry"><span class="pre">main</span></span></a><span class="sig-paren">(</span><span class="sig-param-decl"><em class="sig-param"><a class="n reference internal" href="api/kremboxer/main.html#p-argv" title="kremboxer.kremboxer.main.argv (Python parameter) — Command line parameters passed from the system.  Will be parsed to extract the parameter file."><span class="n"><span class="pre">argv</span></span></a></em></span><span class="sig-paren">)</span></dt>
+<dd><p>Main user entry point for the Kremboxer code.  All parts of the dualband calibration and FRP computation
+can be launched by providing this script with a JSON parameter file as a command line argument</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+<h2 id="public-members">Public Members<a class="headerlink" href="#public-members" title="Permalink to this heading">¶</a></h2>
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="burnunits.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Burn Units Data" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Burn Units Data
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="api/greybody_utils/planck_model.html" class="md-footer__link md-footer__link--next" aria-label="Next: kremboxer.greybody_utils.planck_model" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              kremboxer.greybody_utils.planck_model
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  
+  
+  <div class="md-footer-meta md-typeset">
+    
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-footer-copyright__highlight">
+        &#169; Copyright 2023, Joseph Paki.
+        
+    </div>
+  
+    Created using
+    <a href="https://www.sphinx-doc.org/" target="_blank" rel="noopener">Sphinx</a>
+    5.3.0.
+     and
+    <a href="https://github.com/jbms/sphinx-immaterial/" target="_blank" rel="noopener">Sphinx-Immaterial</a>
+  
+</div>
+      
+    </div>
+    
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="_static/javascripts/bundle.444abb77.min.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    
+  </body>
+</html>
