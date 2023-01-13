@@ -19,16 +19,9 @@ The repo includes data for the sensor bandpasses, temperature sensor calibration
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
    
    usage
    burnunits
    api   
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
