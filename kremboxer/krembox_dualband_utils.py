@@ -57,7 +57,8 @@ def associate_data2burnplot(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.G
 
 
 def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: Path, show_plot: bool,
-                                 dt_start: datetime.datetime, dt_end: datetime.datetime, sup_title: str):
+                                 dt_start: datetime.datetime, dt_end: datetime.datetime,
+                                 sup_title: str):
     """
 
     :param rad_df:
@@ -128,14 +129,18 @@ def plot_processed_dualband_data(rad_df: pd.DataFrame, plot_outfile: Path, show_
     plt.savefig(plot_outfile)
     if show_plot:
         plt.show()
+    plt.close()
 
 
-def plot_osceola_statistics(gdf: gpd.GeoDataFrame, plot_output_dir: Path):
+def plot_osceola_statistics(gdf: gpd.GeoDataFrame, plot_output_dir: Path, show_plot: bool = True):
     """
     Makes a plot with statistics computed from all the Osceola FRP datasets at Osceola, ex: fire duration, max FRP, vs treatment
     Note that this only works for the Osceola datasets, because of the special association between treatments and burn units
+
     :param rad_data_gdf:
     :param plot_output_dir:
+    :param show_plot:
+
     :return:
     :group: krembox_dualband_utils
     """
@@ -177,7 +182,10 @@ def plot_osceola_statistics(gdf: gpd.GeoDataFrame, plot_output_dir: Path):
     if not plot_output_dir.exists():
         plot_output_dir.mkdir()
     plt.savefig(plot_output_dir.joinpath("fre_vs_burnfreq.png"))
-    plt.show()
+
+    if show_plot:
+        plt.show()
+    plt.close()
 
 
 if __name__ == "__main__":

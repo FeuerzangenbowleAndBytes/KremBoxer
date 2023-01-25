@@ -34,6 +34,7 @@
     "plot_title_prefix": "Sycan Marsh",
     "projection": "EPSG:32610",
     "campaign": "SycanMarsh",
-    "animations": false
+    "animations": false,
+    "show_plots": false
   }
 }

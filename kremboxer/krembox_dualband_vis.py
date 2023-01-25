@@ -133,13 +133,15 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
     print("Animations saved to ", plot_output_dir.joinpath(gif_output_filename))
 
 
-def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit, plot_output_dir: Path, plot_title_prefix=""):
+def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit,
+                   plot_output_dir: Path, plot_title_prefix="", show_plot: bool = True):
     """
     Plots data associated with a given burn unit
     :param rad_data_gdf:
     :param burn_plot_gdf:
     :param burn_unit:
     :param plot_output_dir:
+    :param show_plot: whether to show plot during code execution
     :return:
     :group: krembox_dualband_vis
     """
@@ -200,7 +202,10 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
     if not plot_output_dir.exists():
         plot_output_dir.mkdir()
     plt.savefig(plot_output_dir.joinpath(plot_filename))
-    fig.show()
+
+    if show_plot:
+        fig.show()
+    plt.close()
 
     # Make a spatial plot of the locations of the radiometers
     fig, ax = plt.subplots(1, 1, figsize=(6, 6))
@@ -211,7 +216,10 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
     ax.legend()
     plot_filename = "Dualband_Locations_BurnUnit_" + str(burn_unit) + ".png"
     plt.savefig(plot_output_dir.joinpath(plot_filename))
-    fig.show()
+
+    if show_plot:
+        fig.show()
+    plt.close()
 
     # Make detailed plots of each radiometer dataset
     for i, row in rad_data_gdf.iterrows():
@@ -221,15 +229,21 @@ def plot_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFra
         sup_title = row["dataset"] + ", Burn Unit " + burn_unit
         min_datetime = datetime.datetime.fromisoformat(rad_df['datetime'].iloc[row['pstart_ind']]) - datetime.timedelta(minutes=10)
         max_datetime = datetime.datetime.fromisoformat(rad_df['datetime'].iloc[row['pend_ind']]) + datetime.timedelta(minutes=10)
-        kdu.plot_processed_dualband_data(rad_df, plot_output_dir.joinpath(plot_name), True, min_datetime, max_datetime, sup_title)
+        kdu.plot_processed_dualband_data(rad_df, plot_output_dir.joinpath(plot_name), show_plot, min_datetime, max_datetime,
+                                         sup_title)
 
 
-def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: Path, color_column: str, plot_title_prefix="", rad_data_df = None):
+def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: Path, color_column: str,
+                       plot_title_prefix: str = "", rad_data_df=None, show_plot: bool = True):
     """
     Makes a simple plot of all the burn units
+
     :param burn_plot_gdf:
     :param plot_output_dir:
+    :param color_column:
     :param plot_title_prefix:
+    :param rad_data_df:
+    :param show_plot:
     :return:
     :group: krembox_dualband_vis
     """
@@ -248,7 +262,9 @@ def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: Path, c
     plt.tight_layout()
     plot_filename = "BurnUnitMap" + ".png"
     plt.savefig(plot_output_dir.joinpath(plot_filename))
-    fig.show()
+    if show_plot:
+        fig.show()
+    plt.close()
 
 
 def run_krembox_dualband_vis(vis_params: dict):
@@ -264,6 +280,11 @@ def run_krembox_dualband_vis(vis_params: dict):
     # Load processed dataframe and burn plots dataframe
     rad_data_gdf = gpd.read_file(vis_params["rad_data_dataframe"])
     burn_plot_gdf = gpd.read_file(vis_params["burn_plot_dataframe"])
+
+    # Control whether plots are shown during code execution, default is True
+    show_plots = True
+    if "show_plots" in vis_params.keys():
+        show_plots = vis_params["show_plots"]
 
     print("Reprojecting from burn plots from ", burn_plot_gdf.crs, " to ", vis_params["projection"])
     burn_plot_gdf = burn_plot_gdf.to_crs(vis_params["projection"])
@@ -288,18 +309,20 @@ def run_krembox_dualband_vis(vis_params: dict):
     color_column = "Id"
     if vis_params["campaign"] == "Osceola":
         color_column = "BurnYear"
-    plot_burn_unit_map(burn_plot_gdf, Path(vis_params["plot_output_dir"]), color_column, plot_title_prefix, rad_data_gdf)
+    plot_burn_unit_map(burn_plot_gdf, Path(vis_params["plot_output_dir"]),
+                       color_column, plot_title_prefix,
+                       rad_data_gdf, show_plots)
 
     # Loop through burn units of interest and plot data
     for burn_unit in burn_units:
         burn_unit_plot_output_dir = Path(vis_params["plot_output_dir"]).joinpath(burn_unit)
-        plot_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, burn_unit_plot_output_dir, plot_title_prefix)
+        plot_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, burn_unit_plot_output_dir, plot_title_prefix, show_plots)
         if vis_params["animations"]:
             animate_burn_unit(rad_data_gdf, burn_plot_gdf, burn_unit, burn_unit_plot_output_dir, vis_params["plot_title_prefix"])
 
     # Make graphs associated with particular burn campaigns
     if vis_params["campaign"] == "Osceola":
-        kdu.plot_osceola_statistics(rad_data_gdf, vis_params["plot_output_dir"])
+        kdu.plot_osceola_statistics(rad_data_gdf, Path(vis_params["plot_output_dir"]), show_plots)
 
     print("Finished vis!")
     return 1

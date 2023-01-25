@@ -34,6 +34,7 @@
     "plot_title_prefix": "Fort Stewart 03/01",
     "projection": "EPSG:32617",
     "campaign": "FortStewart",
-    "animations": false
+    "animations": false,
+    "show_plots": false
   }
 }

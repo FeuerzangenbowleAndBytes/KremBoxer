@@ -124,6 +124,8 @@ def run_krembox_dualband_frp(params: dict):
     print("Iterating through clean datasets")
     pstart_indices = []
     pend_indices = []
+    time_starts = []
+    time_stops = []
     max_FRP_indices = []
     max_FRPs = []
     max_FRP_datetimes = []
@@ -133,6 +135,7 @@ def run_krembox_dualband_frp(params: dict):
     MW_FREs = []
     proc_files = []
     fire_durations = []
+    over_1000FRP_durations = []
     for i, row in gdf.iterrows():
         clean_file_path = Path(row["data_directory"]).joinpath(row["clean_file"])
         print(i, clean_file_path)
@@ -164,6 +167,9 @@ def run_krembox_dualband_frp(params: dict):
         print("\tDuration: {:.2f} minutes".format(dt_dur))
         pstart_indices.append(ind_start)
         pend_indices.append(ind_end)
+        time_starts.append(dt_start)
+        time_stops.append(dt_end)
+        fire_durations.append(dt_dur)
 
         # Find duration of fire, as measured by how long frp > 0
         df_temp = rad_data_proc[rad_data_proc["LW_FRP"] > 1000]
@@ -175,7 +181,7 @@ def run_krembox_dualband_frp(params: dict):
             duration = (df_temp['datetime'].iloc[-1] - df_temp['datetime'].iloc[0]).seconds / 60
             mean_FRPs.append(df_temp["LW_FRP"].mean())
             var_FRPs.append(df_temp["LW_FRP"].var())
-        fire_durations.append(duration)
+        over_1000FRP_durations.append(duration)
 
         # Save the processed data to a new csv file
         proc_directory = Path(row["data_directory"]).joinpath("Processed")
@@ -197,6 +203,9 @@ def run_krembox_dualband_frp(params: dict):
     gdf["fire_duration"] = fire_durations
     gdf["pstart_ind"] = pstart_indices
     gdf["pend_ind"] = pend_indices
+    gdf["fire_start"] = time_starts
+    gdf["fire_end"] = time_stops
+    gdf["over_1000FRP_duration"] = over_1000FRP_durations
     print("Saving processed dataframe in GeoJSON format: ", params["processed_dataframe_output"])
     gdf.to_file(params["processed_dataframe_output"]+".geojson", driver='GeoJSON')
     gdf.to_csv(params["processed_dataframe_output"] + ".csv")
