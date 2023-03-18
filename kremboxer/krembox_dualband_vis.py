@@ -72,15 +72,16 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
     dt_start = frp_dfs[rad_nums[0]]["datetime"].min()
     dt_end = frp_dfs[rad_nums[0]]["datetime"].max()
     for rn, df in frp_dfs.items():
-        if df["datetime"].min() < dt_start:
+        if df["datetime"].min() < dt_start and df["LW_FRP"].max() > 100:
             dt_start = df["datetime"].min()
-        if df["datetime"].max() > dt_end:
+        if df["datetime"].max() > dt_end and df["LW_FRP"].max() > 100:
             dt_end = df["datetime"].max()
 
     # Make frames of animation
-    fig, axs = plt.subplots(2, 1, figsize=(7,9))
+    fig, axs = plt.subplots(2, 1, figsize=(7, 9))
     camera = Camera(fig)
 
+    print("Animating from {} to {}".format(dt_start, dt_end))
     dt = dt_start
     while dt < dt_end:
         burn_plot_gdf.plot(ax=axs[0], facecolor="none", edgecolor='black')
@@ -88,7 +89,7 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
         for index, row in rad_data_gdf.iterrows():
             point: Point = row["geometry"]
             axs[0].scatter([point.x], [point.y], color=rad_colors[row["rad"]], label=row["rad"])
-        axs[0].set_title(plot_title_prefix + "Dualband locations for burn unit " + burn_unit, y=1.04)
+        axs[0].set_title(plot_title_prefix + " Dualband locations for burn unit " + burn_unit, y=1.04)
 
         for rad_num, rdf in frp_dfs.items():
             max_frp_datetime = rad_dict[rad_num]["max_frp_datetime"]
@@ -99,7 +100,7 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
                 frp = rdf.loc[dt]["LW_FRP"]
                 radius = 0
                 if frp > 0:
-                    radius = max(0, 1 * np.log(frp))
+                    radius = max(0, 20 * np.log(frp))
                     #radius = 10* frp / maximum_frp_in_unit
                     #print(radius, maximum_frp_in_unit)
                 axs[0].add_patch(
@@ -110,12 +111,13 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
 
         axs[1].axvline(x=dt, color='black', linewidth=1, alpha=0.9)
         axs[1].set_ylim([0, None])
+        axs[1].set_xlim([dt_start, dt_end])
         axs[1].xaxis.set_major_locator(mdates.MinuteLocator(interval=10))
         axs[1].xaxis.set_minor_locator(mdates.MinuteLocator(interval=1))
         axs[1].xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
         axs[1].set_ylabel("FRP [W/m2]")
         axs[1].set_xlabel("UTC Time")
-        axs[1].set_title(plot_title_prefix+"Dualband FRP for burn unit "+burn_unit)
+        axs[1].set_title(plot_title_prefix+" Dualband FRP for burn unit "+burn_unit)
 
         camera.snap()
 
