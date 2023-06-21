@@ -7,9 +7,11 @@ import time
 import scipy.spatial
 from shapely.geometry import LineString, MultiPoint, Point, Polygon
 from shapely.ops import voronoi_diagram
+from scipy.interpolate import griddata
 
 burn_unt_id = 'G-25W'
 crs = "EPSG:32616"
+output_dir = Path(r"/home/jepaki/Dropbox/Jobs/MTRI/Projects/Wildfire/Eglin_Mar23/RadiometerMaps/G25W")
 
 burn_unit_geojson = Path(r"/home/jepaki/Dropbox/Jobs/MTRI/Projects/Wildfire/Eglin_Mar23/RadiometerMaps/G25W/G25_split.geojson")
 bu_gdf = gpd.read_file(burn_unit_geojson)
@@ -18,6 +20,9 @@ bu_gdf = bu_gdf[bu_gdf["Id"] == burn_unt_id]
 frp_dataframe = Path(r"/home/jepaki/PycharmProjects/KremBoxer/dataframes/eglin_processed_dataframe.geojson")
 frp_gdf = gpd.read_file(frp_dataframe)
 frp_gdf = frp_gdf[frp_gdf["burn_unit"] == burn_unt_id]
+frp_gdf = frp_gdf[frp_gdf["max_FRP"] > 100]
+frp_gdf.reset_index(inplace=True)
+
 
 bu_gdf.to_crs(crs, inplace=True)
 frp_gdf.to_crs(crs, inplace=True)
@@ -45,6 +50,8 @@ for dt in dts:
     dt_unix = time.mktime(dt_.timetuple())
     print(dt_unix)
     dts_unix.append(dt_unix)
+dts_unix = np.array(dts_unix)
+dts_unix -= np.min(dts_unix)
 
 print(xys)
 
@@ -70,5 +77,39 @@ fig, axs = plt.subplots(1, 1, figsize=(6, 8))
 vor_gdf.boundary.plot(ax=axs)
 frp_gdf.plot(ax=axs, color="Red")
 plt.show()
+
+print(xys, dts_unix)
+bu_bbox = bu_gdf.bounds.iloc[0]
+
+grid_x, grid_y = np.meshgrid(np.linspace(bu_bbox['minx'], bu_bbox['maxx'], 100),
+                             np.linspace(bu_bbox['miny'], bu_bbox['maxy'], 100), indexing='xy')
+points = xys
+values = np.array(dts_unix)
+
+grid_dt = griddata(points, values, (grid_x, grid_y), method='nearest')
+grid_cubic_dt = griddata(points, values, (grid_x, grid_y), method='cubic')
+
+
+fig, axs = plt.subplots(1, 2, figsize=(10, 8))
+im = axs[0].imshow(grid_dt, extent=(bu_bbox['minx'], bu_bbox['maxx'],
+                                  bu_bbox['miny'], bu_bbox['maxy']),
+                 vmin=np.min(dts_unix), vmax=np.max(dts_unix), origin='lower')
+
+#plt.colorbar(im, ax=axs[0])
+axs[0].plot(points[:, 0], points[:, 1], 'k.', color='red')
+vor_gdf.boundary.plot(ax=axs[0])
+
+im = axs[1].imshow(grid_cubic_dt, extent=(bu_bbox['minx'], bu_bbox['maxx'],
+                                  bu_bbox['miny'], bu_bbox['maxy']),
+                 vmin=np.min(dts_unix), vmax=np.max(dts_unix), origin='lower')
+
+plt.colorbar(im, ax=axs[1])
+axs[1].plot(points[:, 0], points[:, 1], 'k.', color='red')
+vor_gdf.boundary.plot(ax=axs[1])
+
+plt.tight_layout()
+plt.savefig(output_dir.joinpath("arrival_time_interp.png"))
+plt.show()
+
 
 

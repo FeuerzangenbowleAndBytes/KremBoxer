@@ -5,7 +5,7 @@ from pathlib import Path
 
 output_folder = Path(r"/home/jepaki/Dropbox/Jobs/MTRI/Projects/Wildfire/Eglin_Mar23/RadiometerMaps/G25W")
 burn_unt_id = 'G-25W'
-crs = "EPSG:32616"
+crs = 'EPSG:32616'
 
 plot_rad_record = Path(r"/home/jepaki/Dropbox/Jobs/MTRI/Projects/Wildfire/Eglin_Mar23/RadiometerMaps/radiometer_locations_G25W.csv")
 rad_df = pd.read_csv(plot_rad_record)
@@ -29,6 +29,7 @@ for i, row in rad_df.iterrows():
     geometry.append(plot_gdf.loc[fuel_plot]['geometry'])
 
 rad_gdf = gdp.GeoDataFrame(rad_df, geometry=geometry)
+rad_gdf.set_crs(crs, inplace=True)
 print(rad_gdf)
 rad_gdf.to_file(output_folder.joinpath("radiometer_map.geojson"), driver='GeoJSON')
 
