@@ -23,5 +23,5 @@ Follow these instructions to clone the KremBoxer from github and setup a new Pyt
 .. code-block:: console
 
     $ source ~/python_venvs/kremboxer/bin/activate
-    (kremboxer) $ pip install datetime numpy scipy matplotlib pandas geopandas
+    (kremboxer) $ pip install datetime numpy scipy matplotlib pandas geopandas celluloid
 

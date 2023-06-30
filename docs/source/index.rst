@@ -21,7 +21,9 @@ The repo includes data for the sensor bandpasses, temperature sensor calibration
    :maxdepth: 2
    
    usage
+   methods
    burnunits
-   api   
+   api
+   documentation
 
 
