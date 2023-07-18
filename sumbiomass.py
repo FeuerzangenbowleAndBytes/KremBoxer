@@ -28,3 +28,4 @@ sum_columns = ["WLive", "WLit", "1hr", "10hr", "100hr", "1000hr", "PC", "CL", "P
                "CoarseChar", "FineChar", "ND"]  # Replace with the columns you want to sum
 
 sum_rows_by_title(input_file, output_file, title_column, group_column, sum_columns)
+
