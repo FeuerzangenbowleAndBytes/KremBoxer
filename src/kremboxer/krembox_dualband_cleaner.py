@@ -3,7 +3,7 @@ from pathlib import Path
 import datetime
 import pandas as pd
 import geopandas as gpd
-import kremboxer.krembox_utils as kdb_utils
+import kremboxer.krembox_dualband_utils as kdb_utils
 
 
 def process_data_series(data_series, target_dates, file, data_directory, clean_file_list):
@@ -104,18 +104,21 @@ def run_krembox_dualband_cleaner(params: dict):
                 print("Found non-csv file in raw data folder: ", file)
                 continue
             with open(file, 'r') as csvfile:
+                print(file)
                 csvreader = csv.reader(csvfile)
                 data_series = []
 
                 # Find first header in datafile
                 row = next(csvreader, None)
+                i=0
                 while not 'DAY' == row[0]:
                     row = next(csvreader, None)
-
+                    i+=1
                 # Loop through valid datasets by looking for headers
                 data_series.append(row)
                 while row is not None:
                     row = next(csvreader, None)
+                    i+=1
                     if row is None or 'DAY' == row[0]:
                         (valid_data, metadata) = process_data_series(data_series, target_dates, file, data_directory, clean_file_list)
                         if valid_data:
