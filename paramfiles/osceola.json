@@ -1,0 +1,40 @@
+{
+  "run_calibration": true,
+  "run_data_cleaner": true,
+  "run_frp_computation": true,
+  "run_visualizer": true,
+  "calibration_parameters": {
+    "cal_output": "calibrations/osceola_calibration.json",
+    "LW_bandpass": "calibration_data/DC-6073_W1_8-14Si.csv",
+    "MW_bandpass": "calibration_data/DC-6216_u1_Saph_longwave.csv",
+    "cal_input": "calibration_data/unit11_calibration_data.csv",
+    "temp_cal_input": "calibration_data/temperature_sensor_calibration.csv",
+    "show_plot": true,
+    "plot_output_dir": "/home/jepaki/Projects/Osceola/plots",
+    "plot_output": "osceola_calibration_plot.png",
+    "v_top": 3300,
+    "r_top": 100000
+  },
+  "data_cleaner_parameters": {
+    "data_directories": ["/home/jepaki/Projects/Osceola/020322_Osceola_Radiometers_DualBand/", "/home/jepaki/Projects/Osceola/020422_Osceola_Radiometers_DualBand/"],
+    "target_dates": ["2022-02-04", "2022-02-03"],
+    "clean_dataframe_output": "dataframes/osceola_cleaned_dataframe",
+    "burn_plot_dataframe_input": "dataframes/osceola_burn_plots.geojson",
+    "projection": "EPSG:32617"
+  },
+  "frp_parameters": {
+    "clean_dataframe_input": "dataframes/osceola_cleaned_dataframe.geojson",
+    "cal_input": "calibrations/osceola_calibration.json",
+    "processed_dataframe_output": "dataframes/osceola_processed_dataframe"
+  },
+  "vis_parameters": {
+    "rad_data_dataframe": "dataframes/osceola_processed_dataframe.geojson",
+    "burn_plot_dataframe": "dataframes/osceola_burn_plots.geojson",
+    "plot_output_dir": "/home/jepaki/Projects/Osceola/plots",
+    "plot_title_prefix": "Osceola 02/22",
+    "projection": "EPSG:32617",
+    "campaign": "Osceola",
+    "animations": false,
+    "show_plots": false
+  }
+}

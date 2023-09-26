@@ -17,7 +17,7 @@
   },
   "data_cleaner_parameters": {
     "data_directories": ["/home/jepaki/Projects/FortStewart/F_units", "/home/jepaki/Projects/FortStewart/E_units"],
-    "target_dates": ["2022-03-01", "2022-03-02", "2022-03-03", "2022-03-04"],
+    "target_dates": ["2022-03-01", "2022-03-02", "2022-03-03", "2022-03-04", "2022-03-05"],
     "clean_dataframe_output": "dataframes/fort_stewart_cleaned_dataframe",
     "burn_plot_dataframe_input": "dataframes/fort_stewart_burn_plots.geojson",
     "projection": "EPSG:32617"
@@ -34,6 +34,7 @@
     "plot_title_prefix": "Fort Stewart 03/01",
     "projection": "EPSG:32617",
     "campaign": "FortStewart",
-    "animations": false
+    "animations": false,
+    "show_plots": false
   }
 }

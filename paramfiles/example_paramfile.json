@@ -33,6 +33,7 @@
     "plot_output_dir": "/home/jepaki/Projects/Osceola/plots",
     "plot_title_prefix": "Osceola 02/22",
     "projection": "EPSG:32617",
-    "campaign": "Osceola"
+    "campaign": "Osceola",
+    "animations": true
   }
 }

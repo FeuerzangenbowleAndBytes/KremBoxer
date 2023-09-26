@@ -30,8 +30,11 @@ It is easiest to run `KremBoxer` from the command line.  The most import thing f
 ```
 $ cd ~/code/kremboxer
 $ source ~/python_venvs/kremboxer/bin/activate
-$ python kremboxer.py -p paramfiles/example_paramfile.json
+$ python -m kremboxer.kremboxer -p paramfiles/example_paramfile.json
 ```
+
+## Documentation
+Narrative and API documentation is stored in the `docs` subfolder.  To view, just open `docs/build/html/index.html` in your web browser.
 
 ## Pipeline Steps
 The code can be thought of as performing three different steps in the processing pipeline.
