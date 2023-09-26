@@ -3,7 +3,7 @@ from pathlib import Path
 import datetime
 import pandas as pd
 import geopandas as gpd
-import kremboxer.krembox_dualband_utils as kdb_utils
+import kremboxer.krembox_utils as kdb_utils
 
 
 def process_data_series(data_series, target_dates, file, data_directory, clean_file_list):

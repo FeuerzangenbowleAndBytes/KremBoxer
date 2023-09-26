@@ -1,8 +1,11 @@
+import sys
 import numpy as np
 import scipy.constants as sc
 import scipy.optimize as so
 import math
 import matplotlib.pyplot as plt
+from matplotlib.dates import datestr2num
+from pathlib import Path
 
 
 def planck_model(T, A, N):
@@ -141,6 +144,8 @@ if __name__ == '__main__':
     """
     This is just some testing code to verify the above functions and test some processing 
     """
+    import kremboxer.data as kb_data
+
     print(sc.c, sc.Planck, sc.Boltzmann, sc.Stefan_Boltzmann)
     Ts = np.arange(300, 1500, 100)
     fig, axs = plt.subplots(4,1,figsize=(5,8))
@@ -182,12 +187,13 @@ if __name__ == '__main__':
 
     plt.tight_layout()
 
+    print(Path(kb_data.__file__).parent)
 
-    datafile = "/home/jepaki/Projects/Osceola/020422_Osceola_Radiometers_DualBand/Clean/DATALOG_16_2022-02-04T16:21:39+00:00.csv"
+    datadir = Path(kb_data.__file__).parent
+    datafile = datadir.joinpath("DATALOG_16_2022-02-04T16:21:39+00:00.csv")
+    data = np.loadtxt(datafile, skiprows=3, delimiter=',', usecols=[0,1,2], converters={0: datestr2num})
 
-    data = np.loadtxt(datafile, skiprows=3, delimiter=',', usecols=[0,1,2])
-
-    temp_cal_file = "/home/jepaki/PycharmProjects/OsceolaAnalysis/data/clean/temperature_sensor_calibration.csv"
+    temp_cal_file = datadir.joinpath("temperature_sensor_calibration.csv")
     temp_data = np.loadtxt(temp_cal_file, skiprows=1, delimiter=',', usecols=[0,1,2])
     temp_data = np.flip(temp_data, 0)
 
@@ -288,7 +294,7 @@ if __name__ == '__main__':
     axs[2,1].legend()
     axs[2,1].set_title("FRP [W/m^2]")
 
-    plt.suptitle(datafile.split("/")[-1])
+    plt.suptitle(datafile.name)
     fig.tight_layout()
 
     # Check that ratios are computed correctly

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib import cm
 from celluloid import Camera
-import kremboxer.krembox_dualband_utils as kdu
+import kremboxer.krembox_utils as kdu
 
 
 def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame, burn_unit, plot_output_dir: Path, plot_title_prefix=""):

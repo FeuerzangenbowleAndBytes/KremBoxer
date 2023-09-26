@@ -26,12 +26,12 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hp:", ["paramfile"])
     except:
-        print('Usage: kremboxer.py -p <paramfile>')
+        print('Usage: krembox_driver.py -p <paramfile>')
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            print('Usage: kremboxer.py -p <paramfile>')
+            print('Usage: krembox_driver.py -p <paramfile>')
             sys.exit()
         elif opt in ("-p", "--paramfile"):
             paramfile = arg
