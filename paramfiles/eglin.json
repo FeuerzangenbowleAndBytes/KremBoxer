@@ -36,7 +36,7 @@
     "plot_title_prefix": "Eglin",
     "projection": "EPSG:32616",
     "campaign": "Eglin",
-    "animations": true,
+    "animations": false,
     "show_plots": false
   }
 }
