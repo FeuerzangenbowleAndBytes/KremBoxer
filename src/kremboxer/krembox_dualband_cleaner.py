@@ -76,6 +76,11 @@ def run_krembox_dualband_cleaner(params: dict):
     :group: krembox_dualband_cleaner
     """
 
+    # Get the output root directory
+    output_root = Path(params["output_root"])
+    dataframes_dir = output_root.joinpath("dataframes")
+    dataframes_dir.mkdir(exist_ok=True)
+
     # Sort the target dates for convenience
     target_dates = params["target_dates"]
     target_dates = [datetime.datetime.fromisoformat(x).date() for x in target_dates]
@@ -144,10 +149,13 @@ def run_krembox_dualband_cleaner(params: dict):
         burn_plot_gdf = burn_plot_gdf.to_crs(params["projection"])
         gdf = kdb_utils.associate_data2burnplot(gdf, burn_plot_gdf)
 
-    print("Saving clean dataframe in CSV format: ",  params["clean_dataframe_output"]+".csv")
-    gdf.to_csv(params["clean_dataframe_output"]+".csv")
-    print("Saving clean dataframe in GeoJSON format: ", params["clean_dataframe_output"]+".geojson")
-    gdf.to_file(params["clean_dataframe_output"]+".geojson", driver='GeoJSON')
+    # Save the cleaned dataframe
+    df_csv = dataframes_dir.joinpath("cleaned_dataframe.csv")
+    print("Saving clean dataframe in CSV format: ",  df_csv)
+    gdf.to_csv(df_csv)
+    df_geojson = dataframes_dir.joinpath("cleaned_dataframe.geojson")
+    print("Saving clean dataframe in GeoJSON format: ", df_geojson)
+    gdf.to_file(df_geojson, driver='GeoJSON')
     return gdf
 
 

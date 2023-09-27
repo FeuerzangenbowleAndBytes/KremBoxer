@@ -1,6 +1,7 @@
 import getopt
 import sys
 import json
+from pathlib import Path
 import kremboxer.krembox_dualband_calibrate as kd_calibrate
 import kremboxer.krembox_dualband_cleaner as kd_clean
 import kremboxer.krembox_dualband_frp as kd_frp
@@ -42,15 +43,31 @@ def main(argv):
         params = json.load(json_data_file)
     print("Input params: ", params)
 
+    # Check if the specified output directory already exists and warn the user
+    output_root = Path(params["output_root"])
+    if output_root.exists():
+        print("Warning! Output directory already exists: ", output_root)
+        print("Should we continue? (y/n)")
+        response = input()
+        if response != "y":
+            print("Exiting...")
+            sys.exit(0)
+    else:
+        output_root.mkdir(parents=True, exist_ok=True)
+
     # Run detector calibration if requested
     if params["run_calibration"]:
         print("Running dualband calibration")
+        cal_params = params["calibration_parameters"]
+        cal_params["output_root"] = output_root
         kd_calibrate.run_krembox_dualband_calibration(params["calibration_parameters"])
 
     # Clean data if requested
     if params["run_data_cleaner"]:
         print("Running dualband data cleaner")
-        cleaned_gdf = kd_clean.run_krembox_dualband_cleaner(params["data_cleaner_parameters"])
+        cleaner_params = params["data_cleaner_parameters"]
+        cleaner_params["output_root"] = output_root
+        cleaned_gdf = kd_clean.run_krembox_dualband_cleaner(cleaner_params)
 
     # Process cleaned data and compute FRP
     if params["run_frp_computation"]:

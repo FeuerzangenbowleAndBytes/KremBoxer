@@ -3,6 +3,7 @@ import scipy.optimize as so
 import scipy.constants as sc
 from pathlib import Path
 import json
+import shutil
 import matplotlib.pyplot as plt
 import kremboxer.greybody_utils as gbu
 
@@ -34,6 +35,31 @@ def run_krembox_dualband_calibration(cal_params: dict):
 
     :group: krembox_dualband_calibrate
     """
+
+    # Where should we store outputs
+    output_root = Path(cal_params["output_root"])
+
+    # Copy calibration data into output folder
+    calibration_dir = output_root.joinpath('calibration')
+    calibration_dir.mkdir(parents=False, exist_ok=True)
+    cal_params["cal_output"] = calibration_dir.joinpath('calibration.json')
+    cal_params["plot_output_dir"] = calibration_dir
+
+    LW_bandpass_outfile = calibration_dir.joinpath(Path(cal_params["LW_bandpass"]).name)
+    shutil.copy(cal_params["LW_bandpass"], LW_bandpass_outfile)
+    cal_params["LW_bandpass"] = LW_bandpass_outfile
+
+    MW_bandpass_outfile = calibration_dir.joinpath(Path(cal_params["MW_bandpass"]).name)
+    shutil.copy(cal_params["MW_bandpass"], MW_bandpass_outfile)
+    cal_params["MW_bandpass"] = MW_bandpass_outfile
+
+    cal_input_outfile = calibration_dir.joinpath(Path(cal_params["cal_input"]).name)
+    shutil.copy(cal_params["cal_input"], cal_input_outfile)
+    cal_params["cal_input"] = cal_input_outfile
+
+    temp_cal_outfile = calibration_dir.joinpath(Path(cal_params["temp_cal_input"]).name)
+    shutil.copy(cal_params["temp_cal_input"], temp_cal_outfile)
+    cal_params["temp_cal_input"] = temp_cal_outfile
 
     # Load the bandpass functions for the two sensors
     f_mw = np.loadtxt(cal_params["MW_bandpass"], delimiter=',', skiprows=1, usecols=[0, 1])
@@ -104,11 +130,10 @@ def run_krembox_dualband_calibration(cal_params: dict):
     #################################
 
     cal_dict = {
-        "cal_input": cal_params["cal_input"],
-        "temp_cal_input": cal_params["temp_cal_input"],
-        "plot_output": cal_params["plot_output"],
-        "LW_bandpass": cal_params["LW_bandpass"],
-        "MW_bandpass": cal_params["MW_bandpass"],
+        "cal_input": str(cal_params["cal_input"]),
+        "temp_cal_input": str(cal_params["temp_cal_input"]),
+        "LW_bandpass": str(cal_params["LW_bandpass"]),
+        "MW_bandpass": str(cal_params["MW_bandpass"]),
         "r_top": cal_params["r_top"],
         "v_top": cal_params["v_top"],
         "LW": {
@@ -235,7 +260,7 @@ def run_krembox_dualband_calibration(cal_params: dict):
     # Create output plot directory if it does not exist
     if not Path(cal_params["plot_output_dir"]).exists():
         Path(cal_params["plot_output_dir"]).mkdir()
-    plt.savefig(Path(cal_params["plot_output_dir"]).joinpath(cal_params["plot_output"]))
+    plt.savefig(Path(cal_params["plot_output_dir"]).joinpath("calibration.png"))
     print("Saved calibration plot to: ", cal_params["plot_output_dir"])
 
     if cal_params["show_plot"]:

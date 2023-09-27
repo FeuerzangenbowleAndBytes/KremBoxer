@@ -1,17 +1,15 @@
 {
-  "run_calibration": false,
-  "run_data_cleaner": false,
+  "output_root": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03",
+  "run_calibration": true,
+  "run_data_cleaner": true,
   "run_frp_computation": false,
-  "run_visualizer": true,
+  "run_visualizer": false,
   "calibration_parameters": {
-    "cal_output": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/eglin_calibration.json",
     "LW_bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/DC-6073_W1_8-14Si.csv",
     "MW_bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/DC-6216_u1_Saph_longwave.csv",
     "cal_input": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/unit11_calibration_data.csv",
     "temp_cal_input": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/temperature_sensor_calibration.csv",
     "show_plot": true,
-    "plot_output_dir": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output",
-    "plot_output": "eglin_calibration_plot.png",
     "v_top": 3300,
     "r_top": 100000
   },
@@ -20,7 +18,6 @@
       "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25E_2023-03-16/DB",
       "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25W_2023-03-11/DB/20230311"],
     "target_dates": ["2023-03-11", "2023-03-16", "2023-03-19"],
-    "clean_dataframe_output": "/home/jepaki/code/KremBoxer/dataframes/eglin_cleaned_dataframe",
     "burn_plot_dataframe_input": "/home/jepaki/code/KremBoxer/burn_units/G25_split.geojson",
     "projection": "EPSG:32616"
   },
