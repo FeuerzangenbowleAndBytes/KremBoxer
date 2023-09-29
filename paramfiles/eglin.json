@@ -1,8 +1,9 @@
 {
   "output_root": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03",
+  "burn_name": "eglin_2023",
   "run_calibration": true,
   "run_data_cleaner": true,
-  "run_frp_computation": false,
+  "run_frp_computation": true,
   "run_visualizer": false,
   "calibration_parameters": {
     "LW_bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/DC-6073_W1_8-14Si.csv",
@@ -14,17 +15,18 @@
     "r_top": 100000
   },
   "data_cleaner_parameters": {
-    "data_directories": ["/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G20_2023-03-19/DB",
-      "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25E_2023-03-16/DB",
-      "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25W_2023-03-11/DB/20230311"],
-    "target_dates": ["2023-03-11", "2023-03-16", "2023-03-19"],
-    "burn_plot_dataframe_input": "/home/jepaki/code/KremBoxer/burn_units/G25_split.geojson",
+    "data_targets": {
+      "data_directories": ["/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G20_2023-03-19/DB",
+                            "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25E_2023-03-16/DB",
+                            "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25W_2023-03-11/DB/20230311"],
+      "target_dates": ["2023-03-19", "2023-03-16", "2023-03-11"]
+    },
+
+    "burn_plot_dataframe_input": "/home/jepaki/code/KremBoxer/burn_units/eglin_burn_units.geojson",
     "projection": "EPSG:32616"
   },
   "frp_parameters": {
-    "clean_dataframe_input": "/home/jepaki/code/KremBoxer/dataframes/eglin_cleaned_dataframe.geojson",
-    "cal_input": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/eglin_calibration.json",
-    "processed_dataframe_output": "/home/jepaki/code/KremBoxer/dataframes/eglin_processed_dataframe"
+    "cal_input": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/calibration_eglin_2023/calibration_eglin_2023.json"
   },
   "vis_parameters": {
     "rad_data_dataframe": "/home/jepaki/code/KremBoxer/dataframes/eglin_processed_dataframe.geojson",

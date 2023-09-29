@@ -45,6 +45,7 @@ def main(argv):
 
     # Check if the specified output directory already exists and warn the user
     output_root = Path(params["output_root"])
+    burn_name = params["burn_name"]
     if output_root.exists():
         print("Warning! Output directory already exists: ", output_root)
         print("Should we continue? (y/n)")
@@ -60,6 +61,7 @@ def main(argv):
         print("Running dualband calibration")
         cal_params = params["calibration_parameters"]
         cal_params["output_root"] = output_root
+        cal_params["burn_name"] = burn_name
         kd_calibrate.run_krembox_dualband_calibration(params["calibration_parameters"])
 
     # Clean data if requested
@@ -67,12 +69,16 @@ def main(argv):
         print("Running dualband data cleaner")
         cleaner_params = params["data_cleaner_parameters"]
         cleaner_params["output_root"] = output_root
+        cleaner_params["burn_name"] = burn_name
         cleaned_gdf = kd_clean.run_krembox_dualband_cleaner(cleaner_params)
 
     # Process cleaned data and compute FRP
     if params["run_frp_computation"]:
         print("Running dualband FRP computation")
-        processed_gdf = kd_frp.run_krembox_dualband_frp(params["frp_parameters"])
+        frp_params = params["frp_parameters"]
+        frp_params["output_root"] = output_root
+        frp_params["burn_name"] = burn_name
+        processed_gdf = kd_frp.run_krembox_dualband_frp(frp_params)
 
     # Run visualizer to make FRP plots, animations, and burn plot maps
     if params["run_visualizer"]:

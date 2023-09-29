@@ -21,7 +21,9 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
     metadata = {}
     clean_directory = Path(data_directory).joinpath("Clean")
 
-    if len(data_series) > 3:
+    # Only keep datasets where it looks like the radiometer was on for more than 10 minutes
+    # Trying to filter out spurious datasets from people flipping the devices on and off
+    if len(data_series) > 603:
         if data_series[1][data_series[0].index('GPS-TYPE')] == "LOCKED":
             fields = data_series[0]
             header = data_series[1]
@@ -77,8 +79,9 @@ def run_krembox_dualband_cleaner(params: dict):
     """
 
     # Get the output root directory
+    burn_name = params["burn_name"]
     output_root = Path(params["output_root"])
-    dataframes_dir = output_root.joinpath("dataframes")
+    dataframes_dir = output_root.joinpath("dataframes_"+burn_name)
     dataframes_dir.mkdir(exist_ok=True)
 
     # Sort the target dates for convenience
@@ -150,10 +153,10 @@ def run_krembox_dualband_cleaner(params: dict):
         gdf = kdb_utils.associate_data2burnplot(gdf, burn_plot_gdf)
 
     # Save the cleaned dataframe
-    df_csv = dataframes_dir.joinpath("cleaned_dataframe.csv")
+    df_csv = dataframes_dir.joinpath("cleaned_dataframe_"+burn_name+".csv")
     print("Saving clean dataframe in CSV format: ",  df_csv)
     gdf.to_csv(df_csv)
-    df_geojson = dataframes_dir.joinpath("cleaned_dataframe.geojson")
+    df_geojson = dataframes_dir.joinpath("cleaned_dataframe_"+burn_name+".geojson")
     print("Saving clean dataframe in GeoJSON format: ", df_geojson)
     gdf.to_file(df_geojson, driver='GeoJSON')
     return gdf

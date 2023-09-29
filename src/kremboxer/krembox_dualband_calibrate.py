@@ -38,11 +38,12 @@ def run_krembox_dualband_calibration(cal_params: dict):
 
     # Where should we store outputs
     output_root = Path(cal_params["output_root"])
+    burn_name = cal_params["burn_name"]
 
     # Copy calibration data into output folder
-    calibration_dir = output_root.joinpath('calibration')
+    calibration_dir = output_root.joinpath('calibration_'+burn_name)
     calibration_dir.mkdir(parents=False, exist_ok=True)
-    cal_params["cal_output"] = calibration_dir.joinpath('calibration.json')
+    cal_params["cal_output"] = calibration_dir.joinpath('calibration_'+burn_name+'.json')
     cal_params["plot_output_dir"] = calibration_dir
 
     LW_bandpass_outfile = calibration_dir.joinpath(Path(cal_params["LW_bandpass"]).name)
@@ -260,7 +261,7 @@ def run_krembox_dualband_calibration(cal_params: dict):
     # Create output plot directory if it does not exist
     if not Path(cal_params["plot_output_dir"]).exists():
         Path(cal_params["plot_output_dir"]).mkdir()
-    plt.savefig(Path(cal_params["plot_output_dir"]).joinpath("calibration.png"))
+    plt.savefig(Path(cal_params["plot_output_dir"]).joinpath("calibration_"+burn_name+".png"))
     print("Saved calibration plot to: ", cal_params["plot_output_dir"])
 
     if cal_params["show_plot"]:
