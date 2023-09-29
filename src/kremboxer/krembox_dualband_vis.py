@@ -281,6 +281,13 @@ def run_krembox_dualband_vis(vis_params: dict):
 
     print("Running visualizer")
 
+    # Get the output root directory
+    burn_name = vis_params["burn_name"]
+    output_root = Path(vis_params["output_root"])
+    plot_output_dir = output_root.joinpath("plots_dualband_" + burn_name)
+    plot_output_dir.mkdir(exist_ok=True)
+    vis_params["plot_output_dir"] = plot_output_dir
+
     # Load processed dataframe and burn plots dataframe
     rad_data_gdf = gpd.read_file(vis_params["rad_data_dataframe"])
     burn_plot_gdf = gpd.read_file(vis_params["burn_plot_dataframe"])

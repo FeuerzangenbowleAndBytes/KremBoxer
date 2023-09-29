@@ -83,7 +83,10 @@ def main(argv):
     # Run visualizer to make FRP plots, animations, and burn plot maps
     if params["run_visualizer"]:
         print("Running visualizer")
-        kd_vis.run_krembox_dualband_vis(params["vis_parameters"])
+        vis_params = params["vis_parameters"]
+        vis_params["output_root"] = output_root
+        vis_params["burn_name"] = burn_name
+        kd_vis.run_krembox_dualband_vis(vis_params)
 
 
 if __name__ == "__main__":

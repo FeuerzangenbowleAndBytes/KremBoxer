@@ -6,11 +6,11 @@ import geopandas as gpd
 import kremboxer.krembox_dualband_utils as kdb_utils
 
 
-def process_data_series(data_series, target_dates, file, data_directory, clean_file_list):
+def process_data_series(data_series, target_date, file, data_directory, clean_file_list):
     """
 
     :param data_series:
-    :param target_dates:
+    :param target_date:
     :param file:
     :param data_directory:
     :param clean_file_list:
@@ -30,7 +30,7 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
             dt, lat, lon, sample_freq = kdb_utils.parse_header(fields, header)
 
             # Only clean datasets from the dates we're interested in
-            if dt.date() in target_dates:
+            if dt.date() == target_date:
                 print(file, type(file))
                 dataset = file.stem + "_" + dt.isoformat()
                 clean_file = dataset + ".csv"
@@ -85,16 +85,19 @@ def run_krembox_dualband_cleaner(params: dict):
     dataframes_dir.mkdir(exist_ok=True)
 
     # Sort the target dates for convenience
-    target_dates = params["target_dates"]
-    target_dates = [datetime.datetime.fromisoformat(x).date() for x in target_dates]
-    target_dates.sort()
+    # target_dates = params["target_dates"]
+    # target_dates = [datetime.datetime.fromisoformat(x).date() for x in target_dates]
+    # target_dates.sort()
 
     # Data dictionary to keep track of cleaned datasets, turned into Pandas dataframe at end
     metadata_list = []
     clean_file_list = []
 
     # Loop through data directories to find all the raw data, create directories to store cleaned data
-    for data_directory in params["data_directories"]:
+    data_directories = params["data_targets"]["data_directories"]
+    data_dates = params["data_targets"]["data_dates"]
+    for data_date, data_directory in zip(data_dates, data_directories):
+        target_date = datetime.datetime.fromisoformat(data_date).date()
         raw_directory = Path(data_directory).joinpath('Raw')
         clean_directory = Path(data_directory).joinpath("Clean")
         if not raw_directory.exists():
@@ -128,7 +131,7 @@ def run_krembox_dualband_cleaner(params: dict):
                     row = next(csvreader, None)
                     i+=1
                     if row is None or 'DAY' == row[0]:
-                        (valid_data, metadata) = process_data_series(data_series, target_dates, file, data_directory, clean_file_list)
+                        (valid_data, metadata) = process_data_series(data_series, target_date, file, data_directory, clean_file_list)
                         if valid_data:
                             print(metadata)
                             clean_file_list.append(metadata["clean_file"])
