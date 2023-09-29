@@ -1,0 +1,12 @@
+{
+  "overwrite": true,
+  "output_dir": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/g25w_acoustic_shapefile_compare",
+  "input_frp_dataframe": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/g25w_acoustic_compare/filtered_dataframe.geojson",
+  "replace_data_dir": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/g25w_acoustic_compare",
+  "filter_criteria": {
+    "burn_unit": "G-25W",
+    "date": "2023-03-11",
+    "polygon_layer": "/home/jepaki/code/KremBoxer/paramfiles/eglin_g25w_dense_forest.geojson",
+    "feature_name": "g25w_dense_forest"
+  }
+}

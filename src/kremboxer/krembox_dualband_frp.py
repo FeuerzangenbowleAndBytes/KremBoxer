@@ -193,7 +193,7 @@ def run_krembox_dualband_frp(params: dict):
         proc_directory = Path(row["data_directory"]).joinpath("Processed")
         if not proc_directory.exists():
             proc_directory.mkdir()
-        proc_file = Path("Processed").joinpath(Path(row["clean_file"]).stem)
+        proc_file = Path("Processed").joinpath(Path(row["clean_file"]).stem+".csv")
         proc_files.append(str(proc_file))
         proc_file_path = Path(row["data_directory"]).joinpath(proc_file)
         rad_data_proc.to_csv(proc_file_path)

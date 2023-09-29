@@ -1,0 +1,9 @@
+{
+  "overwrite": true,
+  "output_dir": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/g25w_acoustic_compare",
+  "input_frp_dataframe": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/dataframes_eglin_2023/processed_dataframe_eglin_2023.geojson",
+  "filter_criteria": {
+    "burn_unit": "G-25W",
+    "date": "2023-03-11"
+  }
+}
