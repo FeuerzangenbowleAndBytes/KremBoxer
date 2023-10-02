@@ -6,6 +6,7 @@ import kremboxer.krembox_dualband_calibrate as kd_calibrate
 import kremboxer.krembox_dualband_cleaner as kd_clean
 import kremboxer.krembox_dualband_frp as kd_frp
 import kremboxer.krembox_dualband_vis as kd_vis
+import kremboxer.krembox_dualband_fuel_plots as kd_fuel_plots
 
 
 def main(argv):
@@ -79,6 +80,14 @@ def main(argv):
         frp_params["output_root"] = output_root
         frp_params["burn_name"] = burn_name
         processed_gdf = kd_frp.run_krembox_dualband_frp(frp_params)
+
+    # Associate dualband data with fuel plots
+    if params["run_fuel_plot_association"]:
+        print("Running fuel plot association")
+        assoc_params = params["fuel_plot_association_parameters"]
+        assoc_params["output_root"] = output_root
+        assoc_params["burn_name"] = burn_name
+        kd_fuel_plots.run_krembox_dualband_fuel_plot_association(assoc_params)
 
     # Run visualizer to make FRP plots, animations, and burn plot maps
     if params["run_visualizer"]:
