@@ -1,11 +1,12 @@
 {
   "output_root": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03",
   "burn_name": "eglin_2023",
-  "run_calibration": true,
-  "run_data_cleaner": true,
-  "run_frp_computation": true,
-  "run_fuel_plot_connection": true,
-  "run_visualizer": true,
+  "overwrite": true,
+  "run_calibration": false,
+  "run_data_cleaner": false,
+  "run_frp_computation": false,
+  "run_fuel_plot_association": true,
+  "run_visualizer": false,
   "calibration_parameters": {
     "LW_bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/DC-6073_W1_8-14Si.csv",
     "MW_bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/DC-6216_u1_Saph_longwave.csv",

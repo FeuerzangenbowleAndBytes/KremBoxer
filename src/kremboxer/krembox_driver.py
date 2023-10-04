@@ -47,7 +47,7 @@ def main(argv):
     # Check if the specified output directory already exists and warn the user
     output_root = Path(params["output_root"])
     burn_name = params["burn_name"]
-    if output_root.exists():
+    if output_root.exists() and not params["overwrite"]:
         print("Warning! Output directory already exists: ", output_root)
         print("Should we continue? (y/n)")
         response = input()
