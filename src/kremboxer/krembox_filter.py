@@ -6,10 +6,6 @@ import shutil
 from pathlib import Path
 import pandas as pd
 import geopandas as gpd
-import kremboxer.krembox_dualband_calibrate as kd_calibrate
-import kremboxer.krembox_dualband_cleaner as kd_clean
-import kremboxer.krembox_dualband_frp as kd_frp
-import kremboxer.krembox_dualband_vis as kd_vis
 import kremboxer.krembox_dualband_utils as kdu
 
 
@@ -60,19 +56,23 @@ def main(argv):
     else:
         output_root.mkdir(parents=True, exist_ok=True)
 
+    # Copy the filter parameters to the output directory
     shutil.copy(paramfile, output_root.joinpath("filter_params.json"))
 
+    # Read in dataframe to be filtered
     frp_df = gpd.read_file(params["input_frp_dataframe"])
     print(frp_df.head())
 
+    # Filter dataframe by burn unit and date
     filter_criteria = params["filter_criteria"]
     print(filter_criteria)
-
     filter_df = frp_df[frp_df["burn_unit"] == filter_criteria["burn_unit"]]
     filter_date = datetime.datetime.fromisoformat(filter_criteria["date"]).date()
     filter_df = filter_df[filter_df['dt'].apply(lambda x: x.date() == filter_date)]
     print(filter_df)
 
+    # Filter dataframe by polygon if requested, "feature_name" is the name of the polygon to filter by
+    # from the input vector layer "polygon_layer"
     if "polygon_layer" in filter_criteria.keys():
         shutil.copy(filter_criteria["polygon_layer"], output_root)
         poly_gdf = gpd.read_file(filter_criteria["polygon_layer"])
@@ -81,26 +81,33 @@ def main(argv):
         poly_gdf = poly_gdf[poly_gdf["name"] == feature_name]
         poly_geom = poly_gdf["geometry"].iloc[0]
 
+        # Figure out which dataframe records are within the polygon
         pip = filter_df.within(poly_gdf.loc[0, 'geometry'])
 
-        # creating a new geoDataFrame that will have only the intersecting records
+        # Create a new geoDataFrame with only the radiometers within the polygon
         filter_df = filter_df.loc[pip].copy()
 
+    # Create folders to save data and plots
     data_dir = output_root.joinpath("data")
     plot_dir = output_root.joinpath("plots")
     data_dir.mkdir(parents=False, exist_ok=True)
     plot_dir.mkdir(parents=False, exist_ok=True)
 
+    # Iterate through remaining records, copy data to output directory, and make plots of the radiometer data
     filter_data_dirs = []
     filter_data_files = []
     plot_paths = []
     for i, row in filter_df.iterrows():
         print(i, row)
+        # Change the paths to the data files if requested, useful if you are running on a different computer
+        # from the one that generated the input dataframe
         if "replace_data_dir" in params.keys():
             frp_datafile = Path(params["replace_data_dir"]).joinpath(row["processed_file"])
         else:
             frp_datafile = Path(row["data_directory"]).joinpath(row["processed_file"])
         print(frp_datafile)
+
+        # Copy the radiometer data to the output dir
         dest_file = Path("data").joinpath(frp_datafile.name)
         dest_path = output_root.joinpath(dest_file)
         shutil.copy(frp_datafile, dest_path)
@@ -108,6 +115,7 @@ def main(argv):
         filter_data_dirs.append(str(output_root))
         filter_data_files.append(str(dest_file))
 
+        # Create plots of each radiometer dataset
         rad_df = pd.read_csv(dest_path)
         plot_name = row["dataset"] + ".png"
         sup_title = row["dataset"]
@@ -117,11 +125,12 @@ def main(argv):
             minutes=10)
 
         plot_path = plot_dir.joinpath(plot_name)
-        if not plot_path.exists():
+        if not plot_path.exists() and params["make_plots"]:
             kdu.plot_processed_dualband_data(rad_df, plot_path, False, min_datetime,
-                                         max_datetime, sup_title)
+                                             max_datetime, sup_title)
         plot_paths.append(str(plot_path))
 
+    # Save the filtered dataframe
     filter_df["data_directory"] = filter_data_dirs
     filter_df["processed_file"] = filter_data_files
     filter_df.to_file(output_root.joinpath("filtered_frp_dataframe.geojson"), driver='GeoJSON')
