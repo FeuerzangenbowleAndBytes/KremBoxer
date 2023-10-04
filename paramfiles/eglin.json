@@ -1,40 +1,45 @@
 {
-  "run_calibration": true,
-  "run_data_cleaner": true,
-  "run_frp_computation": true,
-  "run_visualizer": true,
+  "output_root": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03",
+  "burn_name": "eglin_2023",
+  "overwrite": true,
+  "run_calibration": false,
+  "run_data_cleaner": false,
+  "run_frp_computation": false,
+  "run_fuel_plot_association": true,
+  "run_visualizer": false,
   "calibration_parameters": {
-    "cal_output": "calibrations/eglin_calibration.json",
-    "LW_bandpass": "calibration_data/DC-6073_W1_8-14Si.csv",
-    "MW_bandpass": "calibration_data/DC-6216_u1_Saph_longwave.csv",
-    "cal_input": "calibration_data/unit11_calibration_data.csv",
-    "temp_cal_input": "calibration_data/temperature_sensor_calibration.csv",
+    "LW_bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/DC-6073_W1_8-14Si.csv",
+    "MW_bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/DC-6216_u1_Saph_longwave.csv",
+    "cal_input": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/unit11_calibration_data.csv",
+    "temp_cal_input": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/temperature_sensor_calibration.csv",
     "show_plot": true,
-    "plot_output_dir": "/home/jepaki/Projects/Eglin_2023-03/G25W_2023-03-11/DB/20230311/plots",
-    "plot_output": "eglin_calibration_plot.png",
     "v_top": 3300,
     "r_top": 100000
   },
   "data_cleaner_parameters": {
-    "data_directories": ["/home/jepaki/Projects/Eglin_2023-03/G25W_2023-03-11/DB/20230311"],
-    "target_dates": ["2023-03-11"],
-    "clean_dataframe_output": "dataframes/eglin_cleaned_dataframe",
-    "burn_plot_dataframe_input": "/home/jepaki/Dropbox/Jobs/MTRI/Projects/Wildfire/Eglin_Mar23/RadiometerMaps/G25W/G25_split.geojson",
+    "data_targets": {
+      "data_directories": ["/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G20_2023-03-19/DB",
+                            "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25E_2023-03-16/DB",
+                            "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25W_2023-03-11/DB/20230311"],
+      "data_dates": ["2023-03-19", "2023-03-16", "2023-03-11"]
+    },
+
+    "burn_plot_dataframe_input": "/home/jepaki/code/KremBoxer/burn_units/eglin_burn_units.geojson",
     "projection": "EPSG:32616"
   },
   "frp_parameters": {
-    "clean_dataframe_input": "dataframes/eglin_cleaned_dataframe.geojson",
-    "cal_input": "calibrations/eglin_calibration.json",
-    "processed_dataframe_output": "dataframes/eglin_processed_dataframe"
+    "cal_input": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/calibration_eglin_2023/calibration_eglin_2023.json"
+  },
+  "fuel_plot_association_parameters": {
+    "fuel_plot_dataframe_input": "/home/jepaki/Dropbox/Jobs/MTRI/Projects/Wildfire/Eglin_Mar23/eglin_fuel_plots_burn_unit_id.geojson"
   },
   "vis_parameters": {
-    "rad_data_dataframe": "dataframes/eglin_processed_dataframe.geojson",
-    "burn_plot_dataframe": "/home/jepaki/Dropbox/Jobs/MTRI/Projects/Wildfire/Eglin_Mar23/RadiometerMaps/G25W/G25_split.geojson",
-    "plot_output_dir": "/home/jepaki/Projects/Eglin_2023-03/G25W_2023-03-11/DB/20230311/plots",
+    "rad_data_dataframe": "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/dataframes_eglin_2023/processed_dataframe_eglin_2023.geojson",
+    "burn_plot_dataframe": "/home/jepaki/code/KremBoxer/burn_units/eglin_burn_units.geojson",
     "plot_title_prefix": "Eglin",
     "projection": "EPSG:32616",
     "campaign": "Eglin",
-    "animations": true,
+    "animations": false,
     "show_plots": false
   }
 }

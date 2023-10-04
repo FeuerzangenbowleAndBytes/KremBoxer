@@ -6,11 +6,11 @@ import geopandas as gpd
 import kremboxer.krembox_dualband_utils as kdb_utils
 
 
-def process_data_series(data_series, target_dates, file, data_directory, clean_file_list):
+def process_data_series(data_series, target_date, file, data_directory, clean_file_list):
     """
 
     :param data_series:
-    :param target_dates:
+    :param target_date:
     :param file:
     :param data_directory:
     :param clean_file_list:
@@ -21,14 +21,16 @@ def process_data_series(data_series, target_dates, file, data_directory, clean_f
     metadata = {}
     clean_directory = Path(data_directory).joinpath("Clean")
 
-    if len(data_series) > 3:
+    # Only keep datasets where it looks like the radiometer was on for more than 10 minutes
+    # Trying to filter out spurious datasets from people flipping the devices on and off
+    if len(data_series) > 603:
         if data_series[1][data_series[0].index('GPS-TYPE')] == "LOCKED":
             fields = data_series[0]
             header = data_series[1]
             dt, lat, lon, sample_freq = kdb_utils.parse_header(fields, header)
 
             # Only clean datasets from the dates we're interested in
-            if dt.date() in target_dates:
+            if dt.date() == target_date:
                 print(file, type(file))
                 dataset = file.stem + "_" + dt.isoformat()
                 clean_file = dataset + ".csv"
@@ -76,17 +78,26 @@ def run_krembox_dualband_cleaner(params: dict):
     :group: krembox_dualband_cleaner
     """
 
+    # Get the output root directory
+    burn_name = params["burn_name"]
+    output_root = Path(params["output_root"])
+    dataframes_dir = output_root.joinpath("dataframes_"+burn_name)
+    dataframes_dir.mkdir(exist_ok=True)
+
     # Sort the target dates for convenience
-    target_dates = params["target_dates"]
-    target_dates = [datetime.datetime.fromisoformat(x).date() for x in target_dates]
-    target_dates.sort()
+    # target_dates = params["target_dates"]
+    # target_dates = [datetime.datetime.fromisoformat(x).date() for x in target_dates]
+    # target_dates.sort()
 
     # Data dictionary to keep track of cleaned datasets, turned into Pandas dataframe at end
     metadata_list = []
     clean_file_list = []
 
     # Loop through data directories to find all the raw data, create directories to store cleaned data
-    for data_directory in params["data_directories"]:
+    data_directories = params["data_targets"]["data_directories"]
+    data_dates = params["data_targets"]["data_dates"]
+    for data_date, data_directory in zip(data_dates, data_directories):
+        target_date = datetime.datetime.fromisoformat(data_date).date()
         raw_directory = Path(data_directory).joinpath('Raw')
         clean_directory = Path(data_directory).joinpath("Clean")
         if not raw_directory.exists():
@@ -104,20 +115,23 @@ def run_krembox_dualband_cleaner(params: dict):
                 print("Found non-csv file in raw data folder: ", file)
                 continue
             with open(file, 'r') as csvfile:
+                print(file)
                 csvreader = csv.reader(csvfile)
                 data_series = []
 
                 # Find first header in datafile
                 row = next(csvreader, None)
+                i=0
                 while not 'DAY' == row[0]:
                     row = next(csvreader, None)
-
+                    i+=1
                 # Loop through valid datasets by looking for headers
                 data_series.append(row)
                 while row is not None:
                     row = next(csvreader, None)
+                    i+=1
                     if row is None or 'DAY' == row[0]:
-                        (valid_data, metadata) = process_data_series(data_series, target_dates, file, data_directory, clean_file_list)
+                        (valid_data, metadata) = process_data_series(data_series, target_date, file, data_directory, clean_file_list)
                         if valid_data:
                             print(metadata)
                             clean_file_list.append(metadata["clean_file"])
@@ -141,10 +155,13 @@ def run_krembox_dualband_cleaner(params: dict):
         burn_plot_gdf = burn_plot_gdf.to_crs(params["projection"])
         gdf = kdb_utils.associate_data2burnplot(gdf, burn_plot_gdf)
 
-    print("Saving clean dataframe in CSV format: ",  params["clean_dataframe_output"]+".csv")
-    gdf.to_csv(params["clean_dataframe_output"]+".csv")
-    print("Saving clean dataframe in GeoJSON format: ", params["clean_dataframe_output"]+".geojson")
-    gdf.to_file(params["clean_dataframe_output"]+".geojson", driver='GeoJSON')
+    # Save the cleaned dataframe
+    df_csv = dataframes_dir.joinpath("cleaned_dataframe_"+burn_name+".csv")
+    print("Saving clean dataframe in CSV format: ",  df_csv)
+    gdf.to_csv(df_csv)
+    df_geojson = dataframes_dir.joinpath("cleaned_dataframe_"+burn_name+".geojson")
+    print("Saving clean dataframe in GeoJSON format: ", df_geojson)
+    gdf.to_file(df_geojson, driver='GeoJSON')
     return gdf
 
 

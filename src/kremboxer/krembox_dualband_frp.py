@@ -1,4 +1,3 @@
-import datetime
 from pathlib import Path
 import numpy as np
 import json
@@ -7,7 +6,7 @@ import geopandas as gpd
 import scipy.optimize as so
 import scipy.constants as sc
 import kremboxer.greybody_utils as gbu
-import kremboxer.krembox_utils as kbu
+import krembox_utils as kbu
 
 
 def load_calibration_data(cal_params):
@@ -109,6 +108,13 @@ def run_krembox_dualband_frp(params: dict):
     :return:
     :group: krembox_dualband_frp
     """
+
+    # Get the output root directory
+    burn_name = params["burn_name"]
+    output_root = Path(params["output_root"])
+    dataframes_dir = output_root.joinpath("dataframes_" + burn_name)
+    clean_dataframe_input = dataframes_dir.joinpath("cleaned_dataframe_"+burn_name+".geojson")
+
     # Load calibration data
     print("Loading calibration data...")
     with open(params["cal_input"], "r") as fp:
@@ -118,7 +124,7 @@ def run_krembox_dualband_frp(params: dict):
 
     # Load clean dataframe that tells us where the data is and some metadata
     print("Reading clean dataframe")
-    gdf = gpd.read_file(params["clean_dataframe_input"])
+    gdf = gpd.read_file(clean_dataframe_input)
 
     # Loop through the clean datasets and compute FRP, record some new metadata
     print("Iterating through clean datasets")
@@ -187,7 +193,7 @@ def run_krembox_dualband_frp(params: dict):
         proc_directory = Path(row["data_directory"]).joinpath("Processed")
         if not proc_directory.exists():
             proc_directory.mkdir()
-        proc_file = Path("Processed").joinpath(Path(row["clean_file"]).stem)
+        proc_file = Path("Processed").joinpath(Path(row["clean_file"]).stem+".csv")
         proc_files.append(str(proc_file))
         proc_file_path = Path(row["data_directory"]).joinpath(proc_file)
         rad_data_proc.to_csv(proc_file_path)
@@ -206,9 +212,9 @@ def run_krembox_dualband_frp(params: dict):
     gdf["fire_start"] = time_starts
     gdf["fire_end"] = time_stops
     gdf["over_1000FRP_duration"] = over_1000FRP_durations
-    print("Saving processed dataframe in GeoJSON format: ", params["processed_dataframe_output"])
-    gdf.to_file(params["processed_dataframe_output"]+".geojson", driver='GeoJSON')
-    gdf.to_csv(params["processed_dataframe_output"] + ".csv")
+    print("Saving processed dataframe in GeoJSON format: ", dataframes_dir.joinpath("processed_dataframe_"+burn_name+".geojson"))
+    gdf.to_file(dataframes_dir.joinpath("processed_dataframe_"+burn_name+".geojson"), driver='GeoJSON')
+    gdf.to_csv(dataframes_dir.joinpath("processed_dataframe_"+burn_name+".csv"))
     return gdf
 
 

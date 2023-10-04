@@ -3,7 +3,7 @@ import datetime
 import numpy as np
 import pandas as pd
 import geopandas as gpd
-#from shapely.geometry import Point  # Need to comment this out when building sphinx documentation with phinx-immaterial theme, who knows why
+#from shapely.geometry import Point  # Need to comment this out when building sphinx documentation with Sphinx-immaterial theme, who knows why
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib import cm
@@ -51,7 +51,7 @@ def animate_burn_unit(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoData
         rad_num = row["rad"]
         rad_dict[rad_num] = {"loc": row["geometry"],
                              "max_frp_index": row["max_FRP_index"],
-                             "max_frp_datetime": datetime.datetime.fromisoformat(row["max_FRP_datetime"])}
+                             "max_frp_datetime": pd.Timestamp(row["max_FRP_datetime"])}
         dataset_name = row["dataset"]
         rad_df = pd.read_csv(proc_data_filepath)
         rad_df['datetime'] = pd.to_datetime(rad_df['datetime'])
@@ -256,7 +256,9 @@ def plot_burn_unit_map(burn_plot_gdf: gpd.GeoDataFrame, plot_output_dir: Path, c
 
     if rad_data_df is not None:
         dates = rad_data_df["dt"]
-        rad_data_df["date"] = dates.apply(lambda x: datetime.datetime.fromisoformat(x).date())
+        print(dates)
+        #rad_data_df["date"] = dates.apply(lambda x: datetime.datetime.fromisoformat(x).date())
+        rad_data_df["date"] = dates.apply(lambda x: pd.Timestamp(x).date())
         rad_data_df.plot(ax=ax, alpha=1, markersize=5, column="date", legend=True)
 
     ax.set_title(plot_title_prefix + "Burn Unit Map", y=1.04)
@@ -278,6 +280,13 @@ def run_krembox_dualband_vis(vis_params: dict):
     """
 
     print("Running visualizer")
+
+    # Get the output root directory
+    burn_name = vis_params["burn_name"]
+    output_root = Path(vis_params["output_root"])
+    plot_output_dir = output_root.joinpath("plots_dualband_" + burn_name)
+    plot_output_dir.mkdir(exist_ok=True)
+    vis_params["plot_output_dir"] = plot_output_dir
 
     # Load processed dataframe and burn plots dataframe
     rad_data_gdf = gpd.read_file(vis_params["rad_data_dataframe"])
