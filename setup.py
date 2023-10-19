@@ -121,6 +121,8 @@ setup(
         "pandas",
         "geopandas",
         "celluloid",
+        "fsspec",
+        "openpyxl",
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
