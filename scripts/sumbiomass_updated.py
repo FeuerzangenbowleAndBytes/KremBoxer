@@ -21,13 +21,59 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     sumbiomass_df = pd.DataFrame(grouped)
     sumbiomass_df['SumBiomass'] = sumbiomass_df[sum_columns].sum(axis=1)
 
+    # Find the mass difference in grams
+    sumbiomass_df['Mass difference in grams'] = sumbiomass_df['SumBiomass'].diff()
+    sumbiomass_df['Mass difference in grams'].iloc[::2] = None
+
+    # grams to kg all hours
+    sumbiomass_df['Mass difference grams to kg_allhrs'] = sumbiomass_df['Mass difference in grams'].div(1000)
+
+    #FRE all hours
+    sumbiomass_df['FRE_allhrs'] = sumbiomass_df['Mass difference grams to kg_allhrs'].mul(.3*20)
+
+    #Adjusted FRE all hours
+    sumbiomass_df['FRE_allhrsadjusted'] = sumbiomass_df['FRE_allhrs'].mul(4)
+
+    #Total Energy all hours
+    sumbiomass_df['Total Energy_allhrs'] = sumbiomass_df['Mass difference grams to kg_allhrs'].mul(20)
+
+    #Adjusted Total Energy all hours
+    sumbiomass_df['Total Energy_allhrsadjusted'] = sumbiomass_df['Total Energy_allhrs'].mul(4)
+
     #Sum all biomass values except for 10, 100, 1000hr columns
-    #sumbiomass1hr_df = pd.DataFrame(grouped)
     sumbiomass_df['SumBiomass_1hr'] = sumbiomass_df[sum_columns1hr].sum(axis=1)
 
+    # Find the mass difference in grams except for 10, 100, 1000hr columns
+    sumbiomass_df['Mass difference in grams_1hr'] = sumbiomass_df['SumBiomass_1hr'].diff()
+    sumbiomass_df['Mass difference in grams_1hr'].iloc[::2] = None
+
+    # grams to kg 1 hours
+    sumbiomass_df['Mass difference grams to kg_1hr'] = sumbiomass_df['Mass difference in grams_1hr'].div(1000)
+
+    # FRE 1 hours
+    sumbiomass_df['FRE_allhrs'] = sumbiomass_df['Mass difference grams to kg_1hr'].mul(.3 * 20)
+
+    # Adjusted FRE 1 hours
+
+    # Total Energy all hours
+
     #Sum all biomass values except for 1, 10, 100, 1000hr columns
-    #sumbiomassnohrs_df = pd.DataFrame(grouped)
     sumbiomass_df['SumBiomass_nohrs'] = sumbiomass_df[sum_columnsnohrs].sum(axis=1)
+
+    # Find the mass difference in grams except for 1, 10, 100, 1000hr columns
+    sumbiomass_df['Mass difference in grams_nohrs'] = sumbiomass_df['SumBiomass_nohrs'].diff()
+    sumbiomass_df['Mass difference in grams_nohrs'].iloc[::2] = None
+
+    # grams to kg no hours
+    sumbiomass_df['Mass difference grams to kg_nohrs'] = sumbiomass_df['Mass difference in grams_nohrs'].div(1000)
+
+    # FRE no hours
+    sumbiomass_df['FRE_nohrs'] = sumbiomass_df['Mass difference grams to kg_1hr'].mul(.3 * 20)
+
+    # Adjusted FRE no hours
+
+    # Total Energy all hours
+
 
     # Save the results to a new sheet in the same Excel file
     # with pd.ExcelWriter(
