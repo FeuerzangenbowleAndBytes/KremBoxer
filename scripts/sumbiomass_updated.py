@@ -8,7 +8,8 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     of summed rows for each fuel type in each macroplot. 'Postburn' and 'preburn' fuel collections will be separated
     into two rows.
 
-
+    Then it will calculate the mass difference in grams of each plot, convert that value to kilograms, calculate
+    FRE and Total Energy, then adjust the values to match the Kremboxer/radiometer plots
     '''
 
     # Read the Excel spreadsheet
