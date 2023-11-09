@@ -29,11 +29,24 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     sumbiomass_df['Mass difference grams to kg_allhrs'] = sumbiomass_df['Mass difference in grams'].div(1000)
 
     #FRE all hours
+    '''
+    FRE is calculated using this equation: Mc = FRE / (Fr*Hc), where Mc is the fuel mass consumed per unit area (summed 
+    biomass collections for each AOI), Hc is the heat of combusion of the fuel, and Fr is the fraction of the total 
+    energy release (per unit area) that is transported by radiation
+    '''
     sumbiomass_df['FRE_allhrs'] = sumbiomass_df['Mass difference grams to kg_allhrs'].mul(.3*20)
+        # Radiative fraction = .3, heat of combusion = 20
 
+    '''
+    Clip plots were 0.5mx0.5mx and we are converting the units in the denominator to m^2 to compare to radiometer 
+    outputs
+    '''
     #Adjusted FRE all hours
     sumbiomass_df['FRE_allhrsadjusted'] = sumbiomass_df['FRE_allhrs'].mul(4)
 
+    '''
+    Total Energy is found by multiplying biomass difference in kg by heat of combusti
+    '''
     #Total Energy all hours
     sumbiomass_df['Total Energy_allhrs'] = sumbiomass_df['Mass difference grams to kg_allhrs'].mul(20)
 
@@ -51,11 +64,18 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     sumbiomass_df['Mass difference grams to kg_1hr'] = sumbiomass_df['Mass difference in grams_1hr'].div(1000)
 
     # FRE 1 hours
-    sumbiomass_df['FRE_allhrs'] = sumbiomass_df['Mass difference grams to kg_1hr'].mul(.3 * 20)
+    sumbiomass_df['FRE_1hr'] = sumbiomass_df['Mass difference grams to kg_1hr'].mul(.3 * 20)
+    # Radiative fraction = .3, heat of combustion = 20
 
     # Adjusted FRE 1 hours
+    sumbiomass_df['FRE_1hradjusted'] = sumbiomass_df['FRE_1hrs'].mul(4)
 
-    # Total Energy all hours
+    # Total Energy 1 hours
+    sumbiomass_df['Total Energy_1hr'] = sumbiomass_df['Mass difference grams to kg_1hr'].mul(20)
+
+    #Adjusted Total Energy 1 hours
+    sumbiomass_df['Total Energy_1hradjusted'] = sumbiomass_df['Total Energy_1hr'].mul(4)
+
 
     #Sum all biomass values except for 1, 10, 100, 1000hr columns
     sumbiomass_df['SumBiomass_nohrs'] = sumbiomass_df[sum_columnsnohrs].sum(axis=1)
@@ -69,10 +89,16 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
 
     # FRE no hours
     sumbiomass_df['FRE_nohrs'] = sumbiomass_df['Mass difference grams to kg_1hr'].mul(.3 * 20)
+    # Radiative fraction = .3, heat of combustion = 20
 
     # Adjusted FRE no hours
+    sumbiomass_df['FRE_nohrsadjusted'] = sumbiomass_df['FRE_nohrs'].mul(4)
 
-    # Total Energy all hours
+    # Total Energy no hours
+    sumbiomass_df['Total Energy_nohrs'] = sumbiomass_df['Mass difference grams to kg_nohrs'].mul(20)
+
+    # Total Energy no hours adjusted
+    sumbiomass_df['Total Energy_nohrsadjusted'] = sumbiomass_df['Total Energy_nohrs'].mul(4)
 
 
     # Save the results to a new sheet in the same Excel file
