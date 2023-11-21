@@ -1,4 +1,3 @@
-import geopandas as gpd
 import pandas as pd
 
 
@@ -9,7 +8,7 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     into two rows.
 
     Then it will calculate the mass difference in grams of each plot, convert that value to kilograms, calculate
-    FRE and Total Energy, then adjust the values to match the Kremboxer/radiometer plots
+    FRE and Total Energy, then adjust the values to match the Kremboxer/radiometer plots.
     '''
 
     # Read the Excel spreadsheet
@@ -18,12 +17,16 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     # Group the rows by the title column and additional group column, and sum the specified columns
     grouped = df.groupby([title_column, group_column])[sum_columns].sum()
 
+    #convert preburn data to column instead of a row
+    #pivot_df = df.pivot(index='Group', columns='Value', values='Value')
+    pivot_df=df.pivot(index=)
+
     # Sum all biomass values
     sumbiomass_df = pd.DataFrame(grouped)
-    sumbiomass_df['SumBiomass'] = sumbiomass_df[sum_columns].sum(axis=1)
+    sumbiomass_df['SumBiomass_allhrs'] = sumbiomass_df[sum_columns].sum(axis=1)
 
     # Find the mass difference in grams
-    sumbiomass_df['Mass difference in grams'] = sumbiomass_df['SumBiomass'].diff()
+    sumbiomass_df['Mass difference in grams'] = sumbiomass_df['SumBiomass_allhrs'].diff()
     sumbiomass_df['Mass difference in grams'].iloc[::2] = None
 
     # grams to kg all hours
