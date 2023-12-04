@@ -21,8 +21,13 @@ def creatingbiomass_shapefile(latlongs, output_shapefile):
     else:
         raise ValueError('Lat and long values not found in Excel file')
 
-    #now join biomass data to file
+    #now bring in biomass data from sumbiomass.py
     biomass_data = pd.read_csv(input_file)
+
+    #remove preburn data before conducting the join
+
+
+
     merged_biomassdf = pd.merge(firegdf, biomass_data, left_on='plot_clean', right_on='Macroplot', how='left')
     merged_biomassdf.to_file(output_shapefile)
 

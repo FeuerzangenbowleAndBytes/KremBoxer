@@ -9,9 +9,6 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
 
     Then it will calculate the mass difference in grams of each plot, convert that value to kilograms, calculate
     FRE and Total Energy, then adjust the values to match the Kremboxer/radiometer plots.
-
-    This code delivers a clean .csv of equation outputs. If you want to georeference this data to compare to kremboxer,
-    use sumbiomass_forgeoreferencing instead
     '''
 
     # Read the Excel spreadsheet
@@ -27,6 +24,7 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     # Find the mass difference in grams
     massdif = sumbiomass_df['Mass difference in grams'] = sumbiomass_df['SumBiomass_allhrs'].diff()
     sumbiomass_df['Mass difference in grams'].iloc[::2] = None
+    sumbiomass_df['Mass difference in grams' + '_diff'] = massdif.shift(-1)
 
     # grams to kg all hours
     sumbiomass_df['Mass difference grams to kg_allhrs'] = sumbiomass_df['Mass difference in grams'].div(1000)
