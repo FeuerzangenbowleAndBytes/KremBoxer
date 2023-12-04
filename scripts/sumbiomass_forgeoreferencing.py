@@ -9,6 +9,8 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
 
     Then it will calculate the mass difference in grams of each plot, convert that value to kilograms, calculate
     FRE and Total Energy, then adjust the values to match the Kremboxer/radiometer plots.
+
+    Delivers a .csv where 'preburn' values are removed to allow for easier joining when georeferencing data
     '''
 
     # Read the Excel spreadsheet
@@ -22,12 +24,12 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     sumbiomass_df['SumBiomass_allhrs'] = sumbiomass_df[sum_columns].sum(axis=1)
 
     # Find the mass difference in grams
-    massdif = sumbiomass_df['Mass difference in grams'] = sumbiomass_df['SumBiomass_allhrs'].diff()
-    sumbiomass_df['Mass difference in grams'].iloc[::2] = None
-    sumbiomass_df['Mass difference in grams' + '_diff'] = massdif.shift(-1)
+    massdif = sumbiomass_df['Mass difference in grams_allhrs'] = sumbiomass_df['SumBiomass_allhrs'].diff()
+    #sumbiomass_df['Mass difference in grams'].iloc[::2] = None
+    sumbiomass_df['Mass difference in grams_allhrs' + '_diff'] = massdif.shift(-1)
 
     # grams to kg all hours
-    sumbiomass_df['Mass difference grams to kg_allhrs'] = sumbiomass_df['Mass difference in grams'].div(1000)
+    sumbiomass_df['Mass difference grams to kg_allhrs'] = sumbiomass_df['Mass difference in grams_allhrs' + '_diff'].div(1000)
 
     #FRE all hours
     '''
@@ -67,10 +69,12 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
 
     # Find the mass difference in grams except for 10, 100, 1000hr columns
     sumbiomass_df['Mass difference in grams_1hr'] = sumbiomass_df['SumBiomass_1hr'].diff()
-    sumbiomass_df['Mass difference in grams_1hr'].iloc[::2] = None
+    #sumbiomass_df['Mass difference in grams_1hr'].iloc[::2] = None
+    sumbiomass_df['Mass difference in grams_1hr' + '_diff'] = massdif.shift(-1)
+
 
     # grams to kg 1 hours
-    sumbiomass_df['Mass difference grams to kg_1hr'] = sumbiomass_df['Mass difference in grams_1hr'].div(1000)
+    sumbiomass_df['Mass difference grams to kg_1hr'] = sumbiomass_df['Mass difference in grams_1hr' + '_diff'].div(1000)
 
     # FRE 1 hours
     sumbiomass_df['FRE_1hr'] = sumbiomass_df['Mass difference grams to kg_1hr'].mul(.3 * 20)
@@ -94,10 +98,11 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
 
     # Find the mass difference in grams except for 1, 10, 100, 1000hr columns
     sumbiomass_df['Mass difference in grams_nohrs'] = sumbiomass_df['SumBiomass_nohrs'].diff()
-    sumbiomass_df['Mass difference in grams_nohrs'].iloc[::2] = None
+    #sumbiomass_df['Mass difference in grams_nohrs'].iloc[::2] = None
+    sumbiomass_df['Mass difference in grams_nohrs' + '_diff'] = massdif.shift(-1)
 
     # grams to kg no hours
-    sumbiomass_df['Mass difference grams to kg_nohrs'] = sumbiomass_df['Mass difference in grams_nohrs'].div(1000)
+    sumbiomass_df['Mass difference grams to kg_nohrs'] = sumbiomass_df['Mass difference in grams_nohrs' + '_diff'].div(1000)
 
     # FRE no hours
     sumbiomass_df['FRE_nohrs'] = sumbiomass_df['Mass difference grams to kg_1hr'].mul(.3 * 20)
@@ -112,6 +117,15 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     # Total Energy no hours adjusted
     sumbiomass_df['Total Energy_nohrsadjusted'] = sumbiomass_df['Total Energy_nohrs'].mul(4)
 
+    '''
+    lastly, remove any row that is labeled 'preburn' in Plot_type. This will ensure that there is only one iteration of
+    each plot so that the data joins smoothly to your latlong data in biomass_georeferencing
+    '''
+    sumbiomasspostburndf = sumbiomass_df[::2]
+    sumbiomasspostburndf.drop('Mass difference in grams', axis=1, inplace=True)
+    sumbiomasspostburndf.drop('Mass difference in grams_1hr', axis=1, inplace=True)
+    sumbiomasspostburndf.drop('Mass difference in grams_nohrs', axis=1, inplace=True)
+
 
     # Save the results to a new sheet in the same Excel file
     # with pd.ExcelWriter(
@@ -121,7 +135,7 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
     #         if_sheet_exists="replace"
     # ) as writer:
     #     sumbiomass_df.to_excel(writer, sheet_name='Summed Rows', index=True)
-    sumbiomass_df.to_csv(output_file, mode="w")
+    sumbiomasspostburndf.to_csv(output_file, mode="w")
 
     print("Summed rows saved to", output_file)
 
@@ -130,7 +144,7 @@ def sum_rows_by_title(input_file, output_file, title_column, group_column, sum_c
 #input_file = 'J://project//SERDP_Objects-IRProcessing//workingdir//dnvanhui//Biomassexcelsheets//testpythoncode//FS_Biomass_2022.xlsx'  # Replace with your input file path
 input_file = 'C://Users//dnvanhui.MTRI//Desktop//Test Projects//Kremboxer//FS_Biomass_2022.xlsx'  # Replace with your input file path
 #output_file = 'J://project//SERDP_Objects-IRProcessing//workingdir//dnvanhui//Biomassexcelsheets//testpythoncode//FS_Biomass_2022.xlsx'  # Replace with your output file path
-output_file = 'C://Users//dnvanhui.MTRI//Desktop//Test Projects//Kremboxer//FS_Biomass_2022.csv'  # Replace with your output file path
+output_file = 'C://Users//dnvanhui.MTRI//Desktop//Test Projects//Kremboxer//FS_Biomass_2022_georeference.csv'  # Replace with your output file path
 title_column = 'Macroplot'  # Replace with your title column name
 group_column = 'Plot_Type'  # Replace with your additional group column name
 sum_columns = ["WLive", "WLit", "1hr", "10hr", "100hr", "1000hr", "PC", "CL", "PN", "ETE", "FL", "CYLitter",
