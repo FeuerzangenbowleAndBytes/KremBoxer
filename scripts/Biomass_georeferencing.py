@@ -32,8 +32,8 @@ def creatingbiomass_shapefile(latlongs, output_shapefile):
     merged_biomassdf.to_file(output_shapefile)
 
     #Inputs
-from sumbiomass_forgeoreferencing import output_file
-input_file = output_file
+from sumbiomass_forgeoreferencing import output_file2
+input_file = output_file2
 latlongs = "C://Users//dnvanhui.MTRI//Desktop//Test Projects//Kremboxer//ft_stewart_2022_lat_long.xlsx"
 output_shapefile = "C://Users//dnvanhui.MTRI//Desktop//Test Projects//Kremboxer//ftstewartbiomass.shp"
 custom_crs = 'EPSG:4326' #change to desired projection
