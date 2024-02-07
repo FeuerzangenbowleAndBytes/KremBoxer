@@ -51,7 +51,7 @@ def process_data_series(data_series, target_date, file, data_directory, clean_fi
                         for i in range(3, len(data_series)):
                             data_row = dt_data.isoformat()+", "+', '.join(data_series[i]) + "\n"
                             csvcleanfile.write(data_row)
-                            dt_data+= datetime.timedelta(seconds=1)
+                            dt_data += datetime.timedelta(seconds=1)
 
                     valid_data = True
                     metadata["dt"] = dt
