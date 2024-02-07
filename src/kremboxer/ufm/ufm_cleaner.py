@@ -43,7 +43,7 @@ def construct_ufm_header_dict(header_titles, header_values):
     return header_dict
 
 
-def read_ufw_dataset(file: Path, output_directory: Path, csvreader: csv.reader, first_row: list):
+def read_ufm_dataset(file: Path, output_directory: Path, csvreader: csv.reader, first_row: list):
     header_titles = first_row
     header_values = next(csvreader, None)
     header_dict = construct_ufm_header_dict(header_titles, header_values)
@@ -113,15 +113,15 @@ def read_ufw_dataset(file: Path, output_directory: Path, csvreader: csv.reader, 
     return return_row
 
 
-def process_ufw_raw_file(file: Path, output_directory: Path):
+def process_ufm_raw_file(file: Path, output_directory: Path):
     csvreader = csv.reader(open(file, 'r'))
     row = next(csvreader, None)
     while not row[0] == 'UNIT':
         row = next(csvreader, None)
 
-    row = read_ufw_dataset(file, output_directory, csvreader, row)
+    row = read_ufm_dataset(file, output_directory, csvreader, row)
     while not row is None:
-        row = read_ufw_dataset(file, output_directory, csvreader, row)
+        row = read_ufm_dataset(file, output_directory, csvreader, row)
 
     print("Finished processing file: ", file)
 
@@ -134,5 +134,5 @@ if __name__ == "__main__":
     test_path = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/test3/DATLOG8.CSV")
     output_dir = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/test3_output")
     output_dir.mkdir(parents=True, exist_ok=True)
-    process_ufw_raw_file(test_path, output_dir)
+    process_ufm_raw_file(test_path, output_dir)
     run_ufm_cleaner()
