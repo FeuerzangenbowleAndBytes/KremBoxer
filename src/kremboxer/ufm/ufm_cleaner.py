@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 import datetime
-
+import scipy
 
 def construct_datetime(year, month, day, hours_utc, minutes, seconds):
     if int(year) == 0:
@@ -58,8 +58,11 @@ def read_ufm_dataset(file: Path, output_directory: Path, csvreader: csv.reader, 
     num_ir_rows = 24
     num_ir_cols = 32
 
+    image_arrays = []
+
     sample = 0
     sample_time: datetime.datetime = header_dict["DATETIME_START"]
+    dataset_datetime = header_dict["DATETIME_START"].isoformat().replace(":", "-")
     return_row = None
     while True:
         # Read next image data
@@ -79,9 +82,10 @@ def read_ufm_dataset(file: Path, output_directory: Path, csvreader: csv.reader, 
                 exit()
             assert (len(row) == num_ir_cols + 1)
             ir_data_array[i, :] = row[0:num_ir_cols]
+        image_arrays.append(ir_data_array)
         ir_image = Image.fromarray(ir_data_array).convert("L")
-        image_name = file.stem + '_' + header_dict["DATETIME_START"].isoformat()+f'_ir_image_{sample}.png'
-        ir_image_dir = output_directory.joinpath(file.stem + '_' + header_dict["DATETIME_START"].isoformat()+'_ir_images')
+        image_name = file.stem + '_' + dataset_datetime + f'_ir_image_{sample}.png'
+        ir_image_dir = output_directory.joinpath(file.stem + '_' + dataset_datetime +'_ir_images')
         ir_image_dir.mkdir(parents=True, exist_ok=True)
         ir_image.save(ir_image_dir.joinpath(image_name))
 
@@ -104,11 +108,17 @@ def read_ufm_dataset(file: Path, output_directory: Path, csvreader: csv.reader, 
         sample += 1
         sample_time += datetime.timedelta(seconds=1)
 
+    image_data_cube = np.stack(image_arrays, axis=0)
+    print(image_data_cube.shape)
+    #np.savetxt(output_directory.joinpath(file.stem + '_' + dataset_datetime + '_ir_images.npy'), image_data_cube)
+    #image_data_cube.tofile(output_directory.joinpath(file.stem + '_' + dataset_datetime + '_ir_images.txt'), sep=",")
+    scipy.io.savemat(output_directory.joinpath(file.stem + '_' + dataset_datetime + '_ir_images.mat'), {'ir_images': image_data_cube})
+
     data_df = pd.DataFrame(data_dict)
     for key, item in header_dict.items():
         data_df.attrs[key] = item
 
-    csv_file = file.stem + '_' + header_dict["DATETIME_START"].isoformat() + '.csv'
+    csv_file = file.stem + '_' + dataset_datetime+ '.csv'
     data_df.to_csv(output_directory.joinpath(csv_file), index=False)
     return return_row
 

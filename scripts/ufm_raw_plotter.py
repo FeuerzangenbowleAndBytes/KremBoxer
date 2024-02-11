@@ -5,7 +5,7 @@ import pandas as pd
 
 ufm_raw_data_csv = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/datalog5_output/DATLOG5_2024-02-10T13:34:52+00:00.csv")
 ufm_raw_data_csv = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/datalog3_output/DATLOG3_2024-02-10T13:59:25+00:00.csv")
-ufm_raw_data_csv = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/datalog6_output/DATLOG6_2024-02-10T13:43:34+00:00.csv")
+ufm_raw_data_csv = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/datalog6_output/DATLOG6_2024-02-10T13-43-34+00-00.csv")
 ufm_df = pd.read_csv(ufm_raw_data_csv)
 print(ufm_df.head())
 print(ufm_df.columns)
