@@ -131,8 +131,9 @@ def run_ufm_cleaner():
 
 
 if __name__ == "__main__":
-    test_path = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/test3/DATLOG8.CSV")
-    output_dir = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/test3_output")
+    #test_path = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/test3/DATLOG8.CSV")
+    test_path = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerData/2024-02-10/UFM/DATLOG6.CSV")
+    output_dir = Path("/home/jepaki/Projects/Objects/FortStewart2024/RadiometerTesting/datalog6_output")
     output_dir.mkdir(parents=True, exist_ok=True)
     process_ufm_raw_file(test_path, output_dir)
     run_ufm_cleaner()
