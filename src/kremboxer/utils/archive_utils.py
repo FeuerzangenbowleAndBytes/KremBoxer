@@ -42,13 +42,24 @@ def create_dataset_archive(params: dict):
         data_source_directory = Path(data_source_directory)
         for file in data_source_directory.glob('**/*.CSV'):
             sensor = id_sensor_from_raw_file(file)
+            print(f'{file} -> {sensor}')
             if sensor == "UNKNOWN":
                 print("Unknown sensor type for file: ", file)
                 unknown_sensor_file.append(file)
                 continue
-            print(f'{file} -> {sensor}')
             if sensor == "Dualband":
                 header_dicts, data_dfs = extract_datasets_from_raw_file(file, sensor)
                 print(header_dicts)
+            if sensor == "Fiveband":
+                continue
+            if sensor == "UFM":
+                continue
+
+            for i, header_dict in enumerate(header_dicts):
+                data_date = header_dict["DATETIME_START"].date()
+                if data_date in data_dates:
+                    print(f"Data date {data_date} is in the list of dates to process")
+                else:
+                    print(f"Data date {data_date} is not in the list of dates to process")
 
     return 0
