@@ -1,5 +1,6 @@
 .pyc
 .idea
 __pycache__
+*/*.egg-info
 venv
 plots
