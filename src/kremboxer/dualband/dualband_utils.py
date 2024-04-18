@@ -22,8 +22,8 @@ def construct_dualband_header_dict(header_titles, header_values):
     header_dict['MINUTES'] = int(header_values[4])
     header_dict['SECONDS'] = int(header_values[5])
     header_dict['SAMPLE-RATE(Hz)'] = float(header_values[6])
-    header_dict['LATITUDE'] = float(header_values[7]) / 100000
-    header_dict['LONGITUDE'] = float(header_values[8]) / 100000
+    header_dict['LATITUDE'] = float(header_values[7]) / 1000000
+    header_dict['LONGITUDE'] = float(header_values[8]) / 1000000
     header_dict['GPS-TYPE'] = str(header_values[9])
     header_dict["DATETIME_START"] = kucu.construct_datetime(header_dict["YEAR"],
                                                             header_dict["MONTH"],

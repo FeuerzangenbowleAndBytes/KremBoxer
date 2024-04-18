@@ -44,6 +44,7 @@ def read_dualband_dataset(file: Path, csvreader, first_row):
 def extract_dualband_datasets_from_raw_file(file: Path):
     header_dicts = []
     data_dfs = []
+    unit = file.stem.split("_")[1]
     with open(file, 'r') as csvfile:
         csvreader = csv.reader(csvfile)
 
@@ -53,10 +54,12 @@ def extract_dualband_datasets_from_raw_file(file: Path):
             row = next(csvreader, None)
 
         row, header_dict, data_df = read_dualband_dataset(file, csvreader, row)
+        header_dict['UNIT'] = unit
         header_dicts.append(header_dict)
         data_dfs.append(data_df)
         while not row is None:
             row, header_dict, data_df = read_dualband_dataset(file, csvreader, row)
+            header_dict['UNIT'] = unit
             header_dicts.append(header_dict)
             data_dfs.append(data_df)
 
