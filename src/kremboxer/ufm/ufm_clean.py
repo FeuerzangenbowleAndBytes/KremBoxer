@@ -48,7 +48,8 @@ def read_ufm_dataset(file: Path, csvreader: csv.reader, first_row: list):
     header_titles = first_row
     header_values = next(csvreader, None)
     header_dict = construct_ufm_header_dict(header_titles, header_values)
-    data_columns = next(csvreader, None)
+    data_columns_raw = list(next(csvreader, None))
+    data_columns = [x for x in data_columns_raw if not x == '']
     data_dict = {}
 
     for data_column in data_columns:
@@ -63,6 +64,7 @@ def read_ufm_dataset(file: Path, csvreader: csv.reader, first_row: list):
 
     sample = 0
     sample_time: datetime.datetime = header_dict["DATETIME_START"]
+    sample_rate: float = header_dict['SAMPLE-RATE(Hz)']
     dataset_datetime = header_dict["DATETIME_START"].isoformat().replace(":", "-")
     return_row = None
     while True:
@@ -81,7 +83,10 @@ def read_ufm_dataset(file: Path, csvreader: csv.reader, first_row: list):
             if row is None:
                 print(f"IR image data incomplete at sample {sample}")
                 exit()
-            assert (len(row) == num_ir_cols + 1)
+            if not len(row) == num_ir_cols + 1 and not len(row) == num_ir_cols:
+                print(f'Error! Row in raw UFM file that should contain image data has {len(row)} columns, should have {num_ir_cols+1}')
+                print(row)
+                exit()
             ir_data_array[i, :] = row[0:num_ir_cols]
         image_arrays.append(ir_data_array)
         #ir_image = Image.fromarray(ir_data_array).convert("L")
@@ -93,7 +98,13 @@ def read_ufm_dataset(file: Path, csvreader: csv.reader, first_row: list):
         # Read next radiometer / wind data
         row = next(csvreader, None)
         for i, data_column in enumerate(data_columns):
-            data_dict[data_column].append(float(row[i]))
+            try:
+                data_dict[data_column].append(float(row[i]))
+            except ValueError:
+                print("Encountered ValueError while processing raw URM data.  The problem row is:")
+                print(i, row)
+                print(data_columns)
+                exit()
         #data_dict["IR_IMAGE"].append(image_name)
         data_dict["DATETIME"].append(sample_time.isoformat())
 
@@ -101,16 +112,21 @@ def read_ufm_dataset(file: Path, csvreader: csv.reader, first_row: list):
         blank_row = next(csvreader, None)
         if blank_row is None:
             break
-        if len(blank_row) > 0:
+        if len(blank_row) > 0 and not blank_row[0] == '':
             print(f"Blank break line between samples not present at sample {sample}")
+            print(blank_row)
             exit()
 
-        # Increment sample count and time
+        # Increment sample count and time, accounting for device sample rate
         sample += 1
-        sample_time += datetime.timedelta(seconds=1)
+        sample_time += datetime.timedelta(seconds=1./sample_rate)
 
-    image_data_cube = np.stack(image_arrays, axis=0)
-    print(image_data_cube.shape)
+    if len(image_arrays) > 0:
+        image_data_cube = np.stack(image_arrays, axis=0)
+        print(image_data_cube.shape)
+    else:
+        # Datasets may not contain any data, e.x. someone turns the device on and off quickly
+        image_data_cube = None
     #np.savetxt(output_directory.joinpath(file.stem + '_' + dataset_datetime + '_ir_images.npy'), image_data_cube)
     #image_data_cube.tofile(output_directory.joinpath(file.stem + '_' + dataset_datetime + '_ir_images.txt'), sep=",")
     #scipy.io.savemat(output_directory.joinpath(file.stem + '_' + dataset_datetime + '_ir_images.mat'), {'ir_images': image_data_cube})
@@ -135,14 +151,16 @@ def extract_ufm_datasets_from_raw_file(file: Path):
         row = next(csvreader, None)
 
     row, header_dict, data_df, ir_image_cube = read_ufm_dataset(file, csvreader, row)
-    header_dicts.append(header_dict)
-    data_dfs.append(data_df)
-    ir_image_cubes.append(ir_image_cube)
-    while not row is None:
-        row, header_dict, data_df, ir_image_cube = read_ufm_dataset(file, csvreader, row)
+    if ir_image_cube is not None:
         header_dicts.append(header_dict)
         data_dfs.append(data_df)
         ir_image_cubes.append(ir_image_cube)
+    while row is not None:
+        row, header_dict, data_df, ir_image_cube = read_ufm_dataset(file, csvreader, row)
+        if ir_image_cube is not None:
+            header_dicts.append(header_dict)
+            data_dfs.append(data_df)
+            ir_image_cubes.append(ir_image_cube)
 
     print("Finished processing file: ", file)
     return header_dicts, data_dfs, ir_image_cubes

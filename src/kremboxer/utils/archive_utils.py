@@ -37,9 +37,10 @@ def extract_datasets_from_raw_file(file: Path, sensor: str):
 
 def create_dataset_archive(params: dict):
     print("Creating dataset archive")
-    output_dir = Path(params["output_dir"])
+    archive_dir = Path(params["archive_dir"])
     data_source_directories = params["data_source_directories"]
     data_dates = [datetime.datetime.fromisoformat(x).date() for x in params["data_dates"]]
+    processing_level = "Raw"
 
     unknown_sensor_file = []
     metadatas = {
@@ -59,8 +60,8 @@ def create_dataset_archive(params: dict):
                 continue
             if sensor == "Dualband":
                 header_dicts, data_dfs = extract_datasets_from_raw_file(file, sensor)
-                db_output_dir = output_dir.joinpath(sensor)
-                db_output_dir.mkdir(exist_ok=True)
+                db_output_dir = archive_dir.joinpath(processing_level).joinpath(sensor)
+                db_output_dir.mkdir(exist_ok=True, parents=True)
                 datafiles = []
                 for i, (header_dict, data_df) in enumerate(zip(header_dicts, data_dfs)):
                     unit = header_dict['UNIT']
@@ -68,15 +69,15 @@ def create_dataset_archive(params: dict):
                     output_file = db_output_dir.joinpath(f'{sensor}_{unit}_{dt}.csv')
                     data_df.to_csv(output_file, index=False)
                     metadatas[sensor].append(header_dict)
-                    metadatas[sensor][-1]['FOLDER'] = sensor
+                    metadatas[sensor][-1]['PROCESSING_LEVEL'] = processing_level
+                    metadatas[sensor][-1]['SENSOR'] = sensor
                     metadatas[sensor][-1]['DATAFILE'] = output_file.name
-                    metadatas[sensor][-1]['TYPE'] = "Raw"
                     metadatas[sensor][-1]['DURATION'] = len(data_df) / header_dict['SAMPLE-RATE(Hz)']
                 print(header_dicts)
             elif sensor == "UFM":
                 header_dicts, data_dfs, ir_image_cubes = extract_datasets_from_raw_file(file, sensor)
-                ufm_output_dir = output_dir.joinpath(sensor)
-                ufm_output_dir.mkdir(exist_ok=True)
+                ufm_output_dir = archive_dir.joinpath(processing_level).joinpath(sensor)
+                ufm_output_dir.mkdir(exist_ok=True, parents=True)
                 datafiles = []
                 for i, (header_dict, data_df, ir_image_cube) in enumerate(zip(header_dicts, data_dfs, ir_image_cubes)):
                     unit = header_dict['UNIT']
@@ -84,9 +85,9 @@ def create_dataset_archive(params: dict):
                     output_file = ufm_output_dir.joinpath(f'{sensor}_{unit}_{dt}.csv')
                     data_df.to_csv(output_file, index=False)
                     metadatas[sensor].append(header_dict)
-                    metadatas[sensor][-1]['FOLDER'] = sensor
+                    metadatas[sensor][-1]['PROCESSING_LEVEL'] = "Raw"
+                    metadatas[sensor][-1]['SENSOR'] = sensor
                     metadatas[sensor][-1]['DATAFILE'] = output_file.name
-                    metadatas[sensor][-1]['TYPE'] = "Raw"
                     metadatas[sensor][-1]['DURATION'] = len(data_df) / header_dict['SAMPLE-RATE(Hz)']
 
                     numpy_output_file = ufm_output_dir.joinpath(f'{sensor}_{unit}_{dt}_ir_images.npy')
@@ -103,6 +104,6 @@ def create_dataset_archive(params: dict):
     for key, metadata in metadatas.items():
         print(key)
         df = pd.DataFrame(metadata)
-        df.to_csv(output_dir.joinpath(f'{key}_raw_metadata.csv'), index=False)
+        df.to_csv(archive_dir.joinpath(f'{key}_raw_metadata.csv'), index=False)
 
     return 0

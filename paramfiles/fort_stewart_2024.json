@@ -1,13 +1,17 @@
 {
-  "output_dir": "/home/oryx/Projects/Objects/FortStewart2024/FireBehaviorDatasets",
+  "archive_dir": "/home/jepaki/Projects/Objects/FortStewart2024/FireBehaviorDatasets",
   "burn_name": "FortStewart2024",
+  "burn_dates": ["2024-02-08", "2024-02-10"],
   "overwrite": true,
-  "run_create_dataset_archive": true,
+  "run_create_dataset_archive": false,
   "create_dataset_archive_params": {
     "data_source_directories": [
-      "/home/oryx/Projects/Objects/FortStewart2024/RadiometerData/2024-02-08",
-      "/home/oryx/Projects/Objects/FortStewart2024/RadiometerData/2024-02-10"
-    ],
-    "data_dates": ["2024-02-08", "2024-02-10"]
+      "/home/jepaki/Projects/Objects/FortStewart2024/RadiometerData/2024-02-08",
+      "/home/jepaki/Projects/Objects/FortStewart2024/RadiometerData/2024-02-10"
+    ]
+  },
+  "run_data_processing": true,
+  "data_processing_params": {
+
   }
 }

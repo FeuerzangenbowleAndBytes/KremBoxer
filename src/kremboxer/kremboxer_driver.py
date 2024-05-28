@@ -30,25 +30,28 @@ def main(argv):
     print("Input params: ", params)
 
     # Check if the specified output directory already exists and warn the user
-    output_root = Path(params["output_dir"])
+    archive_root = Path(params["archive_dir"])
     burn_name = params["burn_name"]
-    if output_root.exists() and not params["overwrite"]:
-        print("Warning! Output directory already exists: ", output_root)
+    if archive_root.exists() and not params["overwrite"]:
+        print("Warning! Archive directory already exists: ", archive_root)
         print("Should we continue? (y/n)")
         response = input()
         if response != "y":
             print("Exiting...")
             sys.exit(0)
     else:
-        output_root.mkdir(parents=True, exist_ok=True)
+        archive_root.mkdir(parents=True, exist_ok=True)
 
     # Create the dataset archive if requested
     if params["run_create_dataset_archive"]:
         print("Creating dataset archive")
         archive_params = params["create_dataset_archive_params"]
-        archive_params["output_dir"] = output_root
+        archive_params["archive_dir"] = archive_root
         archive_params["burn_name"] = burn_name
         kremboxer.utils.archive_utils.create_dataset_archive(archive_params)
+
+    # Process each dataset
+
 
     return 0
 
