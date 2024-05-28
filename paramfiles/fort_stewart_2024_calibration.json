@@ -1,0 +1,18 @@
+{
+  "dualband_calibration_parameters": {
+    "calibration_inputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/",
+    "LW_bandpass": "DC-6073_W1_8-14Si.csv",
+    "MW_bandpass": "DC-6216_u1_Saph_longwave.csv",
+    "cal_input": "unit11_calibration_data.csv",
+    "temp_cal_input": "temperature_sensor_calibration.csv",
+    "v_top": 3300,
+    "r_top": 100000,
+    "calibration_outputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/"
+  },
+  "ufm_calibration_parameters": {
+
+  },
+  "fiveband_calibration_parameters": {
+
+  }
+}
