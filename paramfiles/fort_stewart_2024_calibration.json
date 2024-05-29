@@ -1,4 +1,5 @@
 {
+  "calibration_id": "FortStewart2024",
   "dualband_calibration_parameters": {
     "calibration_inputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/",
     "LW_bandpass": "DC-6073_W1_8-14Si.csv",

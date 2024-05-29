@@ -3,6 +3,7 @@ import json
 import sys
 from pathlib import Path
 import kremboxer.utils.archive_utils
+import kremboxer.dualband.dualband_calibration
 
 
 def main(argv):
@@ -28,6 +29,12 @@ def main(argv):
     with open(paramfile) as json_data_file:
         params = json.load(json_data_file)
     print("Input params: ", params)
+
+    # Perform calibration for dualband devices
+    if 'dualband_calibration_parameters' in params:
+        cal_params = params['dualband_calibration_parameters']
+        cal_params["calibration_id"] = params["calibration_id"]
+        kremboxer.dualband.dualband_calibration.compute_dualband_calibration(cal_params)
 
 
 if __name__ == "__main__":
