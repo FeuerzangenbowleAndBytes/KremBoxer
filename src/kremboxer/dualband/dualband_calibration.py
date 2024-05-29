@@ -4,29 +4,36 @@ from pathlib import Path
 import json
 import shutil
 import scipy.optimize as so
+import scipy.constants as sc
 import kremboxer.utils.greybody_utils as gbu
+import datetime
 
 
 def fit_received_bandpass_energy(f, ts):
     """
+    Computes a model for the integrated radiance $W^D(T)$ received by a sensor with bandpass $F(\lambda)$ exposed to blackbody radiation $W(\lambda, T)$. The model
+    has the form $W^D(T) = A*T^N$, where $W^D(T)=\int_0^\infty W(\lambda, T)F(\lambda)d\lambda$.
 
     Parameters
     ----------
-    f
-    ts
+    f: array
+        Bandpass of the sensor. 2d array where the first column is the wavelength and the second column is the fraction of light transmitted through the bandpass
+    ts: array
+        Temperatures over which to perform the model fit
 
     Returns
     -------
-
+    (A, N, wd)
+        Coefficients for the model fit $W^D(T) = A*T^N$
     """
 
-    lams = f[:,0]*10**(-6)
+    lams = f[:, 0]*10**(-6)
     dlam = lams[1] - lams[0]
     wd = np.zeros_like(ts)
 
     for i in range(0, len(ts)):
         w_lam = gbu.GB_lambda(lams, ts[i])
-        wd[i] = np.sum(w_lam*f[:,1])*dlam
+        wd[i] = np.sum(w_lam*f[:, 1])*dlam
 
     (A, N), pcov = so.curve_fit(gbu.planck_model, ts, wd)
     return (A, N, wd)
@@ -40,11 +47,18 @@ def compute_dualband_calibration(cal_params: dict):
     Parameters
     ----------
     cal_params: dict
-        asdfa
+        "calibration_inputs_folder": folder containing the below calibration input data
+        "LW_bandpass": bandpass for the longwave sensor, path to csv
+        "MW_bandpass": bandpass for the midwave sensor, path to csv
+        "cal_input": sensor values collected with a blackbody for calibration, path to csv
+        "temp_cal_input": lookup table relating temperature to resistance of the temperature sensor inside the device, path to csv
+        "v_top": voltage applied across the internal temperature sensor voltage divider
+        "r_top": resistance of resistor in internal temperature sensor voltage divider
+        "calibration_outputs_folder": folder to store the calibration results
 
     Returns
     -------
-
+        None, calibration results are saved to file
     """
 
     print("Computing dualband calibration with parameters: ", cal_params)
@@ -108,9 +122,165 @@ def compute_dualband_calibration(cal_params: dict):
     # TODO: Left out the 0 at the beginning of MW data, caused optimizer to crash, handle better
     (G_MW, AL_MW), pcov_MW = so.curve_fit(lambda T, G, AL: gbu.detector_model(T, G, AL, 300, A_MW, N_MW),
                                           t_actual[1:], v_mw[1:], maxfev=1000)
-    print("Calibration values:")
+    print("Dualband Calibration Values:")
     print("LW: N_LW=", N_LW, ", A_LW=", A_LW, ", G_LW=", G_LW, ", AL_LW=", AL_LW)
     print("MW: N_MW=", N_MW, ", A_MW=", A_MW, ", G_MW=", G_MW, ", AL_MW=", AL_MW)
 
+    ###############################################
+    # End of calibration, now see how well the
+    # computation of target temp reproduces the
+    # known calibration data
+    ###############################################
+
+    # Compute the temperature of the target from the ratio of the incident power
+    W_GB_LW = v_lw / G_LW + AL_LW * t_temp ** N_LW
+    W_GB_MW = v_mw / G_MW + AL_MW * t_temp ** N_MW
+    ratios = W_GB_MW / W_GB_LW
+    t_predict = np.zeros_like(t_actual)
+    for i in range(0, len(t_actual)):
+        if v_lw[i] > 0 and v_mw[i] > 0:
+            t_predict[i] = so.brentq(lambda Ts: gbu.GB_ratio_BP(Ts, f_mw, f_lw) - ratios[i], 200, 2000)
+
+    # Compute eA from actual and predicted blackbody power
+    eA_LW = W_GB_LW / gbu.planck_model(t_predict, A_LW, N_LW)  # WD_LW
+    eA_MW = W_GB_MW / gbu.planck_model(t_predict, A_MW, N_MW)  # WD_MW
+    eA_LW[eA_LW == np.inf] = 0
+    eA_MW[eA_MW == np.inf] = 0
+
+    # Compute FRP from eA and T
+    FRP_LW = eA_LW * sc.Stefan_Boltzmann * t_predict ** 4
+    FRP_MW = eA_MW * sc.Stefan_Boltzmann * t_predict ** 4
+
+    #################################
+    # Save the calibration data
+    #################################
+
+    cal_time = datetime.datetime.now()
+    cal_dict = {
+        "cal_generation_dt": cal_time.isoformat(),
+        "cal_input": str(cal_input_path.stem),
+        "temp_cal_input": str(temp_cal_input_path.stem),
+        "LW_bandpass": str(LW_bandpass_path.stem),
+        "MW_bandpass": str(MW_bandpass_path.stem),
+        "r_top": r_top,
+        "v_top": v_top,
+        "LW": {
+            "N": N_LW,
+            "A": A_LW,
+            "G": G_LW,
+            "AL": AL_LW
+        },
+        "MW": {
+            "N": N_MW,
+            "A": A_MW,
+            "G": G_MW,
+            "AL": AL_MW
+        }
+    }
+
+    cal_results_output_path = cal_output_dir.joinpath(f'{cal_id}_Dualband_{cal_time.isoformat().replace(":", "-")}.json')
+    with open(cal_output_dir.joinpath(cal_results_output_path), 'w') as file:
+        json.dump(cal_dict, file, indent=0)
+    print("Saved calibration data to: ", cal_results_output_path)
+
+    ############################################
+    # Make a plot of the calibration data and model results
+    ############################################
+
+    # Plot calibration data and save to file
+    fig, axs = plt.subplots(5, 2, figsize=(8, 10))
+
+    # Plot the bandpasses
+    axs[0,0].plot(f_lw[:, 0], f_lw[:, 1], label="F_LW")
+    axs[0,0].plot(f_mw[:, 0], f_mw[:, 1], label="F_MW")
+    axs[0, 0].legend()
+    axs[0, 0].set_xlim(0, 20)
+    axs[0, 0].set_xlabel("Wavelength [um]")
+    axs[0, 0].set_ylabel("Transmission [%]")
+    axs[0, 0].set_title("Bandpass Functions for 2 Band Radiometers")
+
+    # Plot the blackbody curves for the calibration target temperatures
+    wavelengths = f_lw[:, 0] * 10 ** (-6)
+    for T in t_actual:
+        axs[1, 0].plot(wavelengths, gbu.GB_lambda(wavelengths, T), label="T=" + str(T))
+    axs[1, 0].axvline(x=0.1e-6, lw=1, color='black')
+    axs[1, 0].axvline(x=5.5e-6, lw=1, color='black')
+    axs[1, 0].axvline(x=8e-6, lw=1, color='black')
+    axs[1, 0].axvline(x=14e-6, lw=1, color='black')
+    axs[1, 0].set_xlabel("Wavelength [m]")
+    axs[1, 0].set_xlim(0, 20 * 10 ** (-6))
+    axs[1, 0].set_ylabel("Planck [W/m^3]")
+
+    # Plot received energy fit
+    axs[2, 0].plot(t_actual, wd_lw, '.', label="W_LW")
+    axs[2, 0].plot(t_actual, wd_mw, '.', label="W_MW")
+    axs[2, 0].plot(t_actual, gbu.planck_model(t_actual, A_LW, N_LW), '--',
+                   label="fit LW: A={:.2E}, N={:.2f}".format(A_LW, N_LW))
+    axs[2, 0].plot(t_actual, gbu.planck_model(t_actual, A_MW, N_MW), '--',
+                   label="fit MW: A={:.2E}, N={:.2f}".format(A_MW, N_MW))
+    axs[2, 0].set_xlabel("Temperature [K]")
+    axs[2, 0].set_ylabel("Received Power [W/m^2]")
+    axs[2, 0].legend()
+
+    # Plot detector temperature
+    axs[0, 1].plot(t_actual, t_temp, label="TD")
+    axs[0, 1].set_xlabel("Temperature [K]")
+    axs[0, 1].set_ylabel("TD [K]")
+    axs[0, 1].set_title("Detector Temp")
+    axs[0, 1].legend()
+
+    # Plot LW, MW raw data and fits
+    axs[3, 0].plot(t_actual, v_lw, '.', label="V_LW")
+    axs[3, 0].plot(t_actual, v_mw, '.', label="V_MW")
+    axs[3, 0].set_xlabel("Temperature [K]")
+    axs[3, 0].set_ylabel("V sensor")
+    axs[3, 0].plot(t_actual, gbu.detector_model(t_actual, G_LW, AL_LW, 300, A_LW, N_LW), '--', label="LW fit")
+    axs[3, 0].plot(t_actual, gbu.detector_model(t_actual, G_MW, AL_MW, 300, A_MW, N_MW), '--', label="MW fit")
+    axs[3, 0].legend()
+
+    # Compute and plot energy from targets based on the calibrated model (sanity check)
+    axs[1, 1].plot(t_actual, W_GB_LW, label="W_GB_LW")
+    axs[1, 1].plot(t_actual, W_GB_MW, label="W_GB_MW")
+    axs[1, 1].set_xlabel("Temperature [K]")
+    axs[1, 1].set_ylabel("W_GB [W/m^2]")
+    axs[1, 1].legend()
+
+    # Compare predicted and measured ratios (computed Ratios Theory in two slightly different ways as sanity check)
+    axs[2, 1].plot(t_actual, wd_mw / wd_lw, '--', label="Ratios Theory")
+    ratio_predicted = []
+    for T in t_actual:
+        ratio_predicted.append(gbu.GB_ratio_BP(T, f_mw, f_lw))
+    axs[2, 1].plot(t_actual, ratio_predicted, '-*', label="Ratios Theory")
+    axs[2, 1].plot(t_actual, W_GB_MW / W_GB_LW, label="Ratios Actual")
+    axs[2, 1].legend()
+
+    axs[3, 1].plot(t_actual, t_actual, label="T Actual")
+    axs[3, 1].plot(t_actual, t_predict, label="T Pred")
+    axs[3, 1].set_xlabel("T actual")
+    axs[3, 1].set_ylabel("T predict")
+    axs[3, 1].set_title("Source Temp [K]")
+    axs[3, 1].legend()
+
+    axs[4, 0].plot(t_actual, eA_LW, label="LW")
+    axs[4, 0].plot(t_actual, eA_MW, label="MW")
+    axs[4, 0].set_title("eA")
+    axs[4, 0].set_xlabel("T actual [K]")
+    axs[4, 0].set_ylabel("eA")
+    axs[4, 0].legend()
+
+    axs[4, 1].plot(t_actual, FRP_LW, label="LW")
+    axs[4, 1].plot(t_actual, FRP_MW, label="MW")
+    axs[4, 1].set_xlabel("T actual [K]")
+    axs[4, 1].set_ylabel("FRP [W/m**2]")
+    axs[4, 1].set_title("FRP")
+    axs[4, 1].legend()
+
+    fig.suptitle("Radiometer Calibration")
+    plt.tight_layout()
+
+    # Save plot in calibration output directory
+    cal_plot_output_path = cal_output_dir.joinpath(f'{cal_id}_Dualband_{cal_time.isoformat().replace(":", "-")}.png')
+    plt.savefig(cal_plot_output_path)
+    print("Saved calibration plot to: ", cal_plot_output_path)
 
 
