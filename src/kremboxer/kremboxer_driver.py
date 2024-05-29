@@ -3,6 +3,8 @@ import json
 import sys
 from pathlib import Path
 import kremboxer.utils.archive_utils
+import kremboxer.utils.process_utils
+import kremboxer.dualband.dualband_process
 
 
 def main(argv):
@@ -51,8 +53,14 @@ def main(argv):
         kremboxer.utils.archive_utils.create_dataset_archive(archive_params)
 
     # Process each dataset
+    if params["run_data_processing"]:
+        print("Processing raw radiometer data")
+        process_params = params["data_processing_params"]
+        process_params["archive_dir"] = archive_root
+        process_params["burn_dates"] = params["burn_dates"]
+        kremboxer.utils.process_utils.run_data_processing(process_params)
 
-
+    print("Done!")
     return 0
 
 

@@ -158,10 +158,10 @@ def compute_dualband_calibration(cal_params: dict):
     cal_time = datetime.datetime.now()
     cal_dict = {
         "cal_generation_dt": cal_time.isoformat(),
-        "cal_input": str(cal_input_path.stem),
-        "temp_cal_input": str(temp_cal_input_path.stem),
-        "LW_bandpass": str(LW_bandpass_path.stem),
-        "MW_bandpass": str(MW_bandpass_path.stem),
+        "cal_input": str(cal_input_path.name),
+        "temp_cal_input": str(temp_cal_input_path.name),
+        "LW_bandpass": str(LW_bandpass_path.name),
+        "MW_bandpass": str(MW_bandpass_path.name),
         "r_top": r_top,
         "v_top": v_top,
         "LW": {

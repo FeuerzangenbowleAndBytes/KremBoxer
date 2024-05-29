@@ -12,6 +12,7 @@
   },
   "run_data_processing": true,
   "data_processing_params": {
-
+    "dualband_calibration_file": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/FortStewart2024/FortStewart2024_Dualband_2024-05-29T15-14-51.702863.json",
+    "duration_cutoff": 600
   }
 }

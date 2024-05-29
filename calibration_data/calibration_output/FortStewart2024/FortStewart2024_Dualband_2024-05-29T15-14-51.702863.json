@@ -1,9 +1,9 @@
 {
-"cal_generation_dt": "2024-05-29T13:34:48.176583",
-"cal_input": "unit11_calibration_data",
-"temp_cal_input": "temperature_sensor_calibration",
-"LW_bandpass": "DC-6073_W1_8-14Si",
-"MW_bandpass": "DC-6216_u1_Saph_longwave",
+"cal_generation_dt": "2024-05-29T15:14:51.702863",
+"cal_input": "unit11_calibration_data.csv",
+"temp_cal_input": "temperature_sensor_calibration.csv",
+"LW_bandpass": "DC-6073_W1_8-14Si.csv",
+"MW_bandpass": "DC-6216_u1_Saph_longwave.csv",
 "r_top": 100000,
 "v_top": 3300,
 "LW": {

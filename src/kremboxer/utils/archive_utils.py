@@ -1,6 +1,7 @@
 from pathlib import Path
 import datetime
 import pandas as pd
+import geopandas as gpd
 import numpy as np
 import scipy
 import kremboxer.dualband.dualband_utils as db_utils
@@ -39,7 +40,6 @@ def create_dataset_archive(params: dict):
     print("Creating dataset archive")
     archive_dir = Path(params["archive_dir"])
     data_source_directories = params["data_source_directories"]
-    data_dates = [datetime.datetime.fromisoformat(x).date() for x in params["data_dates"]]
     processing_level = "Raw"
 
     unknown_sensor_file = []
@@ -105,5 +105,10 @@ def create_dataset_archive(params: dict):
         print(key)
         df = pd.DataFrame(metadata)
         df.to_csv(archive_dir.joinpath(f'{key}_raw_metadata.csv'), index=False)
+
+        if len(df) > 0:
+            gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.LONGITUDE, df.LATITUDE), crs="EPSG:4326")
+            gdf['DATETIME_START'] = gdf['DATETIME_START'].map(lambda x: x.isoformat())
+            gdf.to_file(archive_dir.joinpath(f'{key}_raw_metadata.geojson'), index=False)
 
     return 0
