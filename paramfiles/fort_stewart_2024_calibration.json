@@ -10,10 +10,17 @@
     "r_top": 100000,
     "calibration_outputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/"
   },
-  "ufm_calibration_parameters": {
-
-  },
   "fiveband_calibration_parameters": {
-
+    "calibration_inputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/",
+    "cal_input": "fb1_calibration_data.csv",
+    "MW_bandpass": "bandpasses/interpolated/DC-6216_u1_Saph_longwave.csv",
+    "LW_bandpass": "bandpasses/interpolated/DC-6073_W1_8-14Si.csv",
+    "WIDE_bandpass": "bandpasses/interpolated/DC-6169_KRS5.csv",
+    "3.95_bandpass": "bandpasses/interpolated/DC-6726_R4_395CWL.csv",
+    "10.95_bandpass": "bandpasses/interpolated/DC-6725_1095CWL.csv",
+    "temp_cal_input": "temperature_sensor_calibration.csv",
+    "v_top": 3300,
+    "r_top": 100000,
+    "calibration_outputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/"
   }
 }
