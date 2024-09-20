@@ -9,34 +9,34 @@ import kremboxer.utils.greybody_utils as gbu
 import datetime
 
 
-def fit_received_bandpass_energy(f, ts):
-    """
-    Computes a model for the integrated radiance $W^D(T)$ received by a sensor with bandpass $F(\lambda)$ exposed to blackbody radiation $W(\lambda, T)$. The model
-    has the form $W^D(T) = A*T^N$, where $W^D(T)=\int_0^\infty W(\lambda, T)F(\lambda)d\lambda$.
-
-    Parameters
-    ----------
-    f: array
-        Bandpass of the sensor. 2d array where the first column is the wavelength and the second column is the fraction of light transmitted through the bandpass
-    ts: array
-        Temperatures over which to perform the model fit
-
-    Returns
-    -------
-    (A, N, wd)
-        Coefficients for the model fit $W^D(T) = A*T^N$
-    """
-
-    lams = f[:, 0]*10**(-6)
-    dlam = lams[1] - lams[0]
-    wd = np.zeros_like(ts)
-
-    for i in range(0, len(ts)):
-        w_lam = gbu.GB_lambda(lams, ts[i])
-        wd[i] = np.sum(w_lam*f[:, 1])*dlam
-
-    (A, N), pcov = so.curve_fit(gbu.planck_model, ts, wd)
-    return (A, N, wd)
+# def fit_received_bandpass_energy(f, ts):
+#     """
+#     Computes a model for the integrated radiance $W^D(T)$ received by a sensor with bandpass $F(\lambda)$ exposed to blackbody radiation $W(\lambda, T)$. The model
+#     has the form $W^D(T) = A*T^N$, where $W^D(T)=\int_0^\infty W(\lambda, T)F(\lambda)d\lambda$.
+#
+#     Parameters
+#     ----------
+#     f: array
+#         Bandpass of the sensor. 2d array where the first column is the wavelength and the second column is the fraction of light transmitted through the bandpass
+#     ts: array
+#         Temperatures over which to perform the model fit
+#
+#     Returns
+#     -------
+#     (A, N, wd)
+#         Coefficients for the model fit $W^D(T) = A*T^N$
+#     """
+#
+#     lams = f[:, 0]*10**(-6)
+#     dlam = lams[1] - lams[0]
+#     wd = np.zeros_like(ts)
+#
+#     for i in range(0, len(ts)):
+#         w_lam = gbu.GB_lambda(lams, ts[i])
+#         wd[i] = np.sum(w_lam*f[:, 1])*dlam
+#
+#     (A, N), pcov = so.curve_fit(gbu.planck_model, ts, wd)
+#     return (A, N, wd)
 
 
 def compute_dualband_calibration(cal_params: dict):
@@ -112,8 +112,8 @@ def compute_dualband_calibration(cal_params: dict):
 
     # Fit a polynomial for the blackbody energy received by each sensor, W~A*T**N
     # LW
-    (A_MW, N_MW, wd_mw) = fit_received_bandpass_energy(f_mw, t_actual)
-    (A_LW, N_LW, wd_lw) = fit_received_bandpass_energy(f_lw, t_actual)
+    (A_MW, N_MW, wd_mw) = gbu.fit_received_bandpass_energy(f_mw, t_actual)
+    (A_LW, N_LW, wd_lw) = gbu.fit_received_bandpass_energy(f_lw, t_actual)
 
     # Now fit the detector model with the calibration data to get G and AL
     # Note that since the detector temp barely changes during calibration, we set it to a constant 300 K during this fit

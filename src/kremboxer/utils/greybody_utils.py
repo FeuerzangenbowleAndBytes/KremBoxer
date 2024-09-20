@@ -8,6 +8,36 @@ from matplotlib.dates import datestr2num
 from pathlib import Path
 
 
+def fit_received_bandpass_energy(f, ts):
+    """
+    Computes a model for the integrated radiance $W^D(T)$ received by a sensor with bandpass $F(\lambda)$ exposed to blackbody radiation $W(\lambda, T)$. The model
+    has the form $W^D(T) = A*T^N$, where $W^D(T)=\int_0^\infty W(\lambda, T)F(\lambda)d\lambda$.
+
+    Parameters
+    ----------
+    f: array
+        Bandpass of the sensor. 2d array where the first column is the wavelength and the second column is the fraction of light transmitted through the bandpass
+    ts: array
+        Temperatures over which to perform the model fit
+
+    Returns
+    -------
+    (A, N, wd)
+        Coefficients for the model fit $W^D(T) = A*T^N$
+    """
+
+    lams = f[:, 0]*10**(-6)
+    dlam = lams[1] - lams[0]
+    wd = np.zeros_like(ts)
+
+    for i in range(0, len(ts)):
+        w_lam = GB_lambda(lams, ts[i])
+        wd[i] = np.sum(w_lam*f[:, 1])*dlam
+
+    (A, N), pcov = so.curve_fit(planck_model, ts, wd)
+    return (A, N, wd)
+
+
 def planck_model(T, A, N):
     """
     Computes a polynomial approximation to the planck curve, A*T^N
@@ -34,7 +64,7 @@ def detector_model(T, G, AL, TD, A, N):
     :param T: temperature of the object being viewed
     :param G: fit coefficient
     :param AL: fit coefficient
-    :param TD: temprature of the detector
+    :param TD: temperature of the detector
     :param A: fit coefficient
     :param N: fit power coefficient
     :return:

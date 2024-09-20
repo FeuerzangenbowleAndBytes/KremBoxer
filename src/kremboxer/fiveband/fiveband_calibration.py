@@ -7,6 +7,7 @@ import scipy.optimize as so
 import scipy.constants as sc
 import kremboxer.utils.greybody_utils as gbu
 import datetime
+import pandas as pd
 
 
 def compute_fiveband_calibration(cal_params: dict):
@@ -33,3 +34,209 @@ def compute_fiveband_calibration(cal_params: dict):
     -------
         None, calibration results are saved to file
     """
+
+    print("Computing fiveband calibration with parameters: ", cal_params)
+
+    # Grab input calibration data
+    cal_input_dir = Path(cal_params["calibration_inputs_folder"])
+    LW_bandpass_path = cal_input_dir.joinpath(cal_params["LW_bandpass"])
+    MW_bandpass_path = cal_input_dir.joinpath(cal_params["MW_bandpass"])
+    WIDE_bandpass_path = cal_input_dir.joinpath(cal_params["WIDE_bandpass"])
+    MW_narrow_bandpass_path = cal_input_dir.joinpath(cal_params["3.95_bandpass"])
+    LW_narrow_bandpass_path = cal_input_dir.joinpath(cal_params["10.95_bandpass"])
+    cal_input_path = cal_input_dir.joinpath(cal_params["cal_input"])
+    temp_cal_input_path = cal_input_dir.joinpath(cal_params["temp_cal_input"])
+    v_top = cal_params["v_top"]
+    r_top = cal_params["r_top"]
+
+    # Where to store output calibration model
+    cal_id = cal_params["calibration_id"]
+    cal_output_dir = Path(cal_params["calibration_outputs_folder"]).joinpath(cal_id).joinpath("fiveband")
+    cal_output_dir.mkdir(exist_ok=True, parents=True)
+
+    # Copy input data into output directory so that we can easily match calibration models with input data
+    shutil.copy(LW_bandpass_path, cal_output_dir.joinpath(LW_bandpass_path.name))
+    LW_bandpass_path = cal_output_dir.joinpath(LW_bandpass_path.name)
+
+    shutil.copy(MW_bandpass_path, cal_output_dir.joinpath(MW_bandpass_path.name))
+    MW_bandpass_path = cal_output_dir.joinpath(MW_bandpass_path.name)
+
+    shutil.copy(WIDE_bandpass_path, cal_output_dir.joinpath(WIDE_bandpass_path.name))
+    WIDE_bandpass_path = cal_output_dir.joinpath(WIDE_bandpass_path.name)
+
+    shutil.copy(MW_narrow_bandpass_path, cal_output_dir.joinpath(MW_narrow_bandpass_path.name))
+    MW_narrow_bandpass_path = cal_output_dir.joinpath(MW_narrow_bandpass_path)
+
+    shutil.copy(LW_narrow_bandpass_path, cal_output_dir.joinpath(LW_narrow_bandpass_path.name))
+    LW_narrow_bandpass_path = cal_output_dir.joinpath(LW_narrow_bandpass_path)
+
+    shutil.copy(cal_input_path, cal_output_dir.joinpath(cal_input_path.name))
+    cal_input_path = cal_output_dir.joinpath(cal_input_path.name)
+    shutil.copy(temp_cal_input_path, cal_output_dir.joinpath(temp_cal_input_path.name))
+    temp_cal_input_path = cal_output_dir.joinpath(temp_cal_input_path.name)
+
+    # Load the bandpass functions for the two sensors
+    f_mw = np.loadtxt(MW_bandpass_path, delimiter=',', skiprows=1, usecols=[0, 1])
+    f_lw = np.loadtxt(LW_bandpass_path, delimiter=',', skiprows=1, usecols=[0, 1])
+    f_mw_narrow = np.loadtxt(MW_narrow_bandpass_path, delimiter=',', skiprows=1, usecols=[0, 1])
+    f_lw_narrow = np.loadtxt(LW_narrow_bandpass_path, delimiter=',', skiprows=1, usecols=[0, 1])
+    f_wide = np.loadtxt(WIDE_bandpass_path, delimiter=',', skiprows=1, usecols=[0, 1])
+
+    # Load the blackbody calibration data
+    blackbody_cal_data_df = pd.read_csv(cal_input_path)
+
+    # Convert the two temperature sensors' mV data into resistance, using known voltage divider characteristics
+    v_top = cal_params["v_top"]  # voltage at the top of divider in mV
+    r_top = cal_params["r_top"]  # 100kOhm resistor in voltage divider
+    t1_mV = blackbody_cal_data_df["TH1"].to_numpy()
+    t1_resist = t1_mV * r_top / (v_top - t1_mV)  # Convert mV reading into resistance of temperature sensor
+    t2_mV = blackbody_cal_data_df["TH2"].to_numpy()
+    t2_resist = t2_mV * r_top / (v_top - t2_mV)  # Convert mV reading into resistance of temperature sensor
+
+    # Load actual temperatures and detector signals from calibration data
+    t_actual = blackbody_cal_data_df["Target T [K]"].to_numpy()
+    v_lw = blackbody_cal_data_df["LW"].to_numpy()
+    v_mw = blackbody_cal_data_df["MW"].to_numpy()
+    v_lw_narrow = blackbody_cal_data_df["10.95"].to_numpy()
+    v_mw_narrow = blackbody_cal_data_df["3.95"].to_numpy()
+    v_wide = blackbody_cal_data_df["WIDE"].to_numpy()
+
+    # Compute the temperature of the detector from its resistance
+    t_cal_data = np.loadtxt(temp_cal_input_path, skiprows=1, delimiter=",", usecols=[0, 1, 2])
+    t_cal_data = np.flip(t_cal_data, 0)
+    t1_temp = gbu.detector_temperature_lookup(R=t1_resist, temp_cal_data=t_cal_data)
+    t2_temp = gbu.detector_temperature_lookup(R=t2_resist, temp_cal_data=t_cal_data)
+
+    print("T1 = ", t1_temp)
+    print("T2 = ", t2_temp)
+
+    # Fit a polynomial for the blackbody energy received by each sensor, W~A*T**N
+    (A_MW, N_MW, wd_mw) = gbu.fit_received_bandpass_energy(f_mw, t_actual)
+    (A_LW, N_LW, wd_lw) = gbu.fit_received_bandpass_energy(f_lw, t_actual)
+    (A_MW_narrow, N_MW_narrow, wd_mw_narrow) = gbu.fit_received_bandpass_energy(f_mw_narrow, t_actual)
+    (A_LW_narrow, N_LW_narrow, wd_lw_narrow) = gbu.fit_received_bandpass_energy(f_lw_narrow, t_actual)
+    (A_WIDE, N_WIDE, wd_WIDE) = gbu.fit_received_bandpass_energy(f_wide, t_actual)
+
+    # Now fit the detector model with the calibration data to get G and AL
+    # Note that since the detector temp barely changes during calibration, we set it to the average during data collect
+    # TODO: Currently some strong sensitivity to what is chosen for the detector temperature, try to find a better way to optimize with
+    # varying detector temp instead of fixing to one value
+    (G_LW, AL_LW), pcov_LW = so.curve_fit(
+        lambda T, G, AL: gbu.detector_model(T, G, AL, np.average(t2_temp), A_LW, N_LW),
+        t_actual, v_lw)
+    (G_MW, AL_MW), pcov_MW = so.curve_fit(
+        lambda T, G, AL: gbu.detector_model(T, G, AL, 290, A_MW, N_MW),
+        t_actual, v_mw)
+    (G_LW_narrow, AL_LW_narrow), pcov_LW_narrow = so.curve_fit(
+        lambda T, G, AL: gbu.detector_model(T, G, AL, np.average(t1_temp), A_LW_narrow, N_LW_narrow),
+        t_actual, v_lw_narrow)
+    (G_MW_narrow, AL_MW_narrow), pcov_MW_narrow = so.curve_fit(
+        lambda T, G, AL: gbu.detector_model(T, G, AL, np.average(t1_temp), A_MW_narrow, N_MW_narrow),
+        t_actual, v_mw_narrow, maxfev=1000)
+    (G_WIDE, AL_WIDE), pcov_WIDE = so.curve_fit(
+        lambda T, G, AL: gbu.detector_model(T, G, AL, np.average(t1_temp), A_WIDE, N_WIDE),
+        t_actual, v_wide, maxfev=1000)
+    print("Fiveband Calibration Values:")
+    print("LW: N_LW=", N_LW, ", A_LW=", A_LW, ", G_LW=", G_LW, ", AL_LW=", AL_LW)
+    print("MW: N_MW=", N_MW, ", A_MW=", A_MW, ", G_MW=", G_MW, ", AL_MW=", AL_MW)
+    print("LW_narrow: N_LW_narrow=", N_LW_narrow, ", A_LW_narrow=", A_LW_narrow, ", G_LW_narrow=", G_LW_narrow, ", AL_LW_narrow=", AL_LW_narrow)
+    print("MW_narrow: N_MW_narrow=", N_MW_narrow, ", A_MW_narrow=", A_MW_narrow, ", G_MW_narrow=", G_MW_narrow, ", AL_MW_narrow=", AL_MW_narrow)
+    print("WIDE: N_WIDE=", N_WIDE, ", A_WIDE=", A_WIDE, ", G_WIDE=", G_WIDE, ", AL_WIDE=", AL_WIDE)
+
+    ###############################################
+    # End of calibration, now see how well the
+    # computation of target temp reproduces the
+    # known calibration data
+    ###############################################
+
+    # Compute the temperature of the target from the ratio of the incident power
+    W_GB_LW = v_lw / G_LW + AL_LW * t2_temp ** N_LW
+    W_GB_MW = v_mw / G_MW + AL_MW * t2_temp ** N_MW
+    ratios = W_GB_MW / W_GB_LW
+    t_predict = np.zeros_like(t_actual)
+
+    fig, axs = plt.subplots(1,2)
+    axs[0].plot(f_mw[:,0], f_mw[:,1], label="MW")
+    axs[0].plot(f_lw[:,0], f_lw[:,1], label="LW")
+    #axs[1].plot(W_GB_MW)
+    #axs[1].plot(W_GB_LW)
+    axs[1].plot(t_actual, v_mw, label='MW')
+    axs[1].plot(t_actual, v_lw, label='LW')
+
+    axs[1].plot(t_actual, gbu.detector_model(t_actual, G_MW, AL_MW, t2_temp, A_MW, N_MW), ls='--', label='fit')
+    axs[1].plot(t_actual, gbu.detector_model(t_actual, G_LW, AL_LW, t2_temp, A_LW, N_LW), ls='--', label='fit')
+    axs[1].legend()
+    axs[0].legend()
+    plt.show()
+
+
+    for i in range(0, len(t_actual)):
+        if v_lw[i] > 0 and v_mw[i] > 0:
+            try:
+                t_predict[i] = so.brentq(lambda Ts: gbu.GB_ratio_BP(Ts, f_mw, f_lw) - ratios[i], 200, 2000)
+            except ValueError:
+                print("Failed to compute T prediction for T = ", t_actual[i])
+
+    # Compute eA from actual and predicted blackbody power
+    eA_LW = W_GB_LW / gbu.planck_model(t_predict, A_LW, N_LW)  # WD_LW
+    eA_MW = W_GB_MW / gbu.planck_model(t_predict, A_MW, N_MW)  # WD_MW
+    eA_LW[eA_LW == np.inf] = 0
+    eA_MW[eA_MW == np.inf] = 0
+
+    # Compute FRP from eA and T
+    FRP_LW = eA_LW * sc.Stefan_Boltzmann * t_predict ** 4
+    FRP_MW = eA_MW * sc.Stefan_Boltzmann * t_predict ** 4
+
+    #################################
+    # Save the calibration data
+    #################################
+
+    cal_time = datetime.datetime.now()
+    cal_dict = {
+        "cal_generation_dt": cal_time.isoformat(),
+        "cal_input": str(cal_input_path.name),
+        "temp_cal_input": str(temp_cal_input_path.name),
+        "LW_bandpass": str(LW_bandpass_path.name),
+        "MW_bandpass": str(MW_bandpass_path.name),
+        "LW_narrow_bandpass": str(LW_narrow_bandpass_path.name),
+        "MW_narrow_bandpass": str(MW_narrow_bandpass_path.name),
+        "WIDE_bandpass": str(WIDE_bandpass_path.name),
+        "r_top": r_top,
+        "v_top": v_top,
+        "LW": {
+            "N": N_LW,
+            "A": A_LW,
+            "G": G_LW,
+            "AL": AL_LW
+        },
+        "MW": {
+            "N": N_MW,
+            "A": A_MW,
+            "G": G_MW,
+            "AL": AL_MW
+        },
+        "LW_narrow": {
+            "N": N_LW_narrow,
+            "A": A_LW_narrow,
+            "G": G_LW_narrow,
+            "AL": AL_LW_narrow
+        },
+        "MW_narrow": {
+            "N": N_MW_narrow,
+            "A": A_MW_narrow,
+            "G": G_MW_narrow,
+            "AL": AL_MW_narrow
+        },
+        "WIDE": {
+            "N": N_WIDE,
+            "A": A_WIDE,
+            "G": G_WIDE,
+            "AL": AL_WIDE
+        }
+    }
+
+    cal_results_output_path = cal_output_dir.joinpath(
+        f'{cal_id}_Dualband_{cal_time.isoformat().replace(":", "-")}.json')
+    with open(cal_output_dir.joinpath(cal_results_output_path), 'w') as file:
+        json.dump(cal_dict, file, indent=0)
+    print("Saved calibration data to: ", cal_results_output_path)
