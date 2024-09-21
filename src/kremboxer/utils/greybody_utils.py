@@ -59,7 +59,7 @@ def planck_model(T, A, N):
 def detector_model(T, G, AL, TD, A, N):
     """
     Model for the detector response when viewing an object at temperature `T` and when the detector's temperature
-    is `TD`
+    is `TD`. Sensor response is a function of the energy received from the source minus the energy radiated by the detector.
 
     :param T: temperature of the object being viewed
     :param G: fit coefficient
