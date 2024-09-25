@@ -70,7 +70,7 @@ def detector_model(T, G, AL, TD, A, N):
     :return:
     :group: greybody_utils
     """
-    return G*(A*T**N-AL*TD**N)
+    return G*(A*T**N-AL*TD**4)
 
 
 def GB_lambda(lams, T, emissivity=1):

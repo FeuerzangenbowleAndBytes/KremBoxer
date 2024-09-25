@@ -11,13 +11,40 @@
     "calibration_outputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/"
   },
   "fiveband_calibration_parameters": {
+    "bands": {
+      "MW": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6216_u1_Saph_longwave.csv",
+        "datalog_col": "MW",
+        "sensor_temp": "TH1",
+        "type": "broad"
+      },
+      "LW": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6073_W1_8-14Si.csv",
+        "datalog_col": "LW",
+        "sensor_temp": "TH1",
+        "type": "broad"
+      },
+      "3.95": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6726_R4_395CWL.csv",
+        "datalog_col": "3.95",
+        "sensor_temp": "TH2",
+        "type": "narrow"
+      },
+      "10.95": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6725_1095CWL.csv",
+        "datalog_col": "10.95",
+        "sensor_temp": "TH2",
+        "type": "narrow"
+      },
+      "WIDE": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6169_KRS5.csv",
+        "datalog_col": "WIDE",
+        "sensor_temp": "TH1",
+        "type": "broad"
+      }
+    },
     "calibration_inputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/",
-    "cal_input": "fb1_calibration_data.csv",
-    "MW_bandpass": "bandpasses/interpolated/DC-6216_u1_Saph_longwave.csv",
-    "LW_bandpass": "bandpasses/interpolated/DC-6073_W1_8-14Si.csv",
-    "WIDE_bandpass": "bandpasses/interpolated/DC-6169_KRS5.csv",
-    "3.95_bandpass": "bandpasses/interpolated/DC-6726_R4_395CWL.csv",
-    "10.95_bandpass": "bandpasses/interpolated/DC-6725_1095CWL.csv",
+    "cal_input": "fb1_calibration_data_remove_highest_temp.csv",
     "temp_cal_input": "temperature_sensor_calibration.csv",
     "v_top": 3300,
     "r_top": 100000,
