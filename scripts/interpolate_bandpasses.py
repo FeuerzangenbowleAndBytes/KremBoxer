@@ -61,8 +61,8 @@ def interpolate_bandpass_files(input_dir: Path, bandpass_files, output_dir: Path
     axs[1].set_title("Interpolated Bandpasses")
     axs[0].legend()
     axs[1].legend()
-    #axs[0].set_xlim([3.5, 4.5])
-    #axs[1].set_xlim([3.5, 4.5])
+    axs[0].set_xlim([3.5, 4.5])
+    axs[1].set_xlim([3.5, 4.5])
     plt.savefig(bandpass_output_dir.joinpath("bandpass_interpolation_results.png"))
     plt.show()
 
@@ -76,4 +76,4 @@ if __name__ == "__main__":
     bandpass_files = ["DC-6073_W1_8-14Si.csv", "DC-6169_KRS5.csv",
                   "DC-6725_1095CWL.csv", "DC-6726_R4_395CWL.csv", "DC-6216_u1_Saph_longwave.csv"]
 
-    interpolate_bandpass_files(bandpass_input_dir, bandpass_files, bandpass_output_dir, dl=0.01, l_min=0.1, l_max=20)
+    interpolate_bandpass_files(bandpass_input_dir, bandpass_files, bandpass_output_dir, dl=0.001, l_min=0.1, l_max=20)

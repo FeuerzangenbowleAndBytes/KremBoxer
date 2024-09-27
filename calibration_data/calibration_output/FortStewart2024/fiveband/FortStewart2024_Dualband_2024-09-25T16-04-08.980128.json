@@ -1,0 +1,15 @@
+{
+"cal_generation_dt": "2024-09-25T16:04:08.980128",
+"cal_input": "fb1_calibration_data_remove_highest_temp.csv",
+"temp_cal_input": "temperature_sensor_calibration.csv",
+"r_top": 100000,
+"v_top": 3300,
+"bands": {
+"band": {
+"N": 4.135428350939964,
+"A": 1.5674560524680754e-08,
+"G": 0.04541906935585507,
+"AL": 5.037819693033941e-08
+}
+}
+}

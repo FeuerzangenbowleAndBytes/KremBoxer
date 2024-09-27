@@ -28,7 +28,7 @@ def fit_received_bandpass_energy(f, ts):
 
     lams = f[:, 0]*10**(-6)
     dlam = lams[1] - lams[0]
-    wd = np.zeros_like(ts)
+    wd = np.zeros_like(ts, dtype=float)
 
     for i in range(0, len(ts)):
         w_lam = GB_lambda(lams, ts[i])
@@ -70,7 +70,7 @@ def detector_model(T, G, AL, TD, A, N):
     :return:
     :group: greybody_utils
     """
-    return G*(A*T**N-AL*TD**4)
+    return G*(A*T**N-AL*TD**N)
 
 
 def GB_lambda(lams, T, emissivity=1):
