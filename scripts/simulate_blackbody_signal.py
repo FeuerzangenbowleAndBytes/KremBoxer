@@ -7,11 +7,11 @@ import kremboxer.utils.greybody_utils as gbu
 
 bandpass_dir = Path().home().joinpath("code", "KremBoxer", "calibration_data", "calibration_input", "fiveband", "bandpasses", "interpolated")
 bandpass_files = {
-    #"MW": "DC-6216_u1_Saph_longwave.csv",
-    #"LW": "DC-6073_W1_8-14Si.csv",
+    "MW": "DC-6216_u1_Saph_longwave.csv",
+    "LW": "DC-6073_W1_8-14Si.csv",
     "10.95": "DC-6725_1095CWL.csv",
     "3.95": "DC-6726_R4_395CWL.csv",
-    #"WIDE": "DC-6169_KRS5.csv",
+    "WIDE": "DC-6169_KRS5.csv",
 }
 
 bandpass_data = {}

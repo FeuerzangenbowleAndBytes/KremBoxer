@@ -146,30 +146,64 @@ def compute_fiveband_calibration(cal_params: dict):
         axs[2, 0].plot(t_actual, band_data["t_sensor_temp"], label=f'{band}')
 
     # Try to predict target known temperatures, eA, FRP
-    # With MW and LW
     ratio_mw_lw = bands_dict["MW"]["W_GB"] / bands_dict["LW"]["W_GB"]
-    t_predict = np.zeros_like(t_actual)
-    for i in range(0, len(t_actual)):
-        t_predict[i] = so.brentq(lambda Ts: gbu.GB_ratio_BP(Ts, bands_dict["MW"]["f"], bands_dict["LW"]["f"]) - ratio_mw_lw[i], 200, 2000)
-    axs[2, 1].plot(t_actual, t_predict-t_actual, label="MW/LW")
-
     ratio_mw_lw_narrow = bands_dict["3.95"]["W_GB"] / bands_dict["10.95"]["W_GB"]
-    t_predict = np.zeros_like(t_actual)
-    axs[3, 0].plot(t_actual, bands_dict["3.95"]["W_GB"], label="3.95")
-    axs[3, 0].plot(t_actual, bands_dict["10.95"]["W_GB"], label="10.95")
-    axs[3, 1].plot(t_actual, ratio_mw_lw_narrow)
+    t_predict_mw_lw = np.zeros_like(t_actual)
+    t_predict_mw_lw_narrow = np.zeros_like(t_actual)
+    for i in range(0, len(t_actual)):
+        t_predict_mw_lw[i] = so.brentq(lambda Ts: gbu.GB_ratio_BP(Ts, bands_dict["MW"]["f"], bands_dict["LW"]["f"]) - ratio_mw_lw[i], 300, 2000)
+        try:
+            t_predict_mw_lw_narrow[i] = so.brentq(lambda Ts: gbu.GB_ratio_BP(Ts, bands_dict["3.95"]["f"], bands_dict["10.95"]["f"]) - ratio_mw_lw_narrow[i], 300, 2000)
+        except ValueError:
+            print("Unable to predict temperature with 3.95 and 10.95 um bands for calibration temperature ", t_actual[i])
+    axs[2, 1].plot(t_actual, t_predict_mw_lw-t_actual, label="MW/LW")
+    axs[2, 1].plot(t_actual, t_predict_mw_lw_narrow-t_actual, label="3.95/10.95")
+    axs[2, 2].plot(t_actual, t_predict_mw_lw, label="MW/LW")
+    axs[2, 2].plot(t_actual, t_predict_mw_lw_narrow, label="3.95/10.95")
+    axs[2, 2].plot(t_actual, t_actual, label="Actual")
+
+    # Compute and plot emissivity area product and FRP
+    eA_MW = bands_dict["MW"]["W_GB"] / gbu.planck_model(t_predict_mw_lw, bands_dict["MW"]["A"], bands_dict["MW"]["N"])
+    FRP_MW = eA_MW * sc.Stefan_Boltzmann * t_predict_mw_lw ** 4
+    eA_LW = bands_dict["LW"]["W_GB"] / gbu.planck_model(t_predict_mw_lw, bands_dict["LW"]["A"], bands_dict["LW"]["N"])
+    FRP_LW = eA_LW * sc.Stefan_Boltzmann * t_predict_mw_lw ** 4
+    eA_MW_narrow = bands_dict["3.95"]["W_GB"] / gbu.planck_model(t_predict_mw_lw_narrow, bands_dict["3.95"]["A"], bands_dict["3.95"]["N"])
+    FRP_MW_narrow = eA_MW_narrow * sc.Stefan_Boltzmann * t_predict_mw_lw_narrow ** 4
+    eA_LW_narrow = bands_dict["10.95"]["W_GB"] / gbu.planck_model(t_predict_mw_lw_narrow, bands_dict["10.95"]["A"], bands_dict["10.95"]["N"])
+    FRP_LW_narrow = eA_LW_narrow * sc.Stefan_Boltzmann * t_predict_mw_lw_narrow ** 4
+
+    axs[3, 0].plot(t_actual, eA_MW, label="MW")
+    axs[3, 0].plot(t_actual, eA_LW, label="LW")
+    axs[3, 0].plot(t_actual, eA_MW_narrow, label="3.95")
+    axs[3, 0].plot(t_actual, eA_LW_narrow, label="10.95")
+    axs[3, 0].set_title("Emissivity Area Product")
+    axs[3, 0].set_xlabel("Calibration Temp [K]")
+    axs[3, 0].set_ylabel("Emissivity*Area")
     axs[3, 0].legend()
+
+    axs[3, 1].plot(t_actual, FRP_MW, label="MW")
+    axs[3, 1].plot(t_actual, FRP_LW, label="LW")
+    axs[3, 1].plot(t_actual, FRP_MW_narrow, label="3.95")
+    axs[3, 1].plot(t_actual, FRP_LW_narrow, label="10.95")
+    axs[3, 1].set_title("Fire Radiative Power")
+    axs[3, 1].set_xlabel("Calibration Temp [K]")
+    axs[3, 1].set_ylabel("FRP [W/m^2]")
+    axs[3, 1].legend()
+
+    # Debugging
+    t_predict = np.zeros_like(t_actual)
+    #axs[3, 1].plot(t_actual, ratio_mw_lw_narrow)
     Ts = np.arange(200, 1000, 10.0)
     GB_ratios = np.zeros_like(Ts)
     for i in range(0, len(Ts)):
         GB_ratios[i] = gbu.GB_ratio_BP(Ts[i], bands_dict["3.95"]["f"], bands_dict["10.95"]["f"])
-    #     t_predict[i] = so.brentq(
-    #         lambda Ts: gbu.GB_ratio_BP(Ts, bands_dict["3.95"]["f"], bands_dict["10.95"]["f"]) - ratio_mw_lw_narrow[i], 200, 2000)
-    # axs[2, 1].plot(t_actual, t_predict - t_actual, label="3.95/10.95")
     axs[3, 2].plot(Ts, GB_ratios, c='black', label="GB Ratio")
     for i in range(0, len(ratio_mw_lw_narrow)):
         axs[3, 2].axhline(y=ratio_mw_lw_narrow[i], ls='--', label=f'T={t_actual[i]}K')
     axs[3, 2].legend()
+    axs[3, 2].set_title("Ratio of Blackboy Irradiances 3.95/10.95")
+    axs[3, 2].set_xlabel("Blackbody Temperature [K]")
+    axs[3, 2].set_ylabel("Irradiance Ratio")
 
     axs[0, 0].set_title("Planck Radiance at Cal Temps")
     axs[0, 0].set_xlabel("Wavelength [um]")
@@ -203,64 +237,12 @@ def compute_fiveband_calibration(cal_params: dict):
     axs[2, 1].set_xlabel("Calibration Temp [K]")
     axs[2, 1].set_ylabel("Predicted - Cal Temp [K]")
     axs[2, 1].legend()
+    axs[2, 2].set_title("Predicted Target Temp")
+    axs[2, 2].set_xlabel("Calibration Temp [K]")
+    axs[2, 2].set_ylabel("Predicted Temp [K]")
+    axs[2, 2].legend()
 
     plt.tight_layout()
-    plt.show()
-
-    # Compute the temperature of the target from the ratio of the incident power
-    # W_GB_LW = v_lw / G_LW + AL_LW * t2_temp ** N_LW
-    # W_GB_MW = v_mw / G_MW + AL_MW * t2_temp ** N_MW
-    # ratios = W_GB_MW / W_GB_LW
-    # t_predict = np.zeros_like(t_actual)
-    #
-    # fig, axs = plt.subplots(1,3)
-    # axs[0].plot(f_mw[:,0], f_mw[:,1], label="MW")
-    # axs[0].plot(f_lw[:,0], f_lw[:,1], label="LW")
-    # axs[0].plot(f_mw_narrow[:,0], f_mw_narrow[:,1], label="3.95um")
-    # axs[0].plot(f_lw_narrow[:,0], f_lw_narrow[:,1], label="10.96um")
-    # axs[0].plot(f_wide[:,0], f_wide[:,1], label="WIDE")
-    # axs[0].set_title("Bandpasses")
-    # #axs[1].plot(W_GB_MW)
-    # #axs[1].plot(W_GB_LW)
-    # axs[1].scatter(t_actual, v_mw, label='MW')
-    # axs[1].scatter(t_actual, v_lw, label='LW')
-    # axs[2].scatter(t_actual, v_mw_narrow, label='3.95um')
-    # axs[2].scatter(t_actual, v_lw_narrow, label='10.95um')
-    # axs[1].scatter(t_actual, v_wide, label='WIDE')
-    #
-    # axs[1].plot(t_actual, gbu.detector_model(t_actual, G_MW, AL_MW, t1_temp, A_MW, N_MW), ls='--')
-    # axs[1].plot(t_actual, gbu.detector_model(t_actual, G_LW, AL_LW, t1_temp, A_LW, N_LW), ls='--')
-    # axs[2].plot(t_actual, gbu.detector_model(t_actual, G_MW_narrow, AL_MW_narrow, t2_temp, A_MW_narrow, N_MW_narrow), ls='--')
-    # #axs[2].plot(t_actual, G_MW_narrow*A_MW_narrow*t_actual**N_MW_narrow-AL_MW_narrow*t1_temp**ND_MW_narrow, ls='--')
-    # #axs[2].plot(t_actual, G_LW_narrow*A_LW_narrow*t_actual**N_LW_narrow-AL_LW_narrow*t1_temp**ND_LW_narrow, ls='--')
-    # axs[2].plot(t_actual, gbu.detector_model(t_actual, G_LW_narrow, AL_LW_narrow, t2_temp, A_LW_narrow, N_LW_narrow), ls='--')
-    # axs[1].plot(t_actual, gbu.detector_model(t_actual, G_WIDE, AL_WIDE, t1_temp, A_WIDE, N_WIDE), ls='--')
-    # axs[1].set_title("Broad Band Fits")
-    # axs[2].set_title("Narrow Band Fits")
-    #
-    # axs[2].legend()
-    # axs[1].legend()
-    # axs[0].legend()
-    # plt.tight_layout()
-    # plt.savefig(Path.home().joinpath("code", "KremBoxer", "plots", "calibration_full_T4.png"))
-    # plt.show()
-    #
-    # for i in range(0, len(t_actual)):
-    #     if v_lw[i] > 0 and v_mw[i] > 0:
-    #         try:
-    #             t_predict[i] = so.brentq(lambda Ts: gbu.GB_ratio_BP(Ts, f_mw, f_lw) - ratios[i], 200, 2000)
-    #         except ValueError:
-    #             print("Failed to compute T prediction for T = ", t_actual[i])
-    #
-    # # Compute eA from actual and predicted blackbody power
-    # eA_LW = W_GB_LW / gbu.planck_model(t_predict, A_LW, N_LW)  # WD_LW
-    # eA_MW = W_GB_MW / gbu.planck_model(t_predict, A_MW, N_MW)  # WD_MW
-    # eA_LW[eA_LW == np.inf] = 0
-    # eA_MW[eA_MW == np.inf] = 0
-    #
-    # # Compute FRP from eA and T
-    # FRP_LW = eA_LW * sc.Stefan_Boltzmann * t_predict ** 4
-    # FRP_MW = eA_MW * sc.Stefan_Boltzmann * t_predict ** 4
 
     #################################
     # Save the calibration data
@@ -277,7 +259,7 @@ def compute_fiveband_calibration(cal_params: dict):
     }
 
     for band, band_data in bands_dict.items():
-        cal_dict["bands"]["band"] = {
+        cal_dict["bands"][band] = {
             "N": band_data["N"],
             "A": band_data["A"],
             "G": band_data["G"],
@@ -285,7 +267,11 @@ def compute_fiveband_calibration(cal_params: dict):
         }
 
     cal_results_output_path = cal_output_dir.joinpath(
-        f'{cal_id}_Dualband_{cal_time.isoformat().replace(":", "-")}.json')
+        f'{cal_id}_Fiveband_{cal_time.isoformat().replace(":", "-")}.json')
     with open(cal_output_dir.joinpath(cal_results_output_path), 'w') as file:
         json.dump(cal_dict, file, indent=0)
     print("Saved calibration data to: ", cal_results_output_path)
+
+    plot_path = cal_output_dir.joinpath(cal_results_output_path.stem+".png")
+    plt.savefig(plot_path)
+    plt.show()
