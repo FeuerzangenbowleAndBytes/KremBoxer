@@ -116,6 +116,7 @@ setup(
     install_requires=[
         "matplotlib",
         "numpy",
+        "fiona",
         "scipy",
         "pytest",
         "pandas",

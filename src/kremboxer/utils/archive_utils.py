@@ -65,8 +65,8 @@ def create_dataset_archive(params: dict):
                 datafiles = []
                 for i, (header_dict, data_df) in enumerate(zip(header_dicts, data_dfs)):
                     unit = header_dict['UNIT']
-                    dt = header_dict['DATETIME_START'].isoformat().replace(":", "-")
-                    output_file = db_output_dir.joinpath(f'{sensor}_{unit}_{dt}.csv')
+                    dt = header_dict['DATETIME_START'].isoformat() #.replace(":", "-")
+                    output_file = db_output_dir.joinpath(f'{sensor}_{unit}_{dt.replace(":", "-")}.csv') # Replace : with - in time string for windows
                     data_df.to_csv(output_file, index=False)
                     metadatas[sensor].append(header_dict)
                     metadatas[sensor][-1]['PROCESSING_LEVEL'] = processing_level
@@ -81,8 +81,8 @@ def create_dataset_archive(params: dict):
                 datafiles = []
                 for i, (header_dict, data_df, ir_image_cube) in enumerate(zip(header_dicts, data_dfs, ir_image_cubes)):
                     unit = header_dict['UNIT']
-                    dt = header_dict['DATETIME_START'].isoformat().replace(":", "-")
-                    output_file = ufm_output_dir.joinpath(f'{sensor}_{unit}_{dt}.csv')
+                    dt = header_dict['DATETIME_START'].isoformat()#.replace(":", "-")
+                    output_file = ufm_output_dir.joinpath(f'{sensor}_{unit}_{dt.replace(":", "-")}.csv')
                     data_df.to_csv(output_file, index=False)
                     metadatas[sensor].append(header_dict)
                     metadatas[sensor][-1]['PROCESSING_LEVEL'] = "Raw"
@@ -90,8 +90,8 @@ def create_dataset_archive(params: dict):
                     metadatas[sensor][-1]['DATAFILE'] = output_file.name
                     metadatas[sensor][-1]['DURATION'] = len(data_df) / header_dict['SAMPLE-RATE(Hz)']
 
-                    numpy_output_file = ufm_output_dir.joinpath(f'{sensor}_{unit}_{dt}_ir_images.npy')
-                    matlab_output_file = ufm_output_dir.joinpath(f'{sensor}_{unit}_{dt}_ir_images.mat')
+                    numpy_output_file = ufm_output_dir.joinpath(f'{sensor}_{unit}_{dt.replace(":", "-")}_ir_images.npy')
+                    matlab_output_file = ufm_output_dir.joinpath(f'{sensor}_{unit}_{dt.replace(":", "-")}_ir_images.mat')
                     np.save(numpy_output_file, ir_image_cube)
                     scipy.io.savemat(matlab_output_file, {'ir_images': ir_image_cube})
                     metadatas[sensor][-1]['IR_IMAGE_NUMPY'] = numpy_output_file.name
@@ -108,7 +108,9 @@ def create_dataset_archive(params: dict):
 
         if len(df) > 0:
             gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.LONGITUDE, df.LATITUDE), crs="EPSG:4326")
-            gdf['DATETIME_START'] = gdf['DATETIME_START'].map(lambda x: x.isoformat())
-            gdf.to_file(archive_dir.joinpath(f'{key}_raw_metadata.geojson'), index=False)
+            gdf['DATETIME_START'] = gdf['DATETIME_START'].map(lambda x: x.isoformat(sep='T'))
+            # #gdf['DATETIME_START'] = gdf['DATETIME_START'].values.astype(str)
+            # gdf = gdf.astype({'DATETIME_START': 'string'})
+            gdf.to_file(archive_dir.joinpath(f'{key}_raw_metadata.geojson'), driver='GeoJSON', index=False)
 
     return 0

@@ -3,7 +3,7 @@
   "burn_name": "FortStewart2024",
   "burn_dates": ["2024-02-08", "2024-02-10"],
   "overwrite": true,
-  "run_create_dataset_archive": false,
+  "run_create_dataset_archive": true,
   "create_dataset_archive_params": {
     "data_source_directories": [
       "/home/jepaki/Projects/Objects/FortStewart2024/RadiometerData/2024-02-08",

@@ -114,7 +114,9 @@ def compute_FRP(rad_data: pd.DataFrame, F_MW, F_LW, model_params: dict, detect_t
 def process_dualband_datasets(dualband_raw_metadata: Path, data_processing_params: dict):
 
     # Read metadata for dualband datasets, return immediately if there are none
-    db_gdf = gpd.read_file(dualband_raw_metadata)
+    db_gdf = gpd.read_file(dualband_raw_metadata, engine="fiona")
+    print(dualband_raw_metadata)
+
     if len(db_gdf) == 0:
         print("No dualband datasets to process")
         return

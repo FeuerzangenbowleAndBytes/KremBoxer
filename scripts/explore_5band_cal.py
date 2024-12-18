@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-cal_dir = Path("/home/jepaki/Dropbox/Jobs/MTRI/Projects/Wildfire/RadiometerCalibrations/Athens5bandcalibration/")
+cal_dir = Path("/home/jepaki/MTRI/Projects/Wildfire/RadiometerCalibrations/Athens5bandcalibration/")
 
 cal_condensed_csv = cal_dir.joinpath("fb1_calibration_data.csv")
 df = pd.read_csv(cal_condensed_csv)
