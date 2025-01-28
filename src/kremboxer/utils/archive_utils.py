@@ -104,13 +104,20 @@ def create_dataset_archive(params: dict):
     for key, metadata in metadatas.items():
         print(key)
         df = pd.DataFrame(metadata)
+        # Filter duplicates by datetime start and unit, can happen if the same radiometer is used to collect
+        # data on different days, but the memory card is not wiped in between
+        df.drop_duplicates(subset=['UNIT', 'DATETIME_START'], inplace=True)
+
+        # Write out to CSV
         df.to_csv(archive_dir.joinpath(f'{key}_raw_metadata.csv'), index=False)
 
+        # print(len(df))
+        # print(df[df['UNIT']=='5'])
+        # print(df['UNIT'])
+        # Write out to geojson
         if len(df) > 0:
             gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.LONGITUDE, df.LATITUDE), crs="EPSG:4326")
             gdf['DATETIME_START'] = gdf['DATETIME_START'].map(lambda x: x.isoformat(sep='T'))
-            # #gdf['DATETIME_START'] = gdf['DATETIME_START'].values.astype(str)
-            # gdf = gdf.astype({'DATETIME_START': 'string'})
             gdf.to_file(archive_dir.joinpath(f'{key}_raw_metadata.geojson'), driver='GeoJSON', index=False)
 
     return 0

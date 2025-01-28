@@ -1,5 +1,6 @@
 import datetime
 import numpy as np
+import geopandas as gpd
 
 
 def construct_datetime(year, month, day, hours_utc, minutes, seconds):
@@ -49,3 +50,29 @@ def get_signal_bounds(data: np.array, p_start: float, p_end: float):
         i += 1
     ind_end = i-1
     return ind_start, ind_end
+
+
+def associate_data2burnplot(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.GeoDataFrame):
+    """
+
+    :param rad_data_gdf:
+    :param burn_plot_gdf:
+    :return:
+    """
+    burn_plot_ids = []
+    for i, rad_data_row in rad_data_gdf.iterrows():
+        found = False
+        for j, burn_plot_row in burn_plot_gdf.iterrows():
+            if burn_plot_row.geometry.contains(rad_data_row.geometry):
+                burn_plot_ids.append(burn_plot_row.Id)
+                found = True
+                break
+        if not found:
+            print("Warning! Dataset ", rad_data_row["DATAFILE"], " not contained in any burn plot!!")
+            print("\t(lat,lon)=(", rad_data_row["LATITUDE"], ", ", rad_data_row["LONGITUDE"], ")")
+            print("\tSetting burn plot to unknown")
+            burn_plot_ids.append("unknown")
+
+    rad_data_gdf["burn_unit"] = burn_plot_ids
+
+    return rad_data_gdf

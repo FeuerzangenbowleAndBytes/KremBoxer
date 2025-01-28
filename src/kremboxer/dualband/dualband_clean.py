@@ -11,6 +11,7 @@ def read_dualband_dataset(file: Path, csvreader, first_row):
     header_values = next(csvreader, None)
     header_dict = kddu.construct_dualband_header_dict(header_titles, header_values)
     data_columns = next(csvreader, None)
+    data_columns = [x for x in data_columns if not x == '']
 
     data_dict = {}
     for data_column in data_columns:
@@ -45,6 +46,7 @@ def extract_dualband_datasets_from_raw_file(file: Path):
     header_dicts = []
     data_dfs = []
     unit = file.stem.split("_")[1]
+    unit = unit.lstrip("0")   # Strip leading 0 from unit ID string extracted from file name, i.e. '07' -> '7'
     with open(file, 'r') as csvfile:
         csvreader = csv.reader(csvfile)
 

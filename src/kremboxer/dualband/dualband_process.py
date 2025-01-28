@@ -121,6 +121,10 @@ def process_dualband_datasets(dualband_raw_metadata: Path, data_processing_param
         print("No dualband datasets to process")
         return
 
+    # Load dataframe of burn units
+    bu_gdf = gpd.read_file(Path(data_processing_params['burn_units']), engine="fiona")
+    bu_gdf.to_crs(db_gdf.crs, inplace=True)
+
     # Load calibration parameters
     dualband_calibration_path = Path(data_processing_params["dualband_calibration_file"])
     (model_params, detect_temp_cal_data, F_MW, F_LW) = load_dualband_calibration_data(dualband_calibration_path)
@@ -155,6 +159,7 @@ def process_dualband_datasets(dualband_raw_metadata: Path, data_processing_param
     fire_durations = []
     over_1000FRP_durations = []
     processing_levels = []
+    burn_units = []
     for i, row in db_gdf.iterrows():
         data_path = archive_root.joinpath(row['PROCESSING_LEVEL'], row['SENSOR'], row['DATAFILE'])
         data_df = pd.read_csv(data_path)
@@ -222,6 +227,8 @@ def process_dualband_datasets(dualband_raw_metadata: Path, data_processing_param
     db_gdf["fire_end"] = time_stops
     db_gdf["over_1000FRP_duration"] = over_1000FRP_durations
     db_gdf["PROCESSING_LEVEL"] = processing_levels
+
+    db_gdf = cu.associate_data2burnplot(db_gdf, bu_gdf)
 
     db_gdf.to_file(archive_root.joinpath("Dualband_processed_metadata.geojson"), driver='GeoJSON')
     db_gdf.to_csv(archive_root.joinpath("Dualband_processed_metadata.csv"))
