@@ -8,43 +8,58 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 
-def plot_FRP_traces_by_burn_unit(gdf: gpd.GeoDataFrame, root_dir: Path, time_window_map):
+def plot_FRP_traces_by_burn_unit(gdf: gpd.GeoDataFrame, root_dir: Path, time_window_map, plot_lookup_df: pd.DataFrame):
     print(gdf.head())
     burn_units = gdf['burn_unit'].unique()
     print(burn_units)
 
+    print(plot_lookup_df.head())
+    plot_lookup_df["rad"] = plot_lookup_df["rad"].str.lower()
+
     for burn_unit in burn_units:
+        plt.rcParams.update({'font.size': 14})
+        plt.rc('legend', fontsize=10)
         fig, axs = plt.subplots(1, 1, figsize=(8,8))
 
         burn_unit_gdf = gdf[gdf['burn_unit'] == burn_unit]
         for i, row in burn_unit_gdf.iterrows():
-            print(i, row)
             datafile = root_dir.joinpath(row['PROCESSING_LEVEL'], row['SENSOR'], row['DATAFILE'])
             start_dt = datetime.datetime.fromisoformat(str(row['fire_start']))
             end_dt = datetime.datetime.fromisoformat(str(row['fire_end']))
 
-            print(datafile)
             df = pd.read_csv(datafile)
             datetimes = pd.to_datetime(df['DATETIME'])
-            print(datetimes)
-            print(start_dt, end_dt)
+
             mask = (datetimes >= start_dt) & (datetimes <= end_dt)
-            print(len(df['MW_FRP']), len(df[mask]['MW_FRP']))
-            axs.plot(datetimes[mask], df[mask]['MW_FRP'], label=row['UNIT'])
+            clipplot = plot_lookup_df[(plot_lookup_df.burn_unit == burn_unit) & (plot_lookup_df.rad == row['UNIT'].lower())]
+
+            if len(clipplot) == 0:
+                print(f'Unknown clip plot for burn unit: {burn_unit}, sensor: {row["UNIT"]}')
+                continue
+            if len(clipplot) > 1:
+                print(f'Multiple clip plot for burn unit: {burn_unit}, sensor: {row["UNIT"]}')
+                print(clipplot)
+                print("Using first entry")
+            clipplot_name = clipplot.iloc[0]['clipplot']
+            print(clipplot_name)
+            axs.plot(datetimes[mask], df[mask]['MW_FRP'], label=clipplot_name)
 
         axs.legend()
         axs.set_title(f'FRP vs Datetime, Burn Unit: {burn_unit}')
         axs.set_xlim([time_window_map[burn_unit]['t_start'], time_window_map[burn_unit]['t_end'] ])
-        axs.xaxis.set_major_locator(mdates.MinuteLocator(interval=5))
+        axs.xaxis.set_major_locator(mdates.MinuteLocator(interval=10))
         axs.xaxis.set_minor_locator(mdates.MinuteLocator(interval=1))
         axs.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
         axs.set_xlabel('Time (UTC)')
         axs.set_ylabel('FRP (W/m^2)')
+        plt.tight_layout()
         plt.savefig(root_dir.joinpath(f'FRP_Burn_Unit_{burn_unit}.png'))
 
 
 if __name__ == "__main__":
     root_dir = Path("/home/jepaki/Projects/Objects/Eglin_2023/FireBehaviorDatasets/")
+    clipplot_rad_lookup_table = Path("/home/jepaki/Projects/Objects/Eglin_2023/eglin_2023_clipplot_rad_lookuptable.csv")
+    plot_lookup_df = pd.read_csv(clipplot_rad_lookup_table)
     dualband_processed_metadatafile = root_dir.joinpath("Dualband_processed_metadata.geojson")
     gdf = gpd.read_file(dualband_processed_metadatafile, engine='fiona')
     time_window_map = {
@@ -67,4 +82,4 @@ if __name__ == "__main__":
                                        tzinfo=datetime.timezone.utc)
         }
     }
-    plot_FRP_traces_by_burn_unit(gdf, root_dir, time_window_map)
+    plot_FRP_traces_by_burn_unit(gdf, root_dir, time_window_map, plot_lookup_df)
