@@ -1,0 +1,19 @@
+{
+  "archive_dir": "/home/jepaki/Projects/Objects/FortStewart2025/FireBehaviorDatasets",
+  "burn_name": "FortStewart2025",
+  "burn_dates": ["2025-04-14", "2025-04-16", "2025-04-18"],
+  "overwrite": true,
+  "run_create_dataset_archive": true,
+  "create_dataset_archive_params": {
+    "data_source_directories": [
+      "/home/jepaki/Projects/Objects/FortStewart2025/RadiometerData/2025_04_14_BU_81_82",
+      "/home/jepaki/Projects/Objects/FortStewart2025/RadiometerData/2025_04_16_BU_66",
+      "/home/jepaki/Projects/Objects/FortStewart2025/RadiometerData/2025_04_18_BU_33"
+    ]
+  },
+  "run_data_processing": true,
+  "data_processing_params": {
+    "dualband_calibration_file": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/FortStewart2024/FortStewart2024_Dualband_2024-05-29T15-14-51.702863.json",
+    "duration_cutoff": 600
+  }
+}
