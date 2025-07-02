@@ -1,14 +1,14 @@
 {
   "archive_dir": "/home/jepaki/Projects/Objects/FortStewart2025/FireBehaviorDatasets",
   "burn_name": "FortStewart2025",
-  "burn_dates": ["2025-04-14", "2025-04-16", "2025-04-18"],
+  "burn_dates": ["2025-04-13", "2025-04-14", "2025-04-16"],
+  "burn_units": "/home/jepaki/code/KremBoxer/burn_units/fort_stewart_2025_burn_units.geojson",
   "overwrite": true,
-  "run_create_dataset_archive": true,
+  "run_create_dataset_archive": false,
   "create_dataset_archive_params": {
     "data_source_directories": [
       "/home/jepaki/Projects/Objects/FortStewart2025/RadiometerData/2025_04_14_BU_81_82",
-      "/home/jepaki/Projects/Objects/FortStewart2025/RadiometerData/2025_04_16_BU_66",
-      "/home/jepaki/Projects/Objects/FortStewart2025/RadiometerData/2025_04_18_BU_33"
+      "/home/jepaki/Projects/Objects/FortStewart2025/RadiometerData/2025_04_16_BU_66"
     ]
   },
   "run_data_processing": true,

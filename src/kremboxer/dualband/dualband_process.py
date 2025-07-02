@@ -231,4 +231,4 @@ def process_dualband_datasets(dualband_raw_metadata: Path, data_processing_param
     db_gdf = cu.associate_data2burnplot(db_gdf, bu_gdf)
 
     db_gdf.to_file(archive_root.joinpath("Dualband_processed_metadata.geojson"), driver='GeoJSON')
-    db_gdf.to_csv(archive_root.joinpath("Dualband_processed_metadata.csv"))
+    db_gdf.to_csv(archive_root.joinpath("Dualband_processed_metadata.csv"), index=False)

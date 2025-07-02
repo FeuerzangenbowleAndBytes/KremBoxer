@@ -58,6 +58,7 @@ def main(argv):
         process_params = params["data_processing_params"]
         process_params["archive_dir"] = archive_root
         process_params["burn_dates"] = params["burn_dates"]
+        process_params["burn_units"] = params["burn_units"]
         kremboxer.utils.process_utils.run_data_processing(process_params)
 
     print("Done!")

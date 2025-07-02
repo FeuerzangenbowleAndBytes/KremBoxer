@@ -73,7 +73,7 @@ def create_dataset_archive(params: dict):
                     metadatas[sensor][-1]['SENSOR'] = sensor
                     metadatas[sensor][-1]['DATAFILE'] = output_file.name
                     metadatas[sensor][-1]['DURATION'] = len(data_df) / header_dict['SAMPLE-RATE(Hz)']
-                print(header_dicts)
+                #print(header_dicts)
             elif sensor == "UFM":
                 header_dicts, data_dfs, ir_image_cubes = extract_datasets_from_raw_file(file, sensor)
                 ufm_output_dir = archive_dir.joinpath(processing_level).joinpath(sensor)
@@ -97,12 +97,12 @@ def create_dataset_archive(params: dict):
                     metadatas[sensor][-1]['IR_IMAGE_NUMPY'] = numpy_output_file.name
                     metadatas[sensor][-1]['IR_IMAGE_MATLAB'] = matlab_output_file.name
 
-                print(header_dicts)
+                #print(header_dicts)
             elif sensor == "Fiveband":
                 pass
 
     for key, metadata in metadatas.items():
-        print(key)
+        #print(key)
         df = pd.DataFrame(metadata)
         # Filter duplicates by datetime start and unit, can happen if the same radiometer is used to collect
         # data on different days, but the memory card is not wiped in between
