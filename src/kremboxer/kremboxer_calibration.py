@@ -5,6 +5,7 @@ from pathlib import Path
 import kremboxer.utils.archive_utils
 import kremboxer.dualband.dualband_calibration
 import kremboxer.fiveband.fiveband_calibration
+import kremboxer.ufm.ufm_calibration
 
 
 def main(argv):
@@ -32,7 +33,7 @@ def main(argv):
     print("Input params: ", params)
 
     # Perform calibration for dualband devices
-    if 'dualband_calibration_parameters' in params and False:
+    if 'dualband_calibration_parameters' in params:
         cal_params = params['dualband_calibration_parameters']
         cal_params["calibration_id"] = params["calibration_id"]
         kremboxer.dualband.dualband_calibration.compute_dualband_calibration(cal_params)
@@ -41,6 +42,11 @@ def main(argv):
         cal_params = params['fiveband_calibration_parameters']
         cal_params["calibration_id"] = params["calibration_id"]
         kremboxer.fiveband.fiveband_calibration.compute_fiveband_calibration(cal_params)
+        # Perform calibration for fiveband devices
+    if 'ufm_calibration_parameters' in params:
+        cal_params = params['ufm_calibration_parameters']
+        cal_params["calibration_id"] = params["calibration_id"]
+        kremboxer.ufm.ufm_calibration.compute_ufm_calibration(cal_params)
 
 
 if __name__ == "__main__":

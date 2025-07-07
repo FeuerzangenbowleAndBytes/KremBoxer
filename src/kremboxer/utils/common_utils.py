@@ -1,6 +1,9 @@
 import datetime
 import numpy as np
 import geopandas as gpd
+import scipy.optimize as so
+import scipy.constants as sc
+import kremboxer.utils.greybody_utils as gbu
 
 
 def construct_datetime(year, month, day, hours_utc, minutes, seconds):
@@ -76,3 +79,21 @@ def associate_data2burnplot(rad_data_gdf: gpd.GeoDataFrame, burn_plot_gdf: gpd.G
     rad_data_gdf["burn_unit"] = burn_plot_ids
 
     return rad_data_gdf
+
+
+def fit_detector_model(t_target, t_detector, v_sensor, A, N, p0):
+    T_data = np.stack((t_target, t_detector), axis=0)
+    (G, AL), pcov = so.curve_fit(
+        lambda T, G, AL: gbu.detector_model(T[0], G, AL, T[1], A, N),
+        T_data, v_sensor, maxfev=1000, p0=p0)
+
+    return G, AL, pcov
+
+
+def fit_narrow_detector_model(t_target, t_detector, v_sensor, A, N, p0):
+    T_data = np.stack((t_target, t_detector), axis=0)
+    (G, AL), pcov = so.curve_fit(
+        lambda T, G, AL: G*(A*T[0]**N-AL*T[1]**4),
+        T_data, v_sensor, maxfev=1000, p0=p0)
+
+    return G, AL, 4, pcov
