@@ -166,7 +166,7 @@ def compute_ufm_calibration(cal_params: dict):
 
     axs[1, 2].plot(t_actual, FRP_MW, label="MW")
     axs[1, 2].plot(t_actual, FRP_LW, label="LW")
-    axs[1, 2].plot(t_actual, FRP_WIDE, label="WIDE")
+    axs[1, 2].plot(t_actual, FRP_WIDE/0.7, label="WIDE")
     axs[1, 2].plot(t_actual, FRP_WIDE_T, label="WIDE, T")
     axs[1, 2].set_title("Fire Radiative Power")
     axs[1, 2].set_xlabel("Calibration Temp [K]")
