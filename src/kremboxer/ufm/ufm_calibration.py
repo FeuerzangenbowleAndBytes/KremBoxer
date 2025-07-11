@@ -152,10 +152,10 @@ def compute_ufm_calibration(cal_params: dict):
                                                         bands_dict["LW"]["N"])
     FRP_LW = eA_LW * sc.Stefan_Boltzmann * t_predict_mw_lw ** 4
 
-    FRP_WIDE = bands_dict["WIDE"]["W_GB"]
-    t_predict_wide = np.pow(FRP_WIDE / bands_dict["WIDE"]["A"], 1./bands_dict["WIDE"]["N"])
-    FRP_WIDE_T = sc.Stefan_Boltzmann * t_predict_wide ** 4
-    axs[2, 2].plot(t_actual, t_predict_wide, label="WIDE")
+    FRP_WIDE = bands_dict["WIDE"]["W_GB"] / bands_dict["WIDE"]["BandpassFraction"]
+    # t_predict_wide = np.pow(FRP_WIDE / bands_dict["WIDE"]["A"], 1./bands_dict["WIDE"]["N"])
+    # FRP_WIDE_T = sc.Stefan_Boltzmann * t_predict_wide ** 4
+    # axs[2, 2].plot(t_actual, t_predict_wide, label="WIDE")
 
     axs[0, 2].plot(t_actual, eA_MW, label="MW")
     axs[0, 2].plot(t_actual, eA_LW, label="LW")
@@ -166,8 +166,8 @@ def compute_ufm_calibration(cal_params: dict):
 
     axs[1, 2].plot(t_actual, FRP_MW, label="MW")
     axs[1, 2].plot(t_actual, FRP_LW, label="LW")
-    axs[1, 2].plot(t_actual, FRP_WIDE/0.7, label="WIDE")
-    axs[1, 2].plot(t_actual, FRP_WIDE_T, label="WIDE, T")
+    axs[1, 2].plot(t_actual, FRP_WIDE, label="WIDE")
+    #axs[1, 2].plot(t_actual, FRP_WIDE_T, label="WIDE, T")
     axs[1, 2].set_title("Fire Radiative Power")
     axs[1, 2].set_xlabel("Calibration Temp [K]")
     axs[1, 2].set_ylabel("FRP [W/m^2]")
@@ -229,6 +229,8 @@ def compute_ufm_calibration(cal_params: dict):
             "G": band_data["G"],
             "AL": band_data["AL"]
         }
+
+    cal_dict["bands"]["WIDE"]["BandpassFraction"] = bands_dict["WIDE"]["BandpassFraction"]
 
     cal_results_output_path = cal_output_dir.joinpath(
         f'{cal_id}_UFM_{cal_time.isoformat().replace(":", "-")}.json')

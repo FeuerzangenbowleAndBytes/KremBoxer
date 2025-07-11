@@ -84,7 +84,8 @@
         "sensor_temp": "TH1",
         "type": "broad",
         "G0": 1,
-        "AL0": 1
+        "AL0": 1,
+        "BandpassFraction": 0.7
       }
     },
     "calibration_inputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/ufm/",

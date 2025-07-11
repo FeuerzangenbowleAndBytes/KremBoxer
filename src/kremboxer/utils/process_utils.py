@@ -18,3 +18,8 @@ def run_data_processing(data_processing_params: dict):
         kremboxer.dualband.dualband_process.process_dualband_datasets(dualband_metadata_path,
                                                                           data_processing_params)
 
+    # Process raw UFM data
+    ufm_metadata_path = Path(archive_root.joinpath("UFM_raw_metadata.geojson"))
+    if ufm_metadata_path.exists():
+        kremboxer.ufm.ufm_process.process_ufm_datasets(ufm_metadata_path, data_processing_params)
+

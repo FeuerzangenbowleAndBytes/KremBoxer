@@ -1,5 +1,5 @@
 {
-"cal_generation_dt": "2025-07-07T17:03:46.565388",
+"cal_generation_dt": "2025-07-10T10:54:09.751860",
 "cal_input": "ufm_calibration_data.csv",
 "temp_cal_input": "temperature_sensor_calibration.csv",
 "r_top": 100000,
@@ -21,7 +21,8 @@
 "N": 4.112970448200349,
 "A": 1.8110015368919423e-08,
 "G": 0.046340671923771296,
-"AL": 3.015376808360747e-08
+"AL": 3.015376808360747e-08,
+"BandpassFraction": 0.7
 }
 }
 }
