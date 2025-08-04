@@ -14,7 +14,7 @@
   "run_data_processing": true,
   "data_processing_params": {
     "dualband_calibration_file": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/FortStewart2024/FortStewart2024_Dualband_2024-05-29T15-14-51.702863.json",
-    "ufm_calibration_file": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/FortStewart2024/ufm/FortStewart2024_UFM_2025-07-10T10-54-09.751860.json",
+    "ufm_calibration_file": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/FortStewart2024/ufm/FortStewart2024_UFM_2025-08-04T16-27-17.760636.json",
     "duration_cutoff": 600
   }
 }
