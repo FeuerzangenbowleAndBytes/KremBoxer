@@ -48,7 +48,7 @@ def compute_ufm_FRP(rad_data: pd.DataFrame, F_MW, F_LW, F_WIDE, model_params: di
 
     T_predict = np.zeros_like(W_GB_MW)
     for i in range(0, len(T_predict)):
-        print(i)
+        #print(i)
         if V_LW[i] > 0 and V_MW[i] > 0:
             T_predict[i] = so.brentq(lambda Ts: gbu.GB_ratio_BP(Ts, F_MW, F_LW) - ratios[i], 200, 2000)
     print("Done")

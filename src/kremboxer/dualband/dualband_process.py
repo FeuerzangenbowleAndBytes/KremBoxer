@@ -230,5 +230,15 @@ def process_dualband_datasets(dualband_raw_metadata: Path, data_processing_param
 
     db_gdf = cu.associate_data2burnplot(db_gdf, bu_gdf)
 
-    db_gdf.to_file(archive_root.joinpath("Dualband_processed_metadata.geojson"), driver='GeoJSON')
-    db_gdf.to_csv(archive_root.joinpath("Dualband_processed_metadata.csv"), index=False)
+    db_gdf.to_file(archive_root.joinpath("Dualband_processed_metadata_raw_location.geojson"), driver='GeoJSON')
+    db_gdf.to_csv(archive_root.joinpath("Dualband_processed_metadata_raw_location.csv"), index=False)
+
+    if "fuel_plots" in data_processing_params:
+        # Overwrites the radiometer location with the matching fuel plot location (assume that the fuel plot location is more accurate)
+        fp_df = pd.read_csv(Path(data_processing_params["fuel_plots"]))
+        fp_gdf = gpd.GeoDataFrame(fp_df, geometry=gpd.points_from_xy(fp_df.Longitude, fp_df.Latitude), crs="EPSG:4326")
+        db_assoc_gdf, db_unassoc_gdf = cu.associate_data2fuelplot(db_gdf, fp_gdf)
+        if len(db_unassoc_gdf) > 0:
+            print("Warning! Unable to associate these radiometers with a fuel plot:", db_unassoc_gdf)
+        db_assoc_gdf.to_file(archive_root.joinpath("Dualband_processed_metadata.geojson"), driver='GeoJSON')
+        db_assoc_gdf.to_csv(archive_root.joinpath("Dualband_processed_metadata.csv"), index=False)

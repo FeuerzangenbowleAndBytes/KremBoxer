@@ -15,12 +15,12 @@ def run_data_processing(data_processing_params: dict):
 
     # Process raw dualband data
     dualband_metadata_path = Path(archive_root.joinpath("Dualband_raw_metadata.geojson"))
-    if dualband_metadata_path.exists() and False:
+    if dualband_metadata_path.exists():
         kremboxer.dualband.dualband_process.process_dualband_datasets(dualband_metadata_path,
                                                                           data_processing_params)
 
     # Process raw UFM data
     ufm_metadata_path = Path(archive_root.joinpath("UFM_raw_metadata.geojson"))
-    if ufm_metadata_path.exists():
+    if ufm_metadata_path.exists() and False:
         kremboxer.ufm.ufm_process.process_ufm_datasets(ufm_metadata_path, data_processing_params)
 
