@@ -34,7 +34,10 @@ biomass_df["ClipPlot"] = biomass_df["ClipPlot"].astype(str)
 print(rad_df["ClipPlot"].dtype, biomass_df["ClipPlot"].dtype)
 #rad_cons_gdf = rad_df.join(biomass_df, on="ClipPlot", how="inner")
 rad_cons_gdf = rad_df.merge(biomass_df, on="ClipPlot", how="inner")
-rad_cons_gdf["Consumption_Radiometer"] = rad_df["MW_FRE"] / 1000000 / 0.3 / 20
+rad_cons_gdf["Consumption_Radiometer"] = rad_cons_gdf["MW_FRE"] / 1000000.0 / 0.3 / 20.0
+rad_cons_filt = rad_cons_gdf[rad_cons_gdf["ClipPlot"] == "SH047"].iloc[0]
+print(f'Unit={rad_cons_filt["UNIT"]}, MW_FRE={rad_cons_filt["MW_FRE"]}, Consumption={rad_cons_filt["Consumption_Radiometer"]}')
+print(rad_cons_filt["MW_FRE"] /1000000 / 0.3 / 20 )
 print(rad_cons_gdf.head())
 print(len(rad_cons_gdf))
 
@@ -53,6 +56,8 @@ axs.set_ylabel(r'Radiometer Consumption, $\frac{kg}{m^2}$ (Dualband, $F_r=0.3$, 
 axs.set_title(f"{fire_name}, Biomass Consumption, Radiometer vs Clip Plot")
 axs.legend()
 plt.savefig(output_dir / f"{fire_name}_biomass_consumption_all_fuel_subsets.png")
+plt.close(fig)
+
 
 # Zoomed In
 fig, axs = plt.subplots(1, 1, figsize = (8, 8))
@@ -72,6 +77,8 @@ axs.set_ylabel(r'Radiometer Consumption, $\frac{kg}{m^2}$ (Dualband, $F_r=0.3$, 
 axs.set_title(f"{fire_name}, Biomass Consumption, Radiometer vs Clip Plot")
 axs.legend()
 plt.savefig(output_dir / f"{fire_name}_biomass_consumption_all_fuel_subsets_zoom.png")
+plt.close(fig)
+
 
 # Compare ecotypes for just litter consumption
 fig, axs = plt.subplots(1, 1, figsize = (8, 8))
@@ -89,6 +96,8 @@ axs.set_ylabel(r'Radiometer Consumption, $\frac{kg}{m^2}$ (Dualband, $F_r=0.3$, 
 axs.set_title(f"{fire_name}, Biomass Consumption, Radiometer vs Clip Plot")
 axs.legend()
 plt.savefig(output_dir / f"{fire_name}_biomass_consumption_litter_ecotypes.png")
+plt.close(fig)
+
 
 # Plot of clip plot consumption across fuels subsets
 fuel_categories = ["Litter", "LitterPlus1hr", "AllFuels"]
@@ -106,6 +115,8 @@ axs.tick_params(axis='x', rotation=60)
 axs.set_ylim([-0.1, 1])
 axs.legend()
 plt.savefig(output_dir / f"{fire_name}_biomass_consumption_vs_plot_and_subset.png")
+plt.close(fig)
+
 
 fig, axs = plt.subplots(1, 1, figsize = (12, 8))
 axs.scatter(rad_cons_gdf["ClipPlot"], rad_cons_gdf[f'Consumption_Litter'], label="Litter")
@@ -116,6 +127,7 @@ axs.tick_params(axis='x', rotation=60)
 axs.set_ylim([-0.1, 1])
 axs.legend()
 plt.savefig(output_dir / f"{fire_name}_biomass_consumption_vs_plot_litter.png")
+plt.close(fig)
 
 print("Consumption Stats, Mean, Std")
 for fuel_cat in fuel_categories:
@@ -140,7 +152,46 @@ axs.set_xlabel("Fire Radiative Fraction")
 axs.set_ylabel(r"Sum Squared Difference of Biomass Consumption")
 axs.set_title("Difference btw Radiometer and Clip Plot Consumption vs FRF")
 plt.savefig(output_dir / f"{fire_name}_rad_cons_error_vs_frf.png")
+plt.close(fig)
 
+# Plot with FRP traces
+rad_plots_to_vis = ["SH069", "SH047", "HH003", "HH011", "PP018", "TZ009"]
+rad_filt_gdf = rad_cons_gdf[rad_cons_gdf["ClipPlot"].isin(rad_plots_to_vis)]
+fig, axs = plt.subplots(1, 2, figsize = (14, 8))
+axs[0].plot([0, 1], [0, 1], ls='--', lw=1, color='grey')
+axs[0].scatter(rad_filt_gdf["Consumption_Litter"], rad_filt_gdf["Consumption_Radiometer"], label="Litter")
+axs[0].scatter(rad_filt_gdf["Consumption_LitterPlus1hr"], rad_filt_gdf["Consumption_Radiometer"], label="Litter + 1hr")
+axs[0].scatter(rad_filt_gdf["Consumption_AllFuels"], rad_filt_gdf["Consumption_Radiometer"], label="Litter + All Hours")
+
+for i, rad_row in rad_filt_gdf.iterrows():
+    axs[0].plot([rad_row["Consumption_Litter"], rad_row["Consumption_LitterPlus1hr"], rad_row["Consumption_AllFuels"]],
+             [rad_row["Consumption_Radiometer"], rad_row["Consumption_Radiometer"], rad_row["Consumption_Radiometer"]], ls='-', lw=0.5, color='grey')
+
+    clip_plot = rad_row["ClipPlot"]
+    if clip_plot in rad_plots_to_vis:
+        axs[0].text(x=rad_row["Consumption_AllFuels"], y=rad_row["Consumption_Radiometer"], s=clip_plot)
+        frp_file = rad_file.parent / rad_row["PROCESSING_LEVEL"] / rad_row["SENSOR"] / rad_row["DATAFILE"]
+        print(clip_plot, frp_file)
+        print(rad_row["MW_FRE"], rad_row["Consumption_Radiometer"])
+        frp_df = pd.read_csv(frp_file)
+        pstart_ind = rad_row["pstart_ind"]
+        pend_ind = rad_row["pend_ind"]
+        dts = np.array(pd.to_datetime(frp_df["DATETIME"]))[pstart_ind:pend_ind]
+        frps = np.array(frp_df["LW_FRP"])[pstart_ind:pend_ind]
+        axs[1].plot(frps, label=f'{clip_plot}, {rad_row["UNIT"]}')
+
+axs[1].set_xlabel("Time [s]")
+axs[1].set_ylabel(r"Fire Radiative Power, $\frac{W}{m^2}$")
+axs[1].set_title("FRP Trace at Select Clip Plots")
+axs[1].legend()
+axs[1].set_xlim([0, 500])
+
+axs[0].set_xlabel(r'Clip Plot Consumption, $\frac{kg}{m^2}$ (Varying Fuels Subsets)')
+axs[0].set_ylabel(r'Radiometer Consumption, $\frac{kg}{m^2}$ (Dualband, $F_r=0.3$, $H_c=20\frac{MJ}{kg}$)')
+axs[0].set_title(f"{fire_name}, Biomass Consumption, Radiometer vs Clip Plot")
+axs[0].legend()
+plt.savefig(output_dir / f"{fire_name}_consumption_with_frp_traces.png")
+plt.close()
 
 
 
