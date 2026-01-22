@@ -1,0 +1,21 @@
+{
+  "archive_dir": "/home/jepaki/Projects/Objects/Eglin_2023/FireBehaviorDatasets",
+  "burn_name": "Eglin2023",
+  "burn_dates": ["2023-03-11", "2023-03-16", "2023-03-19"],
+  "overwrite": true,
+  "run_create_dataset_archive": true,
+  "burn_units": "/home/jepaki/code/KremBoxer/burn_units/eglin_burn_units.geojson",
+  "create_dataset_archive_params": {
+    "data_source_directories": [
+      "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25W_2023-03-11",
+      "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G25E_2023-03-16",
+      "/home/jepaki/Projects/Objects/RadiometerData/Eglin_2023-03/G20_2023-03-19"
+    ]
+  },
+  "run_data_processing": true,
+  "data_processing_params": {
+    "dualband_calibration_file": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/FortStewart2024/FortStewart2024_Dualband_2024-05-29T15-14-51.702863.json",
+    "duration_cutoff": 600,
+    "fuel_plots": "/home/jepaki/code/KremBoxer/fuel_plots/eglin_2023_fuel_plots.geojson"
+  }
+}

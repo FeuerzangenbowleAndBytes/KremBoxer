@@ -1,0 +1,98 @@
+{
+  "calibration_id": "FortStewart2024",
+  "0dualband_calibration_parameters": {
+    "calibration_inputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/",
+    "LW_bandpass": "DC-6073_W1_8-14Si.csv",
+    "MW_bandpass": "DC-6216_u1_Saph_longwave.csv",
+    "cal_input": "unit11_calibration_data.csv",
+    "temp_cal_input": "temperature_sensor_calibration.csv",
+    "v_top": 3300,
+    "r_top": 100000,
+    "calibration_outputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/"
+  },
+  "0fiveband_calibration_parameters": {
+    "bands": {
+      "MW": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6216_u1_Saph_longwave.csv",
+        "datalog_col": "MW",
+        "sensor_temp": "TH1",
+        "type": "broad",
+        "G0": 0.1,
+        "AL0": 1e-12
+      },
+      "LW": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6073_W1_8-14Si.csv",
+        "datalog_col": "LW",
+        "sensor_temp": "TH1",
+        "type": "broad",
+        "G0": 1,
+        "AL0": 6e-5
+      },
+      "3.95": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6726_R4_395CWL.csv",
+        "datalog_col": "3.95",
+        "sensor_temp": "TH2",
+        "type": "narrow",
+        "G0": 0.1,
+        "AL0": 1e-12
+      },
+      "10.95": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6725_1095CWL.csv",
+        "datalog_col": "10.95",
+        "sensor_temp": "TH2",
+        "type": "narrow",
+        "G0": 3,
+        "AL0": 5e-5
+      },
+      "WIDE": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/bandpasses/interpolated/DC-6169_KRS5.csv",
+        "datalog_col": "WIDE",
+        "sensor_temp": "TH1",
+        "type": "broad",
+        "G0": 1,
+        "AL0": 1
+      }
+    },
+    "calibration_inputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/fiveband/",
+    "cal_input": "fb1_calibration_data_remove_highest_temp.csv",
+    "temp_cal_input": "temperature_sensor_calibration.csv",
+    "v_top": 3300,
+    "r_top": 100000,
+    "calibration_outputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/"
+  },
+  "ufm_calibration_parameters": {
+    "bands": {
+      "MW": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/ufm/bandpasses/interpolated/DC-6216_u1_Saph_longwave.csv",
+        "datalog_col": "MW",
+        "sensor_temp": "TH1",
+        "type": "broad",
+        "G0": 0.1,
+        "AL0": 1e-12
+      },
+      "LW": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/ufm/bandpasses/interpolated/DC-6073_W1_8-14Si.csv",
+        "datalog_col": "LW",
+        "sensor_temp": "TH1",
+        "type": "broad",
+        "G0": 1,
+        "AL0": 6e-5
+      },
+      "WIDE": {
+        "bandpass": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/ufm/bandpasses/interpolated/DC-6169_KRS5.csv",
+        "datalog_col": "WIDE",
+        "sensor_temp": "TH1",
+        "type": "broad",
+        "G0": 1,
+        "AL0": 1,
+        "BandpassFraction": 0.7
+      }
+    },
+    "calibration_inputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_input/ufm/",
+    "cal_input": "ufm_calibration_data.csv",
+    "temp_cal_input": "temperature_sensor_calibration.csv",
+    "v_top": 3300,
+    "r_top": 100000,
+    "calibration_outputs_folder": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "archive_dir": "/home/jepaki/Projects/Objects/AthensExperiments_0624/FireBehaviorDatasets",
+  "burn_name": "Athens_06_2024",
+  "burn_dates": ["2024-06-20"],
+  "overwrite": true,
+  "run_create_dataset_archive": true,
+  "create_dataset_archive_params": {
+    "data_source_directories": [
+      "/home/jepaki/Projects/Objects/AthensExperiments_0624/RadiometerData/2024_06_20"
+    ]
+  },
+  "run_data_processing": true,
+  "data_processing_params": {
+    "dualband_calibration_file": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/FortStewart2024/FortStewart2024_Dualband_2024-05-29T15-14-51.702863.json",
+    "duration_cutoff": 600
+  }
+}
