@@ -1,0 +1,20 @@
+{
+  "archive_dir": "/home/jepaki/Projects/Objects/FortStewart_2022-03/FireBehaviorDatasets",
+  "burn_name": "FortStewart2022",
+  "burn_dates": ["2022-03-01", "2022-03-02", "2022-03-03", "2022-03-04", "2022-03-05"],
+  "overwrite": true,
+  "run_create_dataset_archive": true,
+  "burn_units": "/home/jepaki/code/KremBoxer/burn_units/fort_stewart_2022_burn_units.geojson",
+  "create_dataset_archive_params": {
+    "data_source_directories": [
+      "/home/jepaki/Projects/Objects/FortStewart_2022-03/E_units",
+      "/home/jepaki/Projects/Objects/FortStewart_2022-03/F_units"
+    ]
+  },
+  "run_data_processing": true,
+  "data_processing_params": {
+    "dualband_calibration_file": "/home/jepaki/code/KremBoxer/calibration_data/calibration_output/FortStewart2024/FortStewart2024_Dualband_2024-05-29T15-14-51.702863.json",
+    "duration_cutoff": 600,
+    "fuel_plots": "/home/jepaki/code/KremBoxer/fuel_plots/fort_stewart_2022_fuel_plots.csv"
+  }
+}
