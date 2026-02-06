@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import geopandas as gpd
 import plotly.graph_objects as go
+from fsspec.implementations.local import trailing_sep
 from plotly.subplots import make_subplots
 from pathlib import Path
 
@@ -33,9 +34,15 @@ max_frp_index = row["max_FRP_index"]
 end_frp_index = (db_df["DATETIME"] - end_frp_datetime).abs().idxmin()
 max_frp = frp[max_frp_index]
 end_frp = frp[end_frp_index]
+lam = -1./((end_frp_datetime - max_frp_datetime).seconds) * np.log(end_frp / max_frp)
+print(f'lam={lam}')
+tail_times = np.arange(0, 10*60, dtype=int)
+tail_datetimes = [max_frp_datetime+pd.Timedelta(seconds=x) for x in tail_times]
+tail_frps = max_frp * np.exp(-lam*tail_times)
 
 fig = make_subplots(rows=1, cols=1)
 fig.add_trace(go.Scatter(x=db_df["DATETIME"], y=frp, mode='lines', name=f'DB {row["UNIT"]}'), row=1, col=1)
+fig.add_trace(go.Scatter(x=tail_datetimes, y=tail_frps, mode='lines'), row=1, col=1)
 fig.add_trace(go.Scatter(x=[max_frp_datetime], y=[max_frp], mode='markers', name=f'DB {row["UNIT"]}'), row=1, col=1)
 fig.add_trace(go.Scatter(x=[end_frp_datetime], y=[end_frp], mode='markers', name=f'DB {row["UNIT"]}'), row=1, col=1)
 fig.add_vline(x=max_frp_datetime, line_width=2, line_dash='dash', name="max FRP", row=1, col=1)
