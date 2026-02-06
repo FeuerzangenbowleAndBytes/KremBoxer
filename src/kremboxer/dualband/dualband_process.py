@@ -246,5 +246,6 @@ def process_dualband_datasets(dualband_raw_metadata: Path, data_processing_param
         db_assoc_gdf, db_unassoc_gdf = cu.associate_data2fuelplot(db_gdf, fp_gdf)
         if len(db_unassoc_gdf) > 0:
             print("Warning! Unable to associate these radiometers with a fuel plot:", db_unassoc_gdf)
+            print(f'{len(db_unassoc_gdf)} / {len(db_assoc_gdf)} radiometers did not match with a fuel plot')
         db_assoc_gdf.to_file(archive_root.joinpath("Dualband_processed_metadata.geojson"), driver='GeoJSON')
         db_assoc_gdf.to_csv(archive_root.joinpath("Dualband_processed_metadata.csv"), index=False)

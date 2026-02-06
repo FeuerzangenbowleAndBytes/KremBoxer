@@ -125,8 +125,11 @@ def associate_data2fuelplot(rad_data_gdf: gpd.GeoDataFrame, fuel_plot_gdf: gpd.G
     unassociated_df.drop(columns=["fuel_plot_location"], inplace=True)
 
     # Use the geometry of the fuel plots as the location in the new FRP dataframe.  Drop the old FRP GPS location column.
-    plot_associated_df.set_geometry("fuel_plot_location", inplace=True)
-    plot_associated_df.drop(columns=["geometry", "LATITUDE", "LONGITUDE"], inplace=True)
+    plot_associated_df.drop(columns=["LATITUDE", "LONGITUDE"], inplace=True)
+    associated_mask = plot_associated_df["fuel_plot_location"].notna()
+    plot_associated_df.loc[associated_mask, 'geometry'] = plot_associated_df["fuel_plot_location"][associated_mask]
+    plot_associated_df.drop(columns=["fuel_plot_location"], inplace=True)
+    #plot_associated_df.set_geometry(col="fuel_plot_location", inplace=True, drop=True)
 
     plot_associated_df.to_crs(crs="epsg:4326", inplace=True)
     unassociated_df.to_crs(crs="epsg:4326", inplace=True)
