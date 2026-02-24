@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-cal_dir = Path("/home/jepaki/MTRI/Projects/Wildfire/RadiometerCalibrations/Athens5bandcalibration/")
+cal_dir = Path("/home/oryx/Dropbox/Jobs/MTRI/Projects/Wildfire/RadiometerCalibrations/Athens5bandcalibration/")
 
 cal_condensed_csv = cal_dir.joinpath("fb1_calibration_data.csv")
 df = pd.read_csv(cal_condensed_csv)
@@ -49,12 +49,6 @@ plt.tight_layout()
 plt_file = cal_dir.joinpath(cal_csv.stem + ".png")
 plt.savefig(plt_file)
 
-
-
-# fig = px.line(x=df["TIME"].astype('float'), y=df['TH1'])
-#
-# fig.show()
-
 fig = go.Figure()
 fig.add_trace(go.Line(x=df["TIME"].astype('float'), y=df['TH1'].astype('float'), name='TH1'))
 fig.add_trace(go.Line(x=df["TIME"].astype('float'), y=df['TH2'].astype('float'), name='TH2'))
@@ -65,4 +59,4 @@ fig.add_trace(go.Line(x=df["TIME"].astype('float'), y=df['LW'].astype('float'), 
 fig.add_trace(go.Line(x=df["TIME"].astype('float'), y=df['WIDE'].astype('float'), name='WIDE'))
 fig.update_layout(hovermode="x")
 
-fig.show()
+fig.write_html(cal_dir.joinpath("fb1_calibration_data.html"))
