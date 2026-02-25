@@ -51,10 +51,10 @@ for i, (cal_csv, meta_csv) in enumerate(cal_data.items()):
                   row=i + 1, col=1)
 
     print(meta_df)
-    meta_df["Time Start"] = pd.to_datetime(meta_df["Time Start"])
+    meta_df["Time Start"] = pd.to_datetime(meta_df["Time Start"], format='%H:%M:%S')
     min_start_time = meta_df["Time Start"].min()
     meta_df["Time Start"] = (meta_df["Time Start"] - min_start_time).dt.total_seconds()
-    meta_df["Time End"] = pd.to_datetime(meta_df["Time End"])
+    meta_df["Time End"] = pd.to_datetime(meta_df["Time End"], format='%H:%M:%S')
     meta_df["Time End"] = (meta_df["Time End"] - min_start_time).dt.total_seconds()
 
     lw_max_index = cal_df['LW'].idxmax()
@@ -84,8 +84,42 @@ fig.write_html(cal_dir.joinpath("fiveband_calibration_data.html"))
 
 
 # Make plot comparing the reduced calibration datasets
+fb1_cal_path = cal_dir.joinpath("DATALOG_FB1_cal.csv")
+fb8_cal_path = cal_dir.joinpath("DATALOG_FB8_cal.csv")
+kremens_cal_path = Path.home().joinpath("PycharmProjects", "KremBoxer", "calibration_data", "calibration_input", "fiveband", "fiveband_calibration_data_kremens.csv")
 
+fb1_cal_df = pd.read_csv(fb1_cal_path)
+fb8_cal_df = pd.read_csv(fb8_cal_path)
+kremens_cal_df = pd.read_csv(kremens_cal_path)
+kremens_ave_cal_df = kremens_cal_df.groupby('Temp').aggregate('mean').reset_index()
+kremens_ave_cal_df["Target T [K]"] = kremens_ave_cal_df["Temp"]
+kremens_ave_cal_path = Path.home().joinpath("PycharmProjects", "KremBoxer", "calibration_data", "calibration_input", "fiveband", "fiveband_calibration_data_kremens_ave.csv")
+kremens_ave_cal_df.to_csv(kremens_ave_cal_path)
+print(kremens_ave_cal_df.head())
 
+cal_dfs = {"fb1": fb1_cal_df,
+           "fb8": fb8_cal_df,
+           "kremens": kremens_cal_df,
+           "kremens_ave": kremens_ave_cal_df
+           }
+colors = ["blue", "green", "red", "orange"]
 
+num_cols = 2
+num_rows = int(np.ceil(len(data_cols)/num_cols))
+print(num_rows)
+fig = make_subplots(rows=num_rows, cols=num_cols, subplot_titles=data_cols, shared_xaxes='all')
+for i, (cal_name, cal_df) in enumerate(cal_dfs.items()):
+    for j, data_col in enumerate(data_cols):
+        fig.add_trace(go.Scatter(x=cal_df["Temp"], y=cal_df[data_col].astype('float'), mode='lines+markers',
+                                 marker=dict(color=colors[i], size=10), name=f'{data_col}, {cal_name}'),
+                      row=int(np.floor(j/2))+1, col=j%2+1)
 
+for i in range(num_rows):
+    for j in range(num_cols):
+        fig.update_yaxes(title_text="Sensor Value (mV)", row=i+1, col=j+1)
+        fig.update_xaxes(title_text="Black Body Temp (K)", row=i+1, col=j+1)
+fig.update_layout(hovermode="x")
+fig.update_layout(title_text="Fiveband Calibration Comparison")
+fig.write_html(cal_dir.joinpath("fiveband_calibration_comparison.html"))
+fig.write_image(cal_dir.joinpath("fiveband_calibration_comparison.png"), height=800, width=1000, scale=2)
 
