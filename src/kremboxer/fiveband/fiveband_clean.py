@@ -127,7 +127,7 @@ def extract_fiveband_datasets_from_raw_file(file: Path):
         hour = int(time_str[0:2])
         minute = int(time_str[2:4])
         second = int(time_str[4:6])
-        dt_str = f'{year}-{month}-{day}T{hour:02}:{minute:02}:{second:02}'
+        dt_str = f'20{year}-{month}-{day}T{hour:02}:{minute:02}:{second:02}'
         dt = pd.to_datetime(dt_str, utc=True)
         start_data_time = dt - pd.to_timedelta(first_datetime_index, unit='s')
         end_data_time = dt + pd.to_timedelta(len(fb_df)-first_datetime_index-1, unit='s')

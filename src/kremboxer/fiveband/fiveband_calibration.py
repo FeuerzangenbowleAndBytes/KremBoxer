@@ -245,7 +245,8 @@ def compute_fiveband_calibration(cal_params: dict):
             "N": band_data["N"],
             "A": band_data["A"],
             "G": band_data["G"],
-            "AL": band_data["AL"]
+            "AL": band_data["AL"],
+            "bandpass": str(band_data["bandpass"].name)
         }
 
     cal_results_output_path = cal_output_dir.joinpath(
