@@ -9,6 +9,7 @@ import kremboxer.dualband.dualband_clean as db_clean
 import kremboxer.ufm.ufm_utils as ufm_utils
 import kremboxer.ufm.ufm_clean as ufm_clean
 import kremboxer.fiveband.fiveband_utils as fb_utils
+import kremboxer.fiveband.fiveband_clean as fb_clean
 
 
 def id_sensor_from_raw_file(file: Path) -> str:
@@ -27,7 +28,8 @@ def extract_datasets_from_raw_file(file: Path, sensor: str):
         header_dicts, data_dfs = db_clean.extract_dualband_datasets_from_raw_file(file)
         return header_dicts, data_dfs
     elif sensor == "Fiveband":
-        pass
+        header_dicts, data_dfs, optical_image_cubes, ir_image_cubes = fb_clean.extract_fiveband_datasets_from_raw_file(file)
+        return header_dicts, data_dfs, optical_image_cubes, ir_image_cubes
     elif sensor == "UFM":
         header_dicts, data_dfs, ir_image_cubes = ufm_clean.extract_ufm_datasets_from_raw_file(file)
         return header_dicts, data_dfs, ir_image_cubes
@@ -99,7 +101,21 @@ def create_dataset_archive(params: dict):
 
                 #print(header_dicts)
             elif sensor == "Fiveband":
-                pass
+                header_dicts, data_dfs, optical_image_cubes, ir_image_cubes = extract_datasets_from_raw_file(file, sensor)
+                fb_output_dir = archive_dir.joinpath(processing_level).joinpath(sensor)
+                fb_output_dir.mkdir(exist_ok=True, parents=True)
+                datafiles = []
+
+                for i, (header_dict, data_df) in enumerate(zip(header_dicts, data_dfs)):
+                    unit = header_dict['UNIT']
+                    dt = header_dict['DATETIME_START'].isoformat()
+                    output_file = fb_output_dir.joinpath(f'{sensor}_{unit}_{dt.replace(":", "-")}.csv')
+                    data_df.to_csv(output_file, index=False)
+                    metadatas[sensor].append(header_dict)
+                    metadatas[sensor][-1]['PROCESSING_LEVEL'] = "Raw"
+                    metadatas[sensor][-1]['SENSOR'] = sensor
+                    metadatas[sensor][-1]['DATAFILE'] = output_file.name
+                    metadatas[sensor][-1]['DURATION'] = len(data_df) / header_dict['SAMPLE-RATE(Hz)']
 
     for key, metadata in metadatas.items():
         #print(key)

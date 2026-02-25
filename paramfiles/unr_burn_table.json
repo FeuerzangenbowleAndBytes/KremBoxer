@@ -1,0 +1,20 @@
+{
+  "archive_dir": "/home/oryx/Projects/Objects/UNR_BurnTable/FireBehaviorDatasets",
+  "burn_name": "UNR_BurnTable",
+  "burn_dates": ["2022-07-12", "2022-07-13"],
+  "overwrite": true,
+  "run_create_dataset_archive": true,
+  "burn_units": "/home/jepaki/code/KremBoxer/burn_units/unknown.geojson",
+  "create_dataset_archive_params": {
+    "data_source_directories": [
+      "/home/oryx/Projects/Objects/UNR_BurnTable/LowLoading",
+      "/home/oryx/Projects/Objects/UNR_BurnTable/MediumLoading",
+      "/home/oryx/Projects/Objects/UNR_BurnTable/HighLoading"
+    ]
+  },
+  "run_data_processing": true,
+  "data_processing_params": {
+    "fiveband_calibration_file": "/home/oryx/PycharmProjects/KremBoxer/calibration_data/calibration_output/FortStewart2024/fiveband/FortStewart2024_Fiveband_2026-02-25T12-31-55.646212.json",
+    "duration_cutoff": 600
+  }
+}
