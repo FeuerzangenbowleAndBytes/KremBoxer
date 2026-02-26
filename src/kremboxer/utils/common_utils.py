@@ -91,6 +91,15 @@ def fit_detector_model(t_target, t_detector, v_sensor, A, N, p0):
     return G, AL, pcov
 
 
+def fit_kremens_detector_model(t_target, t_detector, v_sensor, A, N, p0):
+    T_data = np.stack((t_target, t_detector), axis=0)
+    G, pcov = so.curve_fit(
+        lambda T, G: G*(A*T[0]**N-A*T[1]**N),
+        T_data, v_sensor, maxfev=1000, p0=p0)
+
+    return G[0], pcov
+
+
 def fit_narrow_detector_model(t_target, t_detector, v_sensor, A, N, p0):
     T_data = np.stack((t_target, t_detector), axis=0)
     (G, AL), pcov = so.curve_fit(

@@ -8,7 +8,7 @@ import scipy.constants as sc
 import kremboxer.utils.greybody_utils as gbu
 import datetime
 import pandas as pd
-from kremboxer.utils.common_utils import fit_detector_model
+from kremboxer.utils.common_utils import fit_detector_model, fit_kremens_detector_model
 
 def compute_fiveband_calibration(cal_params: dict):
     """
@@ -86,7 +86,9 @@ def compute_fiveband_calibration(cal_params: dict):
         (A, N, wd) = gbu.fit_received_bandpass_energy(f, t_actual)
 
         # Now fit the detector model with the calibration data to get G and AL
-        G, AL, pcov = fit_detector_model(t_actual, t_sensor_temp, v, A, N, p0=[band_data["G0"], band_data["AL0"]])
+        #G, AL, pcov = fit_detector_model(t_actual, t_sensor_temp, v, A, N, p0=[band_data["G0"], band_data["AL0"]])
+        G, pcov = fit_kremens_detector_model(t_actual, t_sensor_temp, v, A, N, p0=[band_data["G0"]])
+        AL = A
 
         # Save the fit parameters and sensor data in the band dictionary
         bands_dict[band]["f"] = f
@@ -100,7 +102,8 @@ def compute_fiveband_calibration(cal_params: dict):
         bands_dict[band]["W_GB"] = bands_dict[band]["v"] / bands_dict[band]["G"] + bands_dict[band]["AL"] * bands_dict[band]["t_sensor_temp"] ** bands_dict[band]["N"]
 
         # Print the calibration values
-        print(f'{band}: N={N}, A={A}, G={G}, AL={AL}')
+        #print(f'{band}: N={N}, A={A}, G={G}, AL={AL}')
+        print(f'band: {band}, A={A}, N={N}, G={G}, G*A={G * A}')
 
     ###############################################
     # End of calibration, now see how well the
