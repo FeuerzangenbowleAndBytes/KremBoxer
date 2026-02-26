@@ -87,9 +87,13 @@ fig.write_html(cal_dir.joinpath("fiveband_calibration_data.html"))
 fb1_cal_path = cal_dir.joinpath("DATALOG_FB1_cal.csv")
 fb8_cal_path = cal_dir.joinpath("DATALOG_FB8_cal.csv")
 kremens_cal_path = Path.home().joinpath("PycharmProjects", "KremBoxer", "calibration_data", "calibration_input", "fiveband", "fiveband_calibration_data_kremens.csv")
-
+db_cal_path =Path.home().joinpath("PycharmProjects", "KremBoxer", "calibration_data",
+                                  "calibration_output", "FortStewart2024", "unit11_calibration_data.csv")
 fb1_cal_df = pd.read_csv(fb1_cal_path)
 fb8_cal_df = pd.read_csv(fb8_cal_path)
+db_cal_df = pd.read_csv(db_cal_path)
+print(db_cal_df.head())
+
 kremens_cal_df = pd.read_csv(kremens_cal_path)
 kremens_ave_cal_df = kremens_cal_df.groupby('Temp').aggregate('mean').reset_index()
 kremens_ave_cal_df["Target T [K]"] = kremens_ave_cal_df["Temp"]
@@ -113,6 +117,28 @@ for i, (cal_name, cal_df) in enumerate(cal_dfs.items()):
         fig.add_trace(go.Scatter(x=cal_df["Temp"], y=cal_df[data_col].astype('float'), mode='lines+markers',
                                  marker=dict(color=colors[i], size=10), name=f'{data_col}, {cal_name}'),
                       row=int(np.floor(j/2))+1, col=j%2+1)
+
+# Add dualband calibration data
+fig.add_trace(go.Scatter(x=db_cal_df["Target T"],
+                         y=db_cal_df['TH'].astype('float'),
+                         mode='lines+markers',
+                         marker=dict(color='brown', size=10),
+                         name=f'TH, dualband'),
+              row=1, col=1)
+
+fig.add_trace(go.Scatter(x=db_cal_df["Target T"],
+                         y=db_cal_df['LW-A'].astype('float'),
+                         mode='lines+markers',
+                         marker=dict(color='brown', size=10),
+                         name=f'LW-A, dualband'),
+              row=3, col=2)
+
+fig.add_trace(go.Scatter(x=db_cal_df["Target T"],
+                         y=db_cal_df['MW-B'].astype('float'),
+                         mode='lines+markers',
+                         marker=dict(color='brown', size=10),
+                         name=f'MW-B, dualband'),
+              row=3, col=1)
 
 for i in range(num_rows):
     for j in range(num_cols):

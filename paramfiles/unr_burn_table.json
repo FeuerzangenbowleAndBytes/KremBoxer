@@ -3,7 +3,7 @@
   "burn_name": "UNR_BurnTable",
   "burn_dates": ["2022-07-12", "2022-07-14", "2022-07-15"],
   "overwrite": true,
-  "run_create_dataset_archive": false,
+  "run_create_dataset_archive": true,
   "burn_units": "/home/jepaki/code/KremBoxer/burn_units/unknown.geojson",
   "create_dataset_archive_params": {
     "data_source_directories": [
