@@ -4,7 +4,7 @@
   "burn_dates": ["2024-02-08", "2024-02-10"],
   "overwrite": true,
   "run_create_dataset_archive": true,
-  "burn_units": "/home/jepaki/code/KremBoxer/burn_units/fort_stewart_2022_burn_units.geojson",
+  "burn_units": "/home/oryx/PycharmProjects/KremBoxer/burn_units/fort_stewart_2024_burn_units.geojson",
   "create_dataset_archive_params": {
     "data_source_directories": [
       "/home/oryx/Projects/Objects/FortStewart2024/RadiometerData/2024-02-08",
@@ -14,6 +14,7 @@
   "run_data_processing": true,
   "data_processing_params": {
     "dualband_calibration_file": "/home/oryx/PycharmProjects/KremBoxer/calibration_data/calibration_output/FortStewart2024/FortStewart2024_Dualband_2024-05-29T15-14-51.702863.json",
+    "ufm_calibration_file": "/home/oryx/PycharmProjects/KremBoxer/calibration_data/calibration_output/FortStewart2024/FortStewart2024_Dualband_2024-09-18T15-52-17.839307.json",
     "duration_cutoff": 600
   }
 }

@@ -8,6 +8,9 @@ def is_dualband_file(file: Path) -> bool:
     row1 = next(csvreader, None)
     row2 = next(csvreader, None)
     row3 = next(csvreader, None)
+    print(file)
+    print(row1)
+    print(row3)
     if row1[0] == "DAY" and row1[6] == "SAMPLE-RATE(Hz)" and row3[1] == "LW-A":
         return True
     return False

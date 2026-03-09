@@ -116,18 +116,27 @@ def extract_fiveband_datasets_from_raw_file(file: Path):
         # datetime series for the whole dataset by assuming all rows
         # are offset by 1 second
         mask = fb_df['TIME'].notna() & fb_df['DATE'].notna()
-        first_datetime_index = mask.idxmax()
-        dt_row = fb_df.iloc[first_datetime_index]
-        date_str = str(int(dt_row['DATE']))
-        time_str = str(int(dt_row['TIME']))
-        day = int(date_str[0:2])
-        month = int(date_str[2:4])
-        year = int(date_str[4:6])
-        time_str = '0' * (6 - len(time_str)) + time_str
-        hour = int(time_str[0:2])
-        minute = int(time_str[2:4])
-        second = int(time_str[4:6])
-        dt_str = f'20{year}-{month}-{day}T{hour:02}:{minute:02}:{second:02}'
+        if mask.max() == True:
+            first_datetime_index = mask.idxmax()
+            dt_row = fb_df.iloc[first_datetime_index]
+            date_str = str(int(dt_row['DATE']))
+            time_str = str(int(dt_row['TIME']))
+            # Pad strings with leading 0 if less than 6 characters long
+            # Makes it simpler to uniformly parse into 2 digit month, day, year, time
+            date_str = '0' * (6 - len(date_str)) + date_str
+            time_str = '0' * (6 - len(time_str)) + time_str
+            day = int(date_str[0:2])
+            month = int(date_str[2:4])
+            year = int(date_str[4:6])
+            hour = int(time_str[0:2])
+            minute = int(time_str[2:4])
+            second = int(time_str[4:6])
+            dt_str = f'20{year}-{month}-{day}T{hour:02}:{minute:02}:{second:02}'
+        else:
+            print(f"Unknown datetime for dataset in {file}, using 2000-01-01T00:00:00")
+            first_datetime_index = 0
+            dt_str = f'2000-01-01T00:00:00'
+
         dt = pd.to_datetime(dt_str, utc=True)
         start_data_time = dt - pd.to_timedelta(first_datetime_index, unit='s')
         end_data_time = dt + pd.to_timedelta(len(fb_df)-first_datetime_index-1, unit='s')
