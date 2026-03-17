@@ -74,6 +74,11 @@ def compute_fiveband_calibration(cal_params: dict):
         bands_dict[band]["bandpass"] = bandpass_copy_path
         f = np.loadtxt(bands_dict[band]["bandpass"], delimiter=',', skiprows=1, usecols=[0, 1])
 
+        # Testing whether elimination of long wavelength 3.95um band transmission helps with calibration fits
+        if band == "3.95" and False:
+            mask = f[:,0] < 7.5
+            f = f[mask,:]
+
         # Load temperature sensor data
         t_sensor_mV = blackbody_cal_data_df[band_data["sensor_temp"]].to_numpy()
         t_sensor_resist = t_sensor_mV * r_top / (v_top - t_sensor_mV)   # Convert mV reading into resistance of temperature sensor
@@ -86,9 +91,9 @@ def compute_fiveband_calibration(cal_params: dict):
         (A, N, wd) = gbu.fit_received_bandpass_energy(f, t_actual)
 
         # Now fit the detector model with the calibration data to get G and AL
-        #G, AL, pcov = fit_detector_model(t_actual, t_sensor_temp, v, A, N, p0=[band_data["G0"], band_data["AL0"]])
-        G, pcov = fit_kremens_detector_model(t_actual, t_sensor_temp, v, A, N, p0=[band_data["G0"]])
-        AL = A
+        G, AL, pcov = fit_detector_model(t_actual, t_sensor_temp, v, A, N, p0=[band_data["G0"], band_data["AL0"]])
+        #G, pcov = fit_kremens_detector_model(t_actual, t_sensor_temp, v, A, N, p0=[band_data["G0"]])
+        #AL = A
 
         # Save the fit parameters and sensor data in the band dictionary
         bands_dict[band]["f"] = f
