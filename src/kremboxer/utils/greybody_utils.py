@@ -34,7 +34,11 @@ def fit_received_bandpass_energy(f, ts):
         w_lam = GB_lambda(lams, ts[i])
         wd[i] = np.sum(w_lam*f[:, 1])*dlam
 
+    print(ts)
+    print(wd)
     (A, N), pcov = so.curve_fit(planck_model, ts, wd)
+    print(f'Condition # of Covariance matrix: {np.linalg.cond(pcov)}')
+    print(np.diag(pcov))
     return (A, N, wd)
 
 

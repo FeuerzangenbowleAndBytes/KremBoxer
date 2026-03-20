@@ -75,7 +75,7 @@ def compute_fiveband_calibration(cal_params: dict):
         f = np.loadtxt(bands_dict[band]["bandpass"], delimiter=',', skiprows=1, usecols=[0, 1])
 
         # Testing whether elimination of long wavelength 3.95um band transmission helps with calibration fits
-        if band == "3.95" and False:
+        if band == "3.95" and True:
             mask = f[:,0] < 7.5
             f = f[mask,:]
 

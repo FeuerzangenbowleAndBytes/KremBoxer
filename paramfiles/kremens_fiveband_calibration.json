@@ -44,7 +44,7 @@
       }
     },
     "calibration_inputs_folder": "/home/oryx/PycharmProjects/KremBoxer/calibration_data/calibration_input/fiveband/",
-    "cal_input": "fiveband_calibration_data_kremens_ave.csv",
+    "cal_input": "fiveband_calibration_data_kremens_ave_mod.csv",
     "temp_cal_input": "temperature_sensor_calibration.csv",
     "v_top": 3300,
     "r_top": 100000,
