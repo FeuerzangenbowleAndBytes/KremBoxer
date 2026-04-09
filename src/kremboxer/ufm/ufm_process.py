@@ -35,20 +35,22 @@ def compute_ufm_FRP(rad_data: pd.DataFrame, F_MW, F_LW, F_WIDE, model_params: di
     # Compute the target temperature from the ratio of the fluxes from the two bands
     print("Trying to find T_predict")
     ratios = W_GB_MW / W_GB_LW
-    fig, axs = plt.subplots(3, 1)
+    fig, axs = plt.subplots(4, 1)
     axs[0].plot(W_GB_LW, label="LW")
-    axs[0].plot(W_GB_MW, label="MW")
-    axs[1].plot(ratios)
+    axs[1].plot(W_GB_MW, label="MW")
+    axs[2].plot(ratios)
     cand_T = np.arange(200, 2000, 100)
     cand_ratios = [gbu.GB_ratio_BP(x, F_MW, F_LW) for x in cand_T]
-    axs[2].plot(cand_ratios)
+    axs[3].plot(cand_ratios)
+    axs[0].legend()
+    axs[1].legend()
+    plt.tight_layout()
     plt.show()
 
     #plt.show()
 
     T_predict = np.zeros_like(W_GB_MW)
     for i in range(0, len(T_predict)):
-        #print(i)
         if V_LW[i] > 0 and V_MW[i] > 0:
             T_predict[i] = so.brentq(lambda Ts: gbu.GB_ratio_BP(Ts, F_MW, F_LW) - ratios[i], 200, 2000)
     print("Done")

@@ -1,0 +1,19 @@
+{
+  "archive_dir": "/home/oryx/Projects/Objects/OconeeApril2026/FireBehaviorDatasets",
+  "burn_name": "OconeeApril2026",
+  "burn_dates": ["2026-04-07", "2026-04-08", "2026-04-09"],
+  "burn_units": "/home/oryx/PycharmProjects/KremBoxer/burn_units/oconee_april_2026_burn_units.geojson",
+  "overwrite": true,
+  "run_create_dataset_archive": false,
+  "create_dataset_archive_params": {
+    "data_source_directories": [
+      "/home/oryx/Projects/Objects/OconeeApril2026/RadiometerData/20260408"
+    ]
+  },
+  "run_data_processing": true,
+  "data_processing_params": {
+    "dualband_calibration_file": "/home/oryx/PycharmProjects/KremBoxer/calibration_data/calibration_output/FortStewart2024/FortStewart2024_Dualband_2024-05-29T15-14-51.702863.json",
+    "ufm_calibration_file": "/home/oryx/PycharmProjects/KremBoxer/calibration_data/calibration_output/FortStewart2024/ufm/FortStewart2024_UFM_2025-08-04T16-27-17.760636.json",
+    "duration_cutoff": 600
+  }
+}

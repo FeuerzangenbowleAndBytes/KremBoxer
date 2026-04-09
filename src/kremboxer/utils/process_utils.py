@@ -22,11 +22,11 @@ def run_data_processing(data_processing_params: dict):
 
     # Process raw UFM data
     ufm_metadata_path = Path(archive_root.joinpath("UFM_raw_metadata.geojson"))
-    if ufm_metadata_path.exists() and False:
+    if ufm_metadata_path.exists():
         kremboxer.ufm.ufm_process.process_ufm_datasets(ufm_metadata_path, data_processing_params)
 
     # Process raw fiveband data
     fiveband_metadata_path = Path(archive_root.joinpath("Fiveband_raw_metadata.geojson"))
-    if fiveband_metadata_path.exists() and False:
+    if fiveband_metadata_path.exists():
         kremboxer.fiveband.fiveband_process.process_fiveband_datasets(fiveband_metadata_path, data_processing_params)
 
