@@ -257,6 +257,8 @@ def compute_fiveband_calibration(cal_params: dict):
             "bandpass": str(band_data["bandpass"].name)
         }
 
+    cal_dict["bands"]["WIDE"]["BandpassFraction"] = bands_dict["WIDE"]["BandpassFraction"]
+
     cal_results_output_path = cal_output_dir.joinpath(
         f'{cal_id}_Fiveband_{cal_time.isoformat().replace(":", "-")}.json')
     with open(cal_output_dir.joinpath(cal_results_output_path), 'w') as file:

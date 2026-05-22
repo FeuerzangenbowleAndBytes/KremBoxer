@@ -71,7 +71,6 @@ def compute_fiveband_FRP(rad_data: pd.DataFrame, F_MW, F_LW, F_395, F_1095, F_WI
     axs.plot(T_predict_narrow, label="3.95/10.95")
     axs.legend()
     plt.show()
-    exit()
 
     # Compute emissivity * Area fraction product, fill in zero where the sensors did not detect radiation
     eA_LW = W_GB_LW / gbu.planck_model(T_predict, model_params["LW"]["A"], model_params["LW"]["N"])  # WD_LW
@@ -198,7 +197,7 @@ def process_fiveband_datasets(fiveband_raw_metadata: Path, data_processing_param
 
     # Apply calibration to each dataset to compute FRP and other derived parameters
     archive_root = Path(data_processing_params["archive_dir"])
-    processed_data_dir = archive_root.joinpath("Processed", "Dualband")
+    processed_data_dir = archive_root.joinpath("Processed", "Fiveband")
     processed_data_dir.mkdir(exist_ok=True, parents=True)
     pstart_indices = []
     pend_indices = []
@@ -221,5 +220,111 @@ def process_fiveband_datasets(fiveband_raw_metadata: Path, data_processing_param
         data_path = archive_root.joinpath(row['PROCESSING_LEVEL'], row['SENSOR'], row['DATAFILE'])
         data_df = pd.read_csv(data_path)
         data_proc_df = compute_fiveband_FRP(data_df, F_MW, F_LW, F_395, F_1095, F_WIDE, model_params, detect_temp_cal_data)
+        data_proc_df['DATETIME'] = pd.to_datetime(data_proc_df['DATETIME'])
 
-        #data_proc_df['DATETIME'] = pd.to_datetime(data_proc_df['DATETIME'])
+        # Compute when the max FRP occurs
+        max_FRP_index = data_proc_df["MW_FRP"].argmax()
+        max_FRP = data_proc_df["MW_FRP"][max_FRP_index]
+        max_FRP_datetime = data_proc_df['DATETIME'][max_FRP_index]
+
+        # Compute the FRE as the integral of the FRP over the entire dataset duration
+        lw_fre = data_proc_df["LW_FRP"].sum() * (1. / row['SAMPLE-RATE(Hz)'])
+        mw_fre = data_proc_df["MW_FRP"].sum() * (1. / row['SAMPLE-RATE(Hz)'])
+        print("\tMax FRP: ", max_FRP_index, max_FRP_datetime, max_FRP, "W/m**2")
+        print("\t MW FRE:", mw_fre, ', LW FRE:', lw_fre)
+        max_FRP_indices.append(max_FRP_index)
+        max_FRPs.append(max_FRP)
+        max_FRP_datetimes.append(max_FRP_datetime)
+        MW_FREs.append(mw_fre)
+        LW_FREs.append(lw_fre)
+
+        # Find time bounds for the middle 90% of the integrated FRP signal
+        ind_start, ind_end = cu.get_signal_bounds(data_proc_df["LW_FRP"].to_numpy(), 0.05, 0.95)
+        dt_start = data_proc_df['DATETIME'].iloc[ind_start]
+        dt_end = data_proc_df['DATETIME'].iloc[ind_end]
+        dt_dur = (dt_end - dt_start).seconds / 60
+        print("\tDuration: {:.2f} minutes".format(dt_dur))
+        pstart_indices.append(ind_start)
+        pend_indices.append(ind_end)
+        time_starts.append(dt_start)
+        time_stops.append(dt_end)
+        fire_durations.append(dt_dur)
+
+        # Find duration of fire, as measured by how long frp > 1000
+        df_temp = data_proc_df[data_proc_df["LW_FRP"] > 1000]
+        if df_temp.empty:
+            duration = 0
+            mean_FRPs.append(0)
+            var_FRPs.append(0)
+        else:
+            duration = (df_temp['DATETIME'].iloc[-1] - df_temp['DATETIME'].iloc[0]).seconds / 60
+            mean_FRPs.append(df_temp["LW_FRP"].mean())
+            var_FRPs.append(df_temp["LW_FRP"].var())
+        over_1000FRP_durations.append(duration)
+
+        # Save the processed data to a new csv file
+        proc_data_path = processed_data_dir.joinpath(row['DATAFILE'])
+        data_proc_df.to_csv(proc_data_path)
+        processing_levels.append("Processed")
+        print("Processed data saved to: ", proc_data_path)
+
+        fig, axs = plt.subplots(4, 1, figsize=(8, 12))
+        axs[0].plot(data_proc_df['DATETIME'], data_proc_df['LW_FRP'], label='LW')
+        axs[0].plot(data_proc_df['DATETIME'], data_proc_df['MW_FRP'], label='MW')
+        axs[0].set_ylabel('FRP [W/m^2]')
+        axs[0].legend()
+
+        axs[1].plot(data_proc_df['DATETIME'], data_proc_df['LW_eA'], label='LW')
+        axs[1].plot(data_proc_df['DATETIME'], data_proc_df['MW_eA'], label='MW')
+        axs[1].set_ylabel('emissivity-Area product')
+        axs[1].legend()
+
+        axs[2].plot(data_proc_df['DATETIME'], data_proc_df['T'], label='Target Temperature')
+        axs[2].plot(data_proc_df['DATETIME'], data_proc_df['TD'], label='Device Temperature')
+        axs[2].set_ylabel('Temperature [K]')
+        axs[2].legend()
+
+        axs[3].plot(data_proc_df['DATETIME'], data_proc_df['LW'], label='LW')
+        axs[3].plot(data_proc_df['DATETIME'], data_proc_df['MW'], label='MW')
+        axs[3].set_ylabel('Raw Sensor Readings')
+        axs[3].set_xlabel('Time')
+        axs[3].legend()
+        plt.tight_layout()
+        plt.savefig(processed_data_dir / row['DATAFILE'].replace(".csv", ".png"))
+
+    fiveband_gdf["max_FRP_index"] = max_FRP_indices
+    fiveband_gdf["max_FRP_datetime"] = max_FRP_datetimes
+    fiveband_gdf["max_FRP"] = max_FRPs
+    fiveband_gdf["mean_FRP"] = mean_FRPs
+    fiveband_gdf["var_FRP"] = var_FRPs
+    fiveband_gdf["MW_FRE"] = MW_FREs
+    fiveband_gdf["LW_FRE"] = LW_FREs
+    fiveband_gdf["fire_duration"] = fire_durations
+    fiveband_gdf["pstart_ind"] = pstart_indices
+    fiveband_gdf["pend_ind"] = pend_indices
+    fiveband_gdf["fire_start"] = time_starts
+    fiveband_gdf["fire_end"] = time_stops
+    fiveband_gdf["over_1000FRP_duration"] = over_1000FRP_durations
+    fiveband_gdf["PROCESSING_LEVEL"] = processing_levels
+
+    #fiveband_gdf = cu.associate_data2burnplot(fiveband_gdf, bu_gdf)
+
+    fiveband_gdf.to_file(archive_root.joinpath("Fiveband_processed_metadata_raw_location.geojson"), driver='GeoJSON')
+    fiveband_gdf.to_csv(archive_root.joinpath("Fiveband_processed_metadata_raw_location.csv"), index=False)
+
+    if "fuel_plots" in data_processing_params:
+        # Overwrites the radiometer location with the matching fuel plot location (assume that the fuel plot location is more accurate)
+        fuel_plots_file = Path(data_processing_params["fuel_plots"])
+        if fuel_plots_file.is_file() and fuel_plots_file.suffix == ".geojson":
+            fp_gdf = gpd.read_file(fuel_plots_file, driver='GeoJSON')
+        elif fuel_plots_file.is_file() and fuel_plots_file.suffix == ".csv":
+            fp_df = pd.read_csv(fuel_plots_file)
+            fp_gdf = gpd.GeoDataFrame(fp_df, geometry=gpd.points_from_xy(fp_df.Longitude, fp_df.Latitude), crs="EPSG:4326")
+        else:
+            raise ValueError(f"Could not read fuel plot data from {fuel_plots_file}")
+        fb_assoc_gdf, fb_unassoc_gdf = cu.associate_data2fuelplot(fiveband_gdf, fp_gdf)
+        if len(fb_unassoc_gdf) > 0:
+            print("Warning! Unable to associate these radiometers with a fuel plot:", fb_unassoc_gdf)
+            print(f'{len(fb_unassoc_gdf)} / {len(fb_assoc_gdf)} radiometers did not match with a fuel plot')
+        fb_assoc_gdf.to_file(archive_root.joinpath("Fiveband_processed_metadata.geojson"), driver='GeoJSON')
+        fb_assoc_gdf.to_csv(archive_root.joinpath("Fiveband_processed_metadata.csv"), index=False)
